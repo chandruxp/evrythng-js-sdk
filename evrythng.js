@@ -78,7 +78,7 @@ Evrythng.prototype.checkin = function(options, callback, errorHandler) {
 		query.params.createThng = options.createThng;
 	}
 	if (typeof this.options.loadingCallback === 'function') this.options.loadingCallback.call(this, true);
-	if (navigator.geolocation) {
+	if (navigator.geolocation && !this.options.disableGeolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
 			query.data.location.latitude = position.coords.latitude;
 			query.data.location.longitude = position.coords.longitude;
@@ -124,10 +124,10 @@ Evrythng.prototype.scan = function(options, callback, errorHandler) {
 			}, errorHandler);
 		};
 	if (typeof this.options.loadingCallback === 'function') this.options.loadingCallback.call(this, true);
-	if (navigator.geolocation) {
+	if (navigator.geolocation && !this.options.disableGeolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
-			data.location.latitude = position.coords.latitude;
-			data.location.longitude = position.coords.longitude;
+			query.data.location.latitude = position.coords.latitude;
+			query.data.location.longitude = position.coords.longitude;
 			doScan();
 		}, function(error) {
 			doScan();
@@ -555,16 +555,25 @@ Evrythng.prototype.deleteReward = function(options, callback, errorHandler) {
 	Facebook
 */
 Evrythng.prototype.fbInit = function(callback) {
-	var self = this;
+	var self = this,
+		fbUrl = '//connect.facebook.net/en_US/all.js';
 	this.options.loginCallback = callback;
 	window.fbAsyncInit = function() {
 		self.fbAsyncInit.call(self);
 	};
 	if (typeof this.options.loadingCallback === 'function') this.options.loadingCallback.call(this, true);
-	load.js('//connect.facebook.net/en_US/all.js', function() {
+	load.js(fbUrl, function() {
 		if (typeof FB != 'object') {
 			if (typeof self.options.loadingCallback === 'function') self.options.loadingCallback.call(self, false);
-			if (window.console) console.log('It seems that Facebook is not available on your network.<br/>Please use another Internet connection');
+			self.handleError({
+				error: {
+					type: 'facebook',
+					message: 'It seems that Facebook is not available on your network. Please check your Internet connection',
+					url: fbUrl,
+					method: 'GET'
+				},
+				status: 0
+			});
 		}
 	});
 };
@@ -602,7 +611,13 @@ Evrythng.prototype.fbLogin = function(callback) {
 	FB.login(function(response) {
 		if (!response.authResponse) {
 			if (typeof self.options.loadingCallback === 'function') self.options.loadingCallback.call(self, false);
-			if (window.console) console.log('FB User cancelled login or did not fully authorize');
+			self.handleError({
+				error: {
+					type: 'facebook',
+					message: 'FB User cancelled login or did not fully authorize'
+				},
+				status: 0
+			});
 		}
 		if (typeof callback === 'function') callback.call(self, response);
 	}, {scope: 'publish_actions,email,user_birthday,user_location'});
@@ -640,17 +655,35 @@ Evrythng.prototype.fbCallback = function(response) {
 			});
 		}
 		else {
-			if (window.console) console.log('Cannot login via Facebook');
+			this.handleError({
+				error: {
+					type: 'facebook',
+					message: 'Cannot login via Facebook'
+				},
+				status: 0
+			});
 		}
 	}
 	else {
 		if (response.status === 'not_authorized') {
 			if (typeof this.options.loadingCallback === 'function') this.options.loadingCallback.call(this, false);
-			if (window.console) console.log('User is logged in to Facebook, but has not authenticated your app');
+			this.handleError({
+				error: {
+					type: 'facebook',
+					message: 'User is logged in to Facebook, but has not authenticated your app'
+				},
+				status: 0
+			});
 		}
 		else {
 			if (typeof this.options.loadingCallback === 'function') this.options.loadingCallback.call(this, false);
-			if (window.console) console.log('User is not logged in to Facebook');
+			this.handleError({
+				error: {
+					type: 'facebook',
+					message: 'User is not logged in to Facebook'
+				},
+				status: 0
+			});
 		}
 		/*
 		location.href = 'https://www.facebook.com/connect/uiserver.php?app_id=' 
@@ -926,7 +959,6 @@ Evrythng.prototype.request = function(options, callback, errorHandler) {
 		if (options.method) corsOptions.method = options.method;
 		if (options.data) corsOptions.data = JSON.stringify(options.data);
 		corsResult = this.cors(corsOptions, function(response, status, xhr) {
-			if (window.console) console.log(response);
 			if (typeof callback === 'function') {
 				var hs = (xhr && xhr.getAllResponseHeaders ? xhr.getAllResponseHeaders() : undefined),
 					headers = {},
@@ -959,7 +991,6 @@ Evrythng.prototype.request = function(options, callback, errorHandler) {
 				+ 'callback=?&'
 				+ this.buildParams(options.params)
 			}, function(response) {
-			if (window.console) console.log(response);
 			if (typeof callback === 'function') {
 				callback.call(self, response);
 			}
