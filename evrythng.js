@@ -242,7 +242,7 @@ Evrythng.prototype.createThng = function(options, callback, errorHandler) {
 Evrythng.prototype.readThng = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: options.thng ? self.buildUrl('/thngs/%s', options.thng) : '/thng',
+		url: options.thng ? self.buildUrl('/thngs/%s', options.thng) : '/thngs',
 		params: options.params
 	}, callback, errorHandler);
 };
