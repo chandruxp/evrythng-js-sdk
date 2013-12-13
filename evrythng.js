@@ -151,18 +151,10 @@ Evrythng.prototype.createApplication = function(options, callback, errorHandler)
 };
 
 
-Evrythng.prototype.readApplications = function(options, callback, errorHandler) {
-	var self = this;
-	return self.request({
-		url: self.buildUrl('/applications')
-	}, callback, errorHandler);
-};
-
-
 Evrythng.prototype.readApplication = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: self.buildUrl('/applications/%s', options.application)
+		url: options.application ? self.buildUrl('/applications/%s', options.application) : '/applications'
 	}, callback, errorHandler);
 };
 
@@ -201,21 +193,10 @@ Evrythng.prototype.createProduct = function(options, callback, errorHandler) {
 };
 
 
-Evrythng.prototype.readProducts = function(options, callback, errorHandler) {
-	var self = this,
-		query = {
-			url: '/products',
-			params: options.params
-		};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
-	return self.request(query, callback, errorHandler);
-};
-
-
 Evrythng.prototype.readProduct = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
-			url: self.buildUrl('/products/%s', options.product)
+			url: options.product ? self.buildUrl('/products/%s', options.product) : '/products'
 		};
 	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
 	return self.request(query, callback, errorHandler);
@@ -244,27 +225,10 @@ Evrythng.prototype.deleteProduct = function(options, callback, errorHandler) {
 	return self.request(query, callback, errorHandler);
 };
 
+
 /*
 	Thngs CRUD
 */
-Evrythng.prototype.readThngs = function(options, callback, errorHandler) {
-	var self = this;
-	return self.request({
-		url : self.buildUrl('/thngs'),
-		method: 'get',
-		params: options.params
-	}, callback, errorHandler);
-};
-
-Evrythng.prototype.readThng = function(options, callback, errorHandler) {
-	var self = this;
-	return self.request({
-		url: self.buildUrl('/thngs/%s', options.thng),
-		method: 'get',
-		params: options.params
-	}, callback, errorHandler);
-};
-
 Evrythng.prototype.createThng = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
@@ -273,6 +237,16 @@ Evrythng.prototype.createThng = function(options, callback, errorHandler) {
 		data: options.data
 	}, callback, errorHandler);
 };
+
+
+Evrythng.prototype.readThng = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: options.thng ? self.buildUrl('/thngs/%s', options.thng) : '/thng',
+		params: options.params
+	}, callback, errorHandler);
+};
+
 
 Evrythng.prototype.updateThng = function(options, callback, errorHandler) {
 	var self = this;
@@ -283,6 +257,7 @@ Evrythng.prototype.updateThng = function(options, callback, errorHandler) {
 	}, callback, errorHandler);
 };
 
+
 Evrythng.prototype.deleteThng = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
@@ -290,6 +265,7 @@ Evrythng.prototype.deleteThng = function(options, callback, errorHandler) {
 		method: 'delete'
 	}, callback, errorHandler);
 };
+
 
 /*
 	Thng Properties CRUD
@@ -304,18 +280,10 @@ Evrythng.prototype.createProperty = function(options, callback, errorHandler) {
 };
 
 
-Evrythng.prototype.readProperties = function(options, callback, errorHandler) {
-	var self = this;
-	return self.request({
-		url: self.buildUrl('/thngs/%s/properties', options.thng)
-	}, callback, errorHandler);
-};
-
-
 Evrythng.prototype.readProperty = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: self.buildUrl('/thngs/%s/properties/%s', options.thng, options.property)
+		url: options.property ? self.buildUrl('/thngs/%s/properties/%s', options.thng, options.property) : self.buildUrl('/thngs/%s/properties', options.thng)
 	}, callback, errorHandler);
 };
 
@@ -338,18 +306,18 @@ Evrythng.prototype.deleteProperty = function(options, callback, errorHandler) {
 	}, callback, errorHandler);
 };
 
-/*
- * Thng Location 
- */
 
-Evrythng.prototype.readThngLocations = function(options, callback, errorHandler) {
+/*
+	Thng Location RU
+*/
+Evrythng.prototype.readThngLocation = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/thngs/%s/location', options.thng),
-		params: options.params,
-		method: 'get'
+		params: options.params
 	}, callback, errorHandler);
 };
+
 
 Evrythng.prototype.updateThngLocation = function(options, callback, errorHandler) {
 	var self = this;
@@ -359,6 +327,7 @@ Evrythng.prototype.updateThngLocation = function(options, callback, errorHandler
 		method: 'put'
 	}, callback, errorHandler);
 };
+
 
 /*
 	Analytics R
@@ -375,20 +344,10 @@ Evrythng.prototype.readAnalytics = function(options, callback, errorHandler) {
 /*
 	Users R
 */
-Evrythng.prototype.readUsers = function(options, callback, errorHandler) {
-	var self = this,
-		query = {
-			url: self.buildUrl('/users')
-		};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
-	return self.request(query, callback, errorHandler);
-};
-
-
 Evrythng.prototype.readUser = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
-			url: self.buildUrl('/users/%s', options.user)
+			url: options.user ? self.buildUrl('/users/%s', options.user) : '/users'
 		};
 	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
 	return self.request(query, callback, errorHandler);
@@ -427,19 +386,10 @@ Evrythng.prototype.readActionTypes = function(options, callback, errorHandler) {
 };
 
 
-Evrythng.prototype.readActions = function(options, callback, errorHandler) {
-	var self = this;
-	return self.request({
-		url: self.buildUrl('/actions/%s', options.type),
-		params: options.params
-	}, callback, errorHandler);
-};
-
-
 Evrythng.prototype.readAction = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: self.buildUrl('/actions/' + options.type + '/%s', options.action),
+		url: options.action ? self.buildUrl('/actions/' + options.type + '/%s', options.action) : self.buildUrl('/actions/%s', options.type),
 		params: options.params
 	}, callback, errorHandler);
 };
@@ -452,7 +402,6 @@ Evrythng.prototype.readPlaces = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url : self.buildUrl('/places'),
-		method: 'get',
 		params: options.params
 	}, callback, errorHandler);
 };
@@ -482,19 +431,10 @@ Evrythng.prototype.readMultimedia = function(options, callback, errorHandler) {
 /*
 	Files R
 */
-Evrythng.prototype.readFiles = function(options, callback, errorHandler) {
-	var self = this;
-	return self.request({
-		url: '/files',
-		params: options.params
-	}, callback, errorHandler);
-};
-
-
 Evrythng.prototype.readFile = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: self.buildUrl('/files/%s', options.file)
+		url: options.file ? self.buildUrl('/files/%s', options.file) : '/files'
 	}, callback, errorHandler);
 };
 
@@ -512,18 +452,10 @@ Evrythng.prototype.createReward = function(options, callback, errorHandler) {
 };
 
 
-Evrythng.prototype.readRewards = function(options, callback, errorHandler) {
-	var self = this;
-	return self.request({
-		url: '/configure/api/rewards'
-	}, callback, errorHandler);
-};
-
-
 Evrythng.prototype.readReward = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: self.buildUrl('/configure/api/rewards/%s', options.reward)
+		url: options.reward ? self.buildUrl('/configure/api/rewards/%s', options.reward) : '/configure/api/rewards'
 	}, callback, errorHandler);
 };
 
