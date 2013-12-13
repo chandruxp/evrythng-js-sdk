@@ -788,13 +788,13 @@ Evrythng.prototype.cors = function(options, callback, errorHandler) {
 	else {
 		var xhr = this.createCORSRequest(method, options.url);
 		if (xhr) {
-			xhr.responseType = 'json';
+			xhr.responseType = 'string';
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.setRequestHeader('Accept', 'application/json');
 			xhr.setRequestHeader('Authorization', this.options.evrythngApiKey);
 			xhr.onload = function(e) {
 				if (xhr.status.toString().indexOf('2') === 0) {
-					if (typeof callback === 'function') callback.call(self, xhr.response, xhr.status, xhr);
+					if (typeof callback === 'function') callback.call(self, JSON.parse(xhr.response), xhr.status, xhr);
 				}
 				else {
 					self.handleError({
