@@ -498,13 +498,11 @@ Evrythng.prototype.fbInit = function(callback) {
 		if (typeof FB != 'object') {
 			if (typeof self.options.loadingCallback === 'function') self.options.loadingCallback.call(self, false);
 			self.handleError({
-				error: {
-					type: 'facebook',
-					message: 'It seems that Facebook is not available on your network. Please check your Internet connection',
-					url: fbUrl,
-					method: 'GET'
-				},
-				status: 0
+				status: 0,
+				type: 'facebook',
+				message: 'It seems that Facebook is not available on your network. Please check your Internet connection',
+				url: fbUrl,
+				method: 'GET'
 			});
 		}
 	});
@@ -544,11 +542,9 @@ Evrythng.prototype.fbLogin = function(callback) {
 		if (!response.authResponse) {
 			if (typeof self.options.loadingCallback === 'function') self.options.loadingCallback.call(self, false);
 			self.handleError({
-				error: {
-					type: 'facebook',
-					message: 'FB User cancelled login or did not fully authorize'
-				},
-				status: 0
+				status: 0,
+				type: 'facebook',
+				message: 'FB User cancelled login or did not fully authorize'
 			});
 		}
 		if (typeof callback === 'function') callback.call(self, response);
@@ -588,11 +584,9 @@ Evrythng.prototype.fbCallback = function(response) {
 		}
 		else {
 			this.handleError({
-				error: {
-					type: 'facebook',
-					message: 'Cannot login via Facebook'
-				},
-				status: 0
+				status: 0,
+				type: 'facebook',
+				message: 'Cannot login via Facebook'
 			});
 		}
 	}
@@ -600,21 +594,17 @@ Evrythng.prototype.fbCallback = function(response) {
 		if (response.status === 'not_authorized') {
 			if (typeof this.options.loadingCallback === 'function') this.options.loadingCallback.call(this, false);
 			this.handleError({
-				error: {
-					type: 'facebook',
-					message: 'User is logged in to Facebook, but has not authenticated your app'
-				},
-				status: 0
+				status: 0,
+				type: 'facebook',
+				message: 'User is logged in to Facebook, but has not authenticated your app'
 			});
 		}
 		else {
 			if (typeof this.options.loadingCallback === 'function') this.options.loadingCallback.call(this, false);
 			this.handleError({
-				error: {
-					type: 'facebook',
-					message: 'User is not logged in to Facebook'
-				},
-				status: 0
+				status: 0,
+				type: 'facebook',
+				message: 'User is not logged in to Facebook'
 			});
 		}
 		/*
@@ -691,7 +681,7 @@ Evrythng.prototype.fbFriends = function(options, callback) {
 Evrythng.prototype.handleError = function(options, callback) {
 	if (window.console) console.error('Evrythng.js Error', options);
 	if (typeof callback === 'function') callback.call(this, options);
-	if (typeof this.onError === 'function') this.onError.call(this, options);
+	if (typeof this.options.onError === 'function') this.options.onError.call(this, options);
 };
 
 
@@ -736,15 +726,13 @@ Evrythng.prototype.cors = function(options, callback, errorHandler) {
 			},
 			error: function(e) {
 				self.handleError({
-					error: {
-						type: e.responseJSON ? 'server' : 'cors',
-						message: (e.responseJSON ? 'Server responded with an error for the CORS request' : 'Cannot establish CORS connection') + ' (using jQuery)',
-						url: options.url,
-						method: method
-					},
+					status: e.status,
+					type: e.responseJSON ? 'server' : 'cors',
+					message: (e.responseJSON ? 'Server responded with an error for the CORS request' : 'Cannot establish CORS connection') + ' (using jQuery)',
+					url: options.url,
+					method: method,
 					originalError: e,
-					responseError: e.responseJSON,
-					status: e.status
+					responseError: e.responseJSON
 				}, errorHandler);
 			}
 		});
@@ -763,29 +751,25 @@ Evrythng.prototype.cors = function(options, callback, errorHandler) {
 				}
 				else {
 					self.handleError({
-						error: {
-							type: 'server',
-							message: 'Server responded with an error for the CORS request',
-							url: options.url,
-							method: method
-						},
+						status: e.target.status,
+						type: 'server',
+						message: 'Server responded with an error for the CORS request',
+						url: options.url,
+						method: method,
 						originalError: e,
-						responseError: e.target.response,
-						status: e.target.status
+						responseError: e.target.response
 					}, errorHandler);
 				}
 			};
 			xhr.onerror = function(e) {
 				self.handleError({
-					error: {
-						type: 'cors',
-						message: 'Cannot establish CORS connection',
-						url: options.url,
-						method: method
-					},
+					status: e.target.status,
+					type: 'cors',
+					message: 'Cannot establish CORS connection',
+					url: options.url,
+					method: method,
 					originalError: e,
-					responseError: e.target.response,
-					status: e.target.status
+					responseError: e.target.response
 				}, errorHandler);
 			};
 			xhr.send(options.data);
@@ -807,30 +791,26 @@ Evrythng.prototype.jsonp = function(options, callback, errorHandler) {
 				timeout: 10000,	// workaround for error handling
 				error: function(xhr, status, error) {
 					self.handleError({
-						error: {
-							type: 'jsonp',
-							message: 'Cannot establish JSONP connection (using jQuery)',
-							url: options.url,
-							method: 'GET'
-						},
+						status: xhr.status,
+						type: 'jsonp',
+						message: 'Cannot establish JSONP connection (using jQuery)',
+						url: options.url,
+						method: 'GET',
 						originalError: xhr,
-						responseError: null,
-						status: xhr.status
+						responseError: null
 					}, errorHandler);
 				}
 			}),
 			callbackWrapper = function(data, status, xhr) {
 				if (data.errors && data.status) {
 					self.handleError({
-						error: {
-							type: 'server',
-							message: 'Server responded with an error for the JSONP request (using jQuery)',
-							url: options.url,
-							method: 'GET'
-						},
+						status: data.status,
+						type: 'server',
+						message: 'Server responded with an error for the JSONP request (using jQuery)',
+						url: options.url,
+						method: 'GET',
 						originalError: null,
-						responseError: xhr.responseJSON,
-						status: data.status
+						responseError: xhr.responseJSON
 					}, errorHandler);
 				}
 				else {
@@ -844,15 +824,13 @@ Evrythng.prototype.jsonp = function(options, callback, errorHandler) {
 		return load.jsonp(options.url, function(data) {
 			if (data.errors && data.status) {
 				self.handleError({
-					error: {
-						type: 'server',
-						message: 'Server responded with an error for the JSONP request',
-						url: options.url,
-						method: 'GET'
-					},
+					status: data.status,
+					type: 'server',
+					message: 'Server responded with an error for the JSONP request',
+					url: options.url,
+					method: 'GET',
 					originalError: null,
-					responseError: data,
-					status: data.status
+					responseError: data
 				}, errorHandler);
 			}
 			else {
@@ -860,15 +838,13 @@ Evrythng.prototype.jsonp = function(options, callback, errorHandler) {
 			}
 		}, true, function(error) {
 			self.handleError({
-				error: {
-					type: 'jsonp',
-					message: 'Cannot establish JSONP connection',
-					url: options.url,
-					method: 'GET'
-				},
+				status: 0,
+				type: 'jsonp',
+				message: 'Cannot establish JSONP connection',
+				url: options.url,
+				method: 'GET',
 				originalError: error,
-				responseError: null,
-				status: 0
+				responseError: null
 			}, errorHandler);
 		});
 	}
@@ -1286,11 +1262,9 @@ Evrythng.prototype.Upload = function(options) {
 Evrythng.prototype.Upload.prototype.handleFileInput = function(file_element) {
 	if (typeof(file_element) === 'undefined') {
 		this.evrythng.handleError({
-			error: {
-				type: 'upload',
-				message: 'Could not find the file select DOM element'
-			},
-			status: 0
+			status: 0,
+			type: 'upload',
+			message: 'Could not find the file select DOM element'
 		}, this.onError);
 		return;
 	}
@@ -1298,11 +1272,9 @@ Evrythng.prototype.Upload.prototype.handleFileInput = function(file_element) {
 	files = file_element.files;
 	if (files.length === 0) {
 		this.evrythng.handleError({
-			error: {
-				type: 'upload',
-				message: 'No file selected'
-			},
-			status: 0
+			status: 0,
+			type: 'upload',
+			message: 'No file selected'
 		}, this.onError);
 		return;
 	}
@@ -1342,11 +1314,9 @@ Evrythng.prototype.Upload.prototype.upload = function(file, type, url, public_ur
 		xhr = this.evrythng.createCORSRequest(this.method, url);
 	if (!xhr) {
 		this.evrythng.handleError({
-			error: {
-				type: 'upload',
-				message: 'CORS not supported'
-			},
-			status: 0
+			status: 0,
+			type: 'upload',
+			message: 'CORS not supported'
 		}, this.onError);
 	}
 	else {
@@ -1367,22 +1337,18 @@ Evrythng.prototype.Upload.prototype.upload = function(file, type, url, public_ur
 			}
 			else {
 				self.evrythng.handleError({
-					error: {
-						type: 'upload',
-						message: 'HTTP error'
-					},
-					status: xhr.status
+					status: xhr.status,
+					type: 'upload',
+					message: 'HTTP error'
 				}, self.onError);
 			}
 		};
 		xhr.onerror = function(e) {
 			self.evrythng.handleError({
-				error: {
-					type: 'upload',
-					message: 'HTTP error',
-					originalError: e
-				},
-				status: xhr.status
+				status: xhr.status,
+				type: 'upload',
+				message: 'HTTP error',
+				originalError: e
 			}, self.onError);
 		};
 		xhr.upload.onprogress = function(e) {
