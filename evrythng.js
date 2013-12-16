@@ -199,7 +199,14 @@ Evrythng.prototype.readProduct = function(options, callback, errorHandler) {
 			url: options.product ? self.buildUrl('/products/%s', options.product) : '/products',
 			params: options.params
 		};
-	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	if (self.options.evrythngAppId) {
+		if (query.params) {
+			query.params.app = self.options.evrythngAppId;
+		}
+		else {
+			query.params = {app: self.options.evrythngAppId};
+		}
+	}
 	return self.request(query, callback, errorHandler);
 };
 
