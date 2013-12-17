@@ -419,20 +419,24 @@ Evrythng.prototype.readPlaces = function(options, callback, errorHandler) {
 	Multimedia CR
 */
 Evrythng.prototype.createMultimedia = function(options, callback, errorHandler) {
-	var self = this;
-	return self.request({
-		url: '/contents/multimedia',
-		data: options.data,
-		method: 'post'
-	}, callback, errorHandler);
+	var self = this,
+	    query = {
+    		url: '/contents/multimedia',
+    		data: options.data,
+    		method: 'post'
+    	};
+	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	return self.request(query, callback, errorHandler);
 };
 
 
 Evrythng.prototype.readMultimedia = function(options, callback, errorHandler) {
-	var self = this;
-	return self.request({
-		url: options.multimedia ? self.buildUrl('/contents/multimedia/%s', options.multimedia) : '/contents/multimedia'
-	}, callback, errorHandler);
+	var self = this,
+	    query = {
+    		url: options.multimedia ? self.buildUrl('/contents/multimedia/%s', options.multimedia) : '/contents/multimedia'
+		};
+	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	return self.request(query, callback, errorHandler);
 };
 
 
