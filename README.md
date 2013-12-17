@@ -17,7 +17,7 @@ You can also set initial options:
 		evrythngApiKey: 'xxxxxxxxxxxx'
 	});
 
-
+For security reasons, make sure the only key you put in your code is the App API key and not your Operator or User App key (see https://dev.evrythng.com/documentation/api#users).
 
 ## Options
 
@@ -25,7 +25,7 @@ You can also set initial options:
 	evrythngApiCorsUrl			CORS API URL
 	evrythngApiJsonpUrl			JSONP API URL
 
-	evrythngApiKey				API key
+	evrythngApiKey				API key, this should be your App API key.
 	evrythngAppId				id of Evrythng application
 	facebookAppId				id of Facebook application
 	
