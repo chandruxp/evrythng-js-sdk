@@ -759,25 +759,25 @@ Evrythng.prototype.cors = function(options, callback, errorHandler) {
 				}
 				else {
 					self.handleError({
-						status: e.target.status,
+						status: xhr.status,
 						type: 'server',
 						message: 'Server responded with an error for the CORS request',
 						url: options.url,
 						method: method,
 						originalError: e,
-						responseError: e.target.response
+						responseError: JSON.parse(xhr.response)
 					}, errorHandler);
 				}
 			};
 			xhr.onerror = function(e) {
 				self.handleError({
-					status: e.target.status,
+					status: xhr.status,
 					type: 'cors',
 					message: 'Cannot establish CORS connection',
 					url: options.url,
 					method: method,
 					originalError: e,
-					responseError: e.target.response
+					responseError: JSON.parse(xhr.response)
 				}, errorHandler);
 			};
 			xhr.send(options.data);
