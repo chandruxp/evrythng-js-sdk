@@ -755,7 +755,7 @@ Evrythng.prototype.cors = function(options, callback, errorHandler) {
 			xhr.setRequestHeader('Authorization', this.options.evrythngApiKey);
 			xhr.onload = function(e) {
 				if (xhr.status.toString().indexOf('2') === 0) {
-					if (typeof callback === 'function') callback.call(self, JSON.parse(xhr.response), xhr.status, xhr);
+					if (typeof callback === 'function') callback.call(self, xhr.response ? JSON.parse(xhr.response) : '', xhr.status, xhr);
 				}
 				else {
 					self.handleError({
@@ -765,7 +765,7 @@ Evrythng.prototype.cors = function(options, callback, errorHandler) {
 						url: options.url,
 						method: method,
 						originalError: e,
-						responseError: JSON.parse(xhr.response)
+						responseError: xhr.response ? JSON.parse(xhr.response) : ''
 					}, errorHandler);
 				}
 			};
@@ -777,7 +777,7 @@ Evrythng.prototype.cors = function(options, callback, errorHandler) {
 					url: options.url,
 					method: method,
 					originalError: e,
-					responseError: JSON.parse(xhr.response)
+					responseError: xhr.response ? JSON.parse(xhr.response) : ''
 				}, errorHandler);
 			};
 			xhr.send(options.data);
