@@ -55,9 +55,7 @@ Evrythng.prototype.checkin = function(options, callback, errorHandler) {
 				locationSource: 'sensor'
 			},
 			method: 'post',
-			params: {
-				access_token: options.evrythngApiKey
-			}
+			evrythngApiKey: options.evrythngApiKey
 		},
 		doCheckin = function() {
 			self.request(query, function(response) {
@@ -111,9 +109,7 @@ Evrythng.prototype.scan = function(options, callback, errorHandler) {
 				locationSource: 'sensor'
 			},
 			method: 'post',
-			params: {
-				access_token: options.evrythngApiKey
-			}
+			evrythngApiKey: options.evrythngApiKey
 		},
 		doScan = function() {
 			self.request(query, function(response) {
@@ -424,10 +420,10 @@ Evrythng.prototype.createMultimedia = function(options, callback, errorHandler) 
     		url: '/contents/multimedia',
     		data: options.data,
     		method: 'post',
-    		params: {}
+    		params: {},
+    		evrythngApiKey: options.evrythngApiKey
     	};
 	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
-	if (options.evrythngApiKey) query.params.access_token = options.evrythngApiKey;
 	return self.request(query, callback, errorHandler);
 };
 
@@ -436,10 +432,10 @@ Evrythng.prototype.readMultimedia = function(options, callback, errorHandler) {
 	var self = this,
 	    query = {
     		url: options.multimedia ? self.buildUrl('/contents/multimedia/%s', options.multimedia) : '/contents/multimedia',
-    		params: {}
+    		params: {},
+    		evrythngApiKey: options.evrythngApiKey
 		};
 	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
-	if (options.evrythngApiKey) query.params.access_token = options.evrythngApiKey;
 	return self.request(query, callback, errorHandler);
 };
 
@@ -878,7 +874,7 @@ Evrythng.prototype.request = function(options, callback, errorHandler) {
 			url: this.options.evrythngApiCorsUrl + options.url
 				+ (options.url.indexOf('?') > -1 ? '&' : '?')
 				+ this.buildParams(options.params),
-			evrythngApiKey: (options.params ? options.params.access_token : null) || this.options.evrythngApiKey
+			evrythngApiKey: options.evrythngApiKey || this.options.evrythngApiKey
 		};
 		if (options.method) corsOptions.method = options.method;
 		if (options.data) corsOptions.data = JSON.stringify(options.data);
@@ -907,7 +903,7 @@ Evrythng.prototype.request = function(options, callback, errorHandler) {
 		if (typeof options.params !== 'object') options.params = {};
 		if (options.method) options.params.method = options.method;
 		if (options.data) options.params.data = JSON.stringify(options.data);
-		if (!options.params.access_token) options.params.access_token = this.options.evrythngApiKey;
+		options.params.access_token = options.evrythngApiKey || this.options.evrythngApiKey;
 		return this.jsonp({
 			url: this.options.evrythngApiJsonpUrl
 				+ options.url
