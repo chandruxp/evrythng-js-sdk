@@ -423,9 +423,11 @@ Evrythng.prototype.createMultimedia = function(options, callback, errorHandler) 
 	    query = {
     		url: '/contents/multimedia',
     		data: options.data,
-    		method: 'post'
+    		method: 'post',
+    		params: {}
     	};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	if (options.evrythngApiKey) query.params.access_token = options.evrythngApiKey;
 	return self.request(query, callback, errorHandler);
 };
 
@@ -433,9 +435,11 @@ Evrythng.prototype.createMultimedia = function(options, callback, errorHandler) 
 Evrythng.prototype.readMultimedia = function(options, callback, errorHandler) {
 	var self = this,
 	    query = {
-    		url: options.multimedia ? self.buildUrl('/contents/multimedia/%s', options.multimedia) : '/contents/multimedia'
+    		url: options.multimedia ? self.buildUrl('/contents/multimedia/%s', options.multimedia) : '/contents/multimedia',
+    		params: {}
 		};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	if (options.evrythngApiKey) query.params.access_token = options.evrythngApiKey;
 	return self.request(query, callback, errorHandler);
 };
 
@@ -756,7 +760,7 @@ Evrythng.prototype.cors = function(options, callback, errorHandler) {
 			xhr.responseType = 'string';
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.setRequestHeader('Accept', 'application/json');
-			xhr.setRequestHeader('Authorization', this.options.evrythngApiKey);
+			xhr.setRequestHeader('Authorization', options.evrythngApiKey);
 			xhr.onload = function(e) {
 				if (xhr.status.toString().indexOf('2') === 0) {
 					if (typeof callback === 'function') callback.call(self, xhr.response ? JSON.parse(xhr.response) : '', xhr.status, xhr);
@@ -874,7 +878,7 @@ Evrythng.prototype.request = function(options, callback, errorHandler) {
 			url: this.options.evrythngApiCorsUrl + options.url
 				+ (options.url.indexOf('?') > -1 ? '&' : '?')
 				+ this.buildParams(options.params),
-			evrythngApiKey: this.options.evrythngApiKey
+			evrythngApiKey: (options.params ? options.params.access_token : null) || this.options.evrythngApiKey
 		};
 		if (options.method) corsOptions.method = options.method;
 		if (options.data) corsOptions.data = JSON.stringify(options.data);
