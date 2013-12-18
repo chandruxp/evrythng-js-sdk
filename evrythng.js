@@ -1305,7 +1305,6 @@ Evrythng.prototype.Upload.prototype.getThumbnailName = function(name) {
 
 Evrythng.prototype.Upload.prototype.getSignedUrl = function(file, type, name, thumbnail, callback) {
 	var params = {
-		access_token: this.accessToken,
 		type0: type,
 		name0: name
 	};
@@ -1315,7 +1314,8 @@ Evrythng.prototype.Upload.prototype.getSignedUrl = function(file, type, name, th
 	}
 	this.evrythng.request({
 		url: '/files/signatures',
-		params: params
+		params: params,
+		evrythngApiKey: this.accessToken
 	}, function(result) {
 		return callback(result);
 	});
