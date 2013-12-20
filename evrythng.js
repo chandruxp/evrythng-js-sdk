@@ -51,13 +51,15 @@ Evrythng.prototype.checkin = function(options, callback, errorHandler) {
 				location: {
 					latitude: options.defaultLocation ? options.defaultLocation.latitude : null,
 					longitude: options.defaultLocation ? options.defaultLocation.longitude : null
-				},
-				locationSource: 'sensor'
+				}
 			},
 			method: 'post',
 			evrythngApiKey: options.evrythngApiKey
 		},
 		doCheckin = function() {
+			if (query.data.location.latitude && query.data.location.longitude) {
+				query.data.locationSource = 'sensor';
+			}
 			self.request(query, function(response) {
 				if (typeof self.options.loadingCallback === 'function') self.options.loadingCallback.call(self, false);
 				if (typeof callback === 'function') {
