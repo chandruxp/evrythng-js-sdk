@@ -413,7 +413,7 @@ Evrythng.prototype.createMultimedia = function(options, callback, errorHandler) 
     		url: '/contents/multimedia',
     		data: options.data,
     		method: 'post',
-    		params: {},
+    		params: options.params || {},
     		evrythngApiKey: options.evrythngApiKey
     	};
 	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
@@ -425,7 +425,7 @@ Evrythng.prototype.readMultimedia = function(options, callback, errorHandler) {
 	var self = this,
 	    query = {
     		url: options.multimedia ? self.buildUrl('/contents/multimedia/%s', options.multimedia) : '/contents/multimedia',
-    		params: {},
+    		params: options.params || {},
     		evrythngApiKey: options.evrythngApiKey
 		};
 	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
