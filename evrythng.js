@@ -36,6 +36,19 @@ Evrythng = function(options) {
 
 Evrythng.prototype.version = '1.1.0';
 
+/*
+ *  Search
+ */
+Evrythng.prototype.search = function(options, callback) {
+	var self = this,
+		params = (options.params) ? options.params : {};
+		query = {
+			url: '/search',
+			params: params
+	};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback);
+};
 
 /*
 	Checkin
