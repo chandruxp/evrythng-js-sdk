@@ -57,7 +57,7 @@ Evrythng.prototype.checkin = function(options, callback, errorHandler) {
 			evrythngApiKey: options.evrythngApiKey
 		},
 		doCheckin = function() {
-			if (query.data.location.latitude && query.data.location.longitude) {
+			if (typeof query.data.location.latitude === 'number' && typeof query.data.location.longitude === 'number') {
 				query.data.locationSource = 'sensor';
 			}
 			self.request(query, function(response) {
