@@ -2,7 +2,7 @@
  * Client-side JavaScript library to access Evrythng API v1.1.0
  * https://github.com/evrythng/evrythng-java-sdk
  *
- * Copyright [2013] [EVRYTHNG Ltd. London / Zurich]
+ * Copyright [2014] [EVRYTHNG Ltd. London / Zurich]
  *
  * Released under the http://www.apache.org/licenses/LICENSE-2.0
  * https://github.com/evrythng/evrythng-java-sdk/blob/master/LICENSE.txt
