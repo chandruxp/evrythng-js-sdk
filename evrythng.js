@@ -130,8 +130,51 @@ Evrythng.prototype.scan = function(options, callback, errorHandler) {
 		}, function(error) {
 			doScan();
 		});
-	} else {
+	}
+	else {
 		doScan();
+	}
+};
+
+
+/*
+	Share
+*/
+Evrythng.prototype.share = function(options, callback, errorHandler) {
+	var self = this,
+		query = {
+			url: '/actions/shares',
+			data: {
+				type: 'shares',
+				location: {
+					latitude: options.defaultLocation ? options.defaultLocation.latitude : null,
+					longitude: options.defaultLocation ? options.defaultLocation.longitude : null
+				},
+				locationSource: 'sensor'
+			},
+			method: 'post',
+			evrythngApiKey: options.evrythngApiKey
+		},
+		doAction = function() {
+			self.request(query, function(response) {
+				if (typeof self.options.loadingCallback === 'function') self.options.loadingCallback.call(self, false);
+				if (typeof callback === 'function') {
+					callback.call(self, response);
+				}
+			}, errorHandler);
+		};
+	if (typeof this.options.loadingCallback === 'function') this.options.loadingCallback.call(this, true);
+	if (navigator.geolocation && !this.options.disableGeolocation) {
+		navigator.geolocation.getCurrentPosition(function(position) {
+			query.data.location.latitude = position.coords.latitude;
+			query.data.location.longitude = position.coords.longitude;
+			doAction();
+		}, function(error) {
+			doAction();
+		});
+	}
+	else {
+		doAction();
 	}
 };
 
