@@ -1419,17 +1419,19 @@ Evrythng.prototype.Upload.prototype.upload = function(file, type, url, public_ur
 	if (this.useFormData) {
 		var formData = new FormData();
 		formData.append(this.formDataName || 'file', file);
-		return xhr.send(formData);
+		xhr.send(formData);
+		return xhr;
 	}
 	else {
-		return xhr.send(file);
+		xhr.send(file);
+		return xhr;
 	}
 };
 
 Evrythng.prototype.Upload.prototype.uploadFile = function(file) {
 	var self = this,
 		upl = function(urls) {
-			self.upload(
+			self.current = self.upload(
 				file,
 				file.type,
 				urls.uploadUrl,
@@ -1478,7 +1480,6 @@ Evrythng.prototype.Upload.prototype.uploadFile = function(file) {
 	else {
 		run.call(this);
 	}
-	
 };
 
 Evrythng.prototype.Upload.prototype.generateThumbnail = function(file, callback) {
