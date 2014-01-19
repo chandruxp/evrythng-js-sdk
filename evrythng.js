@@ -450,7 +450,7 @@ Evrythng.prototype.readPlaces = function(options, callback, errorHandler) {
 
 
 /*
-	Multimedia CR
+	Multimedia CRD
 */
 Evrythng.prototype.createMultimedia = function(options, callback, errorHandler) {
 	var self = this,
@@ -475,6 +475,17 @@ Evrythng.prototype.readMultimedia = function(options, callback, errorHandler) {
 		};
 	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteMultimedia = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/contents/multimedia/%s', options.multimedia),
+		method: 'delete',
+   		params: options.params || {},
+   		evrythngApiKey: options.evrythngApiKey
+	}, callback, errorHandler);
 };
 
 
@@ -791,7 +802,6 @@ Evrythng.prototype.cors = function(options, callback, errorHandler) {
 	else {
 		var xhr = this.createCORSRequest(method, options.url);
 		if (xhr) {
-			xhr.responseType = 'string';
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.setRequestHeader('Accept', 'application/json');
 			xhr.setRequestHeader('Authorization', options.evrythngApiKey);
