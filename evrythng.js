@@ -286,39 +286,50 @@ Evrythng.prototype.deleteProduct = function(options, callback, errorHandler) {
 */
 Evrythng.prototype.createThng = function(options, callback, errorHandler) {
 	var self = this;
-	return self.request({
+	var query = {
 		url: self.buildUrl('/thngs'),
 		method: 'post',
 		data: options.data
-	}, callback, errorHandler);
+	};
+	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	return self.request(query, callback, errorHandler);
 };
 
 
 Evrythng.prototype.readThng = function(options, callback, errorHandler) {
 	var self = this;
+	var params = (options.params) ? options.params : {}; 
+	if (self.options.evrythngAppId) params.app = self.options.evrythngAppId;
+
 	return self.request({
 		url: options.thng ? self.buildUrl('/thngs/%s', options.thng) : '/thngs',
-		params: options.params
+		params: params
 	}, callback, errorHandler);
 };
 
 
 Evrythng.prototype.updateThng = function(options, callback, errorHandler) {
 	var self = this;
-	return self.request({
+	var query = {
 		url: self.buildUrl('/thngs/%s', options.thng),
 		method: 'put',
 		data: options.data
-	}, callback, errorHandler);
+	};
+	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+
+	return self.request(query, callback, errorHandler);
 };
 
 
 Evrythng.prototype.deleteThng = function(options, callback, errorHandler) {
 	var self = this;
-	return self.request({
+	var query = {
 		url: self.buildUrl('/thngs/%s', options.thng),
 		method: 'delete'
-	}, callback, errorHandler);
+	};
+	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+
+	return self.request(query, callback, errorHandler);
 };
 
 
