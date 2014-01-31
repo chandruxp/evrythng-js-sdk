@@ -1,5 +1,5 @@
 /*!
- * Client-side JavaScript library to access Evrythng API v1.1.0
+ * Client-side JavaScript library to access Evrythng API v1.1.1
  * https://github.com/evrythng/evrythng-java-sdk
  *
  * Copyright [2014] [EVRYTHNG Ltd. London / Zurich]
@@ -34,7 +34,7 @@ Evrythng = function(options) {
 };
 
 
-Evrythng.prototype.version = '1.1.0';
+Evrythng.prototype.version = '1.1.1';
 
 /*
  *  Search
