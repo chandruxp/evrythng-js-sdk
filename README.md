@@ -3,7 +3,9 @@ Evrythng.js
 
 Client-side JavaScript library to access Evrythng API.
 
+## Use it from our CDN
 
+Simply reference: https://d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng-1.1.1.min.js in your javascript code.
 
 ## Initialization
 
