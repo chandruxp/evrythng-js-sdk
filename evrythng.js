@@ -121,7 +121,8 @@ Evrythng.prototype.scan = function(options, callback, errorHandler) {
 					latitude: options.defaultLocation ? options.defaultLocation.latitude : null,
 					longitude: options.defaultLocation ? options.defaultLocation.longitude : null
 				},
-				locationSource: 'sensor'
+				locationSource: 'sensor',
+				customFields: options.customFields
 			},
 			method: 'post',
 			evrythngApiKey: options.evrythngApiKey
