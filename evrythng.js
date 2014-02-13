@@ -395,6 +395,42 @@ Evrythng.prototype.updateThngLocation = function(options, callback, errorHandler
 	}, callback, errorHandler);
 };
 
+/*
+	Thng Redirector CRUD
+ */
+Evrythng.prototype.createThngRedirector = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/thngs/%s/redirector', options.thng),
+		method: 'post',
+		data: options.data
+	}, callback, errorHandler);
+};
+
+Evrythng.prototype.readThngRedirector = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/thngs/%s/redirector', options.thng),
+		params : options.params
+	}, callback, errorHandler);
+};
+
+Evrythng.prototype.updateThngRedirector = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/thngs/%s/redirector', options.thng),
+		method: 'put',
+		data: options.data
+	}, callback, errorHandler);
+};
+
+Evrythng.prototype.deleteThngRedirector = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/thngs/%s/redirector', options.thng),
+		method: 'delete',
+	}, callback, errorHandler);
+};
 
 /*
 	Analytics R
