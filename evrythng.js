@@ -281,6 +281,42 @@ Evrythng.prototype.deleteProduct = function(options, callback, errorHandler) {
 	return self.request(query, callback, errorHandler);
 };
 
+/*
+ * Product Redirector CRUD
+ */
+Evrythng.prototype.createProductRedirector = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/products/%s/redirector', options.product),
+		method: 'post',
+		data: options.data
+	}, callback, errorHandler);
+};
+
+Evrythng.prototype.readProductRedirector = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/products/%s/redirector', options.product),
+		params : options.params
+	}, callback, errorHandler);
+};
+
+Evrythng.prototype.updateProductRedirector = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/products/%s/redirector', options.product),
+		method: 'put',
+		data: options.data
+	}, callback, errorHandler);
+};
+
+Evrythng.prototype.deleteProductRedirector = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/products/%s/redirector', options.product),
+		method: 'delete',
+	}, callback, errorHandler);
+};
 
 /*
 	Thngs CRUD
