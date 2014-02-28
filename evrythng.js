@@ -34,21 +34,25 @@ Evrythng = function(options) {
 };
 
 
-Evrythng.prototype.version = '1.1.1';
+/*
+	Version
+*/
+Evrythng.prototype.version = '1.2.0';
+
 
 /*
- *  Search
- */
-Evrythng.prototype.search = function(options, callback) {
+	Search
+*/
+Evrythng.prototype.search = function(options, callback, errorHandler) {
 	var self = this,
-		params = (options.params) ? options.params : {};
 		query = {
 			url: '/search',
-			params: params
-	};
+			params: options.params || {}
+		};
 	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
-	return self.request(query, callback);
+	return self.request(query, callback, errorHandler);
 };
+
 
 /*
 	Checkin
@@ -57,6 +61,7 @@ Evrythng.prototype.checkin = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
 			url: '/actions/checkins',
+			params: options.params || {},
 			data: {
 				timestamp: new Date().getTime(),
 				type: 'checkins',
@@ -113,6 +118,7 @@ Evrythng.prototype.scan = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
 			url: '/actions/scans',
+			params: options.params || {},
 			data: {
 				thng: options.thng,
 				timestamp: new Date().getTime(),
@@ -158,6 +164,7 @@ Evrythng.prototype.share = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
 			url: '/actions/shares',
+			params: options.params || {},
 			data: {
 				type: 'shares',
 				location: {
@@ -200,8 +207,9 @@ Evrythng.prototype.createApplication = function(options, callback, errorHandler)
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/applications'),
-		method : 'post',
-		data : options.data
+		params: options.params || {},
+		method: 'post',
+		data: options.data
 	}, callback, errorHandler);
 };
 
@@ -209,7 +217,8 @@ Evrythng.prototype.createApplication = function(options, callback, errorHandler)
 Evrythng.prototype.readApplication = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: options.application ? self.buildUrl('/applications/%s', options.application) : '/applications'
+		url: options.application ? self.buildUrl('/applications/%s', options.application) : '/applications',
+		params: options.params || {}
 	}, callback, errorHandler);
 };
 
@@ -218,8 +227,9 @@ Evrythng.prototype.updateApplication = function(options, callback, errorHandler)
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/applications/%s', options.application),
-		method : 'put',
-		data : options.data
+		params: options.params || {},
+		method: 'put',
+		data: options.data
 	}, callback, errorHandler);
 };
 
@@ -228,7 +238,8 @@ Evrythng.prototype.deleteApplication = function(options, callback, errorHandler)
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/applications/%s', options.application),
-		method : 'delete'
+		params: options.params || {},
+		method: 'delete'
 	}, callback, errorHandler);
 };
 
@@ -240,10 +251,11 @@ Evrythng.prototype.createProduct = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
 			url: '/products',
+			params: options.params || {},
 			method: 'post',
 			data: options.data
 		};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
 
@@ -263,10 +275,11 @@ Evrythng.prototype.updateProduct = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
 			url: self.buildUrl('/products/%s', options.product),
+			params: options.params || {},
 			method: 'put',
 			data: options.data
 		};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
 
@@ -275,56 +288,109 @@ Evrythng.prototype.deleteProduct = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
 			url: self.buildUrl('/products/%s', options.product),
+			params: options.params || {},
 			method: 'delete'
 		};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
 
+
 /*
- * Product Redirector CRUD
- */
+	Product Properties CRUD
+*/
+Evrythng.prototype.createProductProperty = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/products/%s/properties', options.product),
+		params: options.params || {},
+		method: 'post',
+		data: options.data
+	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readProductProperty = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: options.property ? self.buildUrl('/products/%s/properties/%s', options.product, options.property) : self.buildUrl('/products/%s/properties', options.product),
+		params: options.params || {}
+	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updateProductProperty = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/products/%s/properties', options.product),
+		params: options.params || {},
+		method: 'put',
+		data: options.data
+	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteProductProperty = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/products/%s/properties/%s', options.product, options.property),
+		params: options.params || {},
+		method: 'delete'
+	}, callback, errorHandler);
+};
+
+
+/*
+	Product Redirector CRUD
+*/
 Evrythng.prototype.createProductRedirector = function(options, callback, errorHandler) {
 	var self = this;
 	var query = {
 		url: self.buildUrl('/products/%s/redirector', options.product),
+		params: options.params || {},
 		method: 'post',
 		data: options.data
 	};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
+
 
 Evrythng.prototype.readProductRedirector = function(options, callback, errorHandler) {
 	var self = this;
 	var query = {
 		url: self.buildUrl('/products/%s/redirector', options.product),
-		params : options.params
+		params: options.params || {}
 	};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
+
 
 Evrythng.prototype.updateProductRedirector = function(options, callback, errorHandler) {
 	var self = this;
 	var query = {
 		url: self.buildUrl('/products/%s/redirector', options.product),
+		params: options.params || {},
 		method: 'put',
 		data: options.data
 	};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
+
 
 Evrythng.prototype.deleteProductRedirector = function(options, callback, errorHandler) {
 	var self = this;
 	var query = {
 		url: self.buildUrl('/products/%s/redirector', options.product),
+		params: options.params || {},
 		method: 'delete',
 	};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
+
 
 /*
 	Thngs CRUD
@@ -333,23 +399,23 @@ Evrythng.prototype.createThng = function(options, callback, errorHandler) {
 	var self = this;
 	var query = {
 		url: self.buildUrl('/thngs'),
+		params: options.params || {},
 		method: 'post',
 		data: options.data
 	};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
 
 
 Evrythng.prototype.readThng = function(options, callback, errorHandler) {
 	var self = this;
-	var params = (options.params) ? options.params : {}; 
-	if (self.options.evrythngAppId) params.app = self.options.evrythngAppId;
-
-	return self.request({
+	var query = {
 		url: options.thng ? self.buildUrl('/thngs/%s', options.thng) : '/thngs',
-		params: params
-	}, callback, errorHandler);
+		params: options.params || {}
+	};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
 };
 
 
@@ -357,11 +423,11 @@ Evrythng.prototype.updateThng = function(options, callback, errorHandler) {
 	var self = this;
 	var query = {
 		url: self.buildUrl('/thngs/%s', options.thng),
+		params: options.params || {},
 		method: 'put',
 		data: options.data
 	};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
-
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
 
@@ -370,10 +436,10 @@ Evrythng.prototype.deleteThng = function(options, callback, errorHandler) {
 	var self = this;
 	var query = {
 		url: self.buildUrl('/thngs/%s', options.thng),
+		params: options.params || {},
 		method: 'delete'
 	};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
-
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
 
@@ -381,51 +447,66 @@ Evrythng.prototype.deleteThng = function(options, callback, errorHandler) {
 /*
 	Thng Properties CRUD
 */
-Evrythng.prototype.createProperty = function(options, callback, errorHandler) {
+Evrythng.prototype.createThngProperty = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/thngs/%s/properties', options.thng),
+		params: options.params || {},
 		method: 'post',
 		data: options.data
 	}, callback, errorHandler);
 };
 
 
-Evrythng.prototype.readProperty = function(options, callback, errorHandler) {
+Evrythng.prototype.readThngProperty = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: options.property ? self.buildUrl('/thngs/%s/properties/%s', options.thng, options.property) : self.buildUrl('/thngs/%s/properties', options.thng)
+		url: options.property ? self.buildUrl('/thngs/%s/properties/%s', options.thng, options.property) : self.buildUrl('/thngs/%s/properties', options.thng),
+		params: options.params || {}
 	}, callback, errorHandler);
 };
 
 
-Evrythng.prototype.updateProperty = function(options, callback, errorHandler) {
+Evrythng.prototype.updateThngProperty = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/thngs/%s/properties', options.thng),
+		params: options.params || {},
 		method: 'put',
 		data: options.data
 	}, callback, errorHandler);
 };
 
 
-Evrythng.prototype.deleteProperty = function(options, callback, errorHandler) {
+Evrythng.prototype.deleteThngProperty = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/thngs/%s/properties/%s', options.thng, options.property),
+		params: options.params || {},
 		method: 'delete'
 	}, callback, errorHandler);
 };
 
 
 /*
-	Thng Location RU
+	Thng Location CRUD
 */
+Evrythng.prototype.createThngLocation = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/thngs/%s/location', options.thng),
+		params: options.params || {},
+		data: options.data,
+		method: 'post'
+	}, callback, errorHandler);
+};
+
+
 Evrythng.prototype.readThngLocation = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/thngs/%s/location', options.thng),
-		params: options.params
+		params: options.params || {}
 	}, callback, errorHandler);
 };
 
@@ -434,47 +515,183 @@ Evrythng.prototype.updateThngLocation = function(options, callback, errorHandler
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/thngs/%s/location', options.thng),
+		params: options.params || {},
 		data: options.data,
 		method: 'put'
 	}, callback, errorHandler);
 };
 
+
+Evrythng.prototype.deleteThngLocation = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/thngs/%s/location', options.thng),
+		params: options.params || {},
+		method: 'delete'
+	}, callback, errorHandler);
+};
+
+
 /*
 	Thng Redirector CRUD
- */
+*/
 Evrythng.prototype.createThngRedirector = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/thngs/%s/redirector', options.thng),
+		params: options.params || {},
 		method: 'post',
 		data: options.data
 	}, callback, errorHandler);
 };
 
+
 Evrythng.prototype.readThngRedirector = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/thngs/%s/redirector', options.thng),
-		params : options.params
+		params: options.params || {}
 	}, callback, errorHandler);
 };
+
 
 Evrythng.prototype.updateThngRedirector = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/thngs/%s/redirector', options.thng),
+		params: options.params || {},
 		method: 'put',
 		data: options.data
 	}, callback, errorHandler);
 };
 
+
 Evrythng.prototype.deleteThngRedirector = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/thngs/%s/redirector', options.thng),
+		params: options.params || {},
 		method: 'delete',
 	}, callback, errorHandler);
 };
+
+
+/*
+	Thng Redirector QR R
+*/
+Evrythng.prototype.readThngRedirectorQr = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/thngs/%s/redirector/qr', options.thng),
+		params: options.params || {}
+	}, callback, errorHandler);
+};
+
+
+/*
+	Collections CRUD
+*/
+Evrythng.prototype.createCollection = function(options, callback, errorHandler) {
+	var self = this,
+	    query = {
+    		url: '/collections',
+			params: options.params || {},
+    		data: options.data,
+    		method: 'post'
+    	};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readCollection = function(options, callback, errorHandler) {
+	var self = this,
+	    query = {
+    		url: options.collection ? self.buildUrl('/collections/%s', options.collection) : '/collections',
+    		params: options.params || {}
+		};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updateCollection = function(options, callback, errorHandler) {
+	var self = this,
+	    query = {
+    		url: self.buildUrl('/collections/%s', options.collection),
+			params: options.params || {},
+    		data: options.data,
+    		method: 'put'
+    	};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteCollection = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: options.collection ? self.buildUrl('/collections/%s', options.collection) : '/collections',
+		params: options.params || {},
+		method: 'delete'
+	}, callback, errorHandler);
+};
+
+
+/*
+	Collections Thngs CRUD
+*/
+Evrythng.prototype.createCollectionThng = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/collections/%s/thngs', options.collection),
+		params: options.params || {},
+   		data: options.data,
+   		method: 'put'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readCollectionThng = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/collections/%s/thngs', options.collection),
+   		params: options.params || {}
+	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updateCollectionThngProperty = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/collections/%s/thngs/%s/properties', options.collection, options.thng),
+		params: options.params || {},
+   		data: options.data,
+   		method: 'put'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updateCollectionThngLocation = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/collections/%s/thngs/%s/location', options.collection, options.thng),
+		params: options.params || {},
+   		data: options.data,
+   		method: 'put'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteCollectionThng = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: options.thng ? self.buildUrl('/collections/%s/thngs/%s', options.collection, options.thng) : self.buildUrl('/collections/%s/thngs', options.collection),
+		params: options.params || {},
+		method: 'delete'
+	}, callback, errorHandler);
+};
+
 
 /*
 	Analytics R
@@ -483,7 +700,7 @@ Evrythng.prototype.readAnalytics = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/analytics/query/%s', options.kpi),
-		params: options.params
+		params: options.params || {}
 	}, callback, errorHandler);
 };
 
@@ -494,20 +711,48 @@ Evrythng.prototype.readAnalytics = function(options, callback, errorHandler) {
 Evrythng.prototype.readUser = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
-			url: options.user ? self.buildUrl('/users/%s', options.user) : '/users'
+			url: options.user ? self.buildUrl('/users/%s', options.user) : '/users',
+			params: options.params || {}
 		};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
 
 
 /*
-	Loyalty R
+	Loyalty CR
 */
+Evrythng.prototype.createLoyaltyTransaction = function(options, callback, errorHandler) {
+	var self = this,
+	    query = {
+    		url: '/loyalty/transactions',
+			params: options.params || {},
+    		data: options.data,
+    		method: 'post'
+    	};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.createRedemption = function(options, callback, errorHandler) {
+	var self = this,
+	    query = {
+    		url: self.buildUrl('/loyalty/%s/redemptions', options.user),
+			params: options.params || {},
+    		data: options.data,
+    		method: 'post'
+    	};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
 Evrythng.prototype.readLoyaltyStatus = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: self.buildUrl('/loyalty/%s/status', options.user)
+		url: self.buildUrl('/loyalty/%s/status', options.user),
+		params: options.params || {}
 	}, callback, errorHandler);
 };
 
@@ -515,30 +760,166 @@ Evrythng.prototype.readLoyaltyStatus = function(options, callback, errorHandler)
 Evrythng.prototype.readLoyaltyTransactions = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
-			url: self.buildUrl('/loyalty/%s/transactions', options.user)
+			url: options.user ? self.buildUrl('/loyalty/%s/transactions', options.user) : '/loyalty/transactions',
+			params: options.params || {}
 		};
-	if (self.options.evrythngAppId) query.params = {app: self.options.evrythngAppId};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
 	return self.request(query, callback, errorHandler);
 };
 
 
 /*
-	Actions R
+	Action Types CR
 */
+Evrythng.prototype.createActionType = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: '/actions',
+		params: options.params || {},
+   		data: options.data,
+   		method: 'post'
+   	}, callback, errorHandler);
+};
+
+
 Evrythng.prototype.readActionTypes = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: '/actions'
+		url: '/actions',
+		params: options.params || {}
 	}, callback, errorHandler);
+};
+
+
+/*
+	Actions CRD
+*/
+Evrythng.prototype.createAction = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/actions/%s', options.type),
+		params: options.params || {},
+   		data: options.data,
+   		method: 'post'
+   	}, callback, errorHandler);
 };
 
 
 Evrythng.prototype.readAction = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: options.action ? self.buildUrl('/actions/' + options.type + '/%s', options.action) : self.buildUrl('/actions/%s', options.type),
-		params: options.params
+		url: options.action ? self.buildUrl('/actions/%s/%s', options.type, options.action) : self.buildUrl('/actions/%s', options.type),
+		params: options.params || {}
 	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteAction = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: options.action ? self.buildUrl('/actions/%s/%s', options.type, options.action) : self.buildUrl('/actions/%s', options.type),
+		params: options.params || {},
+   		method: 'delete'
+	}, callback, errorHandler);
+};
+
+
+/*
+	Checkins CRD
+*/
+Evrythng.prototype.createCheckin = function(options, callback, errorHandler) {
+	var self = this;
+	return self.createAction({
+   		type: 'checkin',
+		params: options.params || {},
+   		data: options.data
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readCheckin = function(options, callback, errorHandler) {
+	var self = this;
+	return self.readAction({
+   		type: 'checkin',
+   		action: options.checkin,
+		params: options.params || {}
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteCheckin = function(options, callback, errorHandler) {
+	var self = this;
+	return self.deleteAction({
+   		type: 'checkin',
+   		action: options.checkin,
+		params: options.params || {}
+   	}, callback, errorHandler);
+};
+
+
+/*
+	Scans CRD
+*/
+Evrythng.prototype.createScan = function(options, callback, errorHandler) {
+	var self = this;
+	return self.createAction({
+   		type: 'scan',
+		params: options.params || {},
+   		data: options.data
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readScan = function(options, callback, errorHandler) {
+	var self = this;
+	return self.readAction({
+   		type: 'scan',
+   		action: options.scan,
+		params: options.params || {}
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteScan = function(options, callback, errorHandler) {
+	var self = this;
+	return self.deleteAction({
+   		type: 'scan',
+   		action: options.scan,
+		params: options.params || {}
+   	}, callback, errorHandler);
+};
+
+
+/*
+	Shared CRD
+*/
+Evrythng.prototype.createShare = function(options, callback, errorHandler) {
+	var self = this;
+	return self.createAction({
+   		type: 'share',
+		params: options.params || {},
+   		data: options.data
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readShare = function(options, callback, errorHandler) {
+	var self = this;
+	return self.readAction({
+   		type: 'share',
+   		action: options.share,
+		params: options.params || {}
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteShare = function(options, callback, errorHandler) {
+	var self = this;
+	return self.deleteAction({
+   		type: 'share',
+   		action: options.share,
+		params: options.params || {}
+   	}, callback, errorHandler);
 };
 
 
@@ -548,22 +929,22 @@ Evrythng.prototype.readAction = function(options, callback, errorHandler) {
 Evrythng.prototype.readPlaces = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url : self.buildUrl('/places'),
-		params: options.params
+		url: self.buildUrl('/places'),
+		params: options.params || {}
 	}, callback, errorHandler);
 };
 
 
 /*
-	Multimedia CRD
+	Multimedia CRUD
 */
 Evrythng.prototype.createMultimedia = function(options, callback, errorHandler) {
 	var self = this,
 	    query = {
     		url: '/contents/multimedia',
+			params: options.params || {},
     		data: options.data,
     		method: 'post',
-    		params: options.params || {},
     		evrythngApiKey: options.evrythngApiKey
     	};
 	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
@@ -583,25 +964,333 @@ Evrythng.prototype.readMultimedia = function(options, callback, errorHandler) {
 };
 
 
+Evrythng.prototype.updateMultimedia = function(options, callback, errorHandler) {
+	var self = this,
+	    query = {
+			url: self.buildUrl('/contents/multimedia/%s', options.multimedia),
+			params: options.params || {},
+    		data: options.data,
+    		method: 'put',
+    		evrythngApiKey: options.evrythngApiKey
+    	};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
 Evrythng.prototype.deleteMultimedia = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/contents/multimedia/%s', options.multimedia),
+		params: options.params || {},
 		method: 'delete',
-   		params: options.params || {},
    		evrythngApiKey: options.evrythngApiKey
 	}, callback, errorHandler);
 };
 
 
 /*
-	Files R
+	Physical Assets CRUD
+*/
+Evrythng.prototype.createPhysicalAsset = function(options, callback, errorHandler) {
+	var self = this,
+	    query = {
+    		url: '/contents/physicalAssets',
+			params: options.params || {},
+    		data: options.data,
+    		method: 'post',
+    		evrythngApiKey: options.evrythngApiKey
+    	};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readPhysicalAsset = function(options, callback, errorHandler) {
+	var self = this,
+	    query = {
+    		url: options.physicalAsset ? self.buildUrl('/contents/physicalAssets/%s', options.physicalAsset) : '/contents/physicalAssets',
+    		params: options.params || {},
+    		evrythngApiKey: options.evrythngApiKey
+		};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updatePhysicalAsset = function(options, callback, errorHandler) {
+	var self = this,
+	    query = {
+			url: self.buildUrl('/contents/physicalAssets/%s', options.physicalAsset),
+			params: options.params || {},
+    		data: options.data,
+    		method: 'put',
+    		evrythngApiKey: options.evrythngApiKey
+    	};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deletePhysicalAsset = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/contents/physicalAssets/%s', options.physicalAsset),
+		params: options.params || {},
+		method: 'delete',
+   		evrythngApiKey: options.evrythngApiKey
+	}, callback, errorHandler);
+};
+
+
+/*
+	Files RD
 */
 Evrythng.prototype.readFile = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
-		url: options.file ? self.buildUrl('/files/%s', options.file) : '/files'
+		url: options.file ? self.buildUrl('/files/%s', options.file) : '/files',
+		params: options.params || {}
 	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteFile = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/files/%s', options.file),
+		params: options.params || {},
+		method: 'delete'
+	}, callback, errorHandler);
+};
+
+
+/*
+	Files Signatures R
+*/
+Evrythng.prototype.readFileSignature = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: '/files/signatures',
+		params: options.params || {}
+	}, callback, errorHandler);
+};
+
+
+/*
+	Campaigns CRUD
+*/
+Evrythng.prototype.createCampaign = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: '/campaigns',
+		params: options.params || {},
+   		data: options.data,
+   		method: 'post'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readCampaign = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: options.campaign ? self.buildUrl('/campaigns/%s', options.campaign) : '/campaigns',
+		params: options.params || {}
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updateCampaign = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/campaigns/%s', options.campaign),
+		params: options.params || {},
+   		data: options.data,
+   		method: 'put'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteCampaign = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/campaigns/%s', options.campaign),
+		params: options.params || {},
+   		method: 'delete'
+   	}, callback, errorHandler);
+};
+
+
+/*
+	Campaigns Order U
+*/
+Evrythng.prototype.updateCampaignOrder = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: '/campaigns/order',
+		params: options.params || {},
+   		data: options.data,
+   		method: 'put'
+   	}, callback, errorHandler);
+};
+
+
+/*
+	Campaign Rules CRUD
+*/
+Evrythng.prototype.createCampaignRule = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/campaigns/%s/rules', options.campaign),
+		params: options.params || {},
+   		data: options.data,
+   		method: 'post'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readCampaignRule = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: options.rule ? self.buildUrl('/campaigns/%s/rules/%s', options.campaign, options.rule) : self.buildUrl('/campaigns/%s/rules', options.campaign),
+		params: options.params || {}
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updateCampaignRule = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/campaigns/%s/rules/%s', options.campaign, options.rule),
+		params: options.params || {},
+   		data: options.data,
+   		method: 'put'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteCampaignRule = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/campaigns/%s/rules/%s', options.campaign, options.rule),
+		params: options.params || {},
+   		method: 'delete'
+   	}, callback, errorHandler);
+};
+
+
+/*
+	Campaign Rules Order U
+*/
+Evrythng.prototype.updateCampaignRuleOrder = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: '/campaigns/%s/rules/order',
+		params: options.params || {},
+   		data: options.data,
+   		method: 'put'
+   	}, callback, errorHandler);
+};
+
+
+/*
+	User segments CRUD
+*/
+Evrythng.prototype.createUserSegment = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: '/userSegments',
+		params: options.params || {},
+   		data: options.data,
+   		method: 'post'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readUserSegment = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: options.userSegment ? self.buildUrl('/userSegments/%s', options.userSegment) : '/userSegments',
+		params: options.params || {}
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updateUserSegment = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/userSegments/%s', options.userSegment),
+		params: options.params || {},
+   		data: options.data,
+   		method: 'put'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteUserSegment = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/userSegments/%s', options.userSegment),
+		params: options.params || {},
+   		method: 'delete'
+   	}, callback, errorHandler);
+};
+
+
+/*
+	Auth
+*/
+Evrythng.prototype.authFacebook = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: '/auth/facebook',
+		params: options.params || {},
+		data: options.data,
+   		method: 'post'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.authEvrythng = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: '/auth/evrythng',
+		params: options.params || {},
+		data: options.data,
+   		method: 'post'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.authEvrythngUser = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: '/auth/evrythng/users',
+		params: options.params || {},
+		data: options.data,
+   		method: 'post'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.authEvrythngUserValidate = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: self.buildUrl('/auth/evrythng/users/%s/validate', options.user),
+		params: options.params || {},
+		data: options.data,
+   		method: 'post'
+   	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.authLogout = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+   		url: '/auth/all/logout',
+		params: options.params || {},
+   		method: 'post'
+   	}, callback, errorHandler);
 };
 
 
@@ -688,15 +1377,12 @@ Evrythng.prototype.fbCallback = function(response) {
 					self.fbLogin.call(self, self.fbCallback);
 				}
 				else {
-					var data = {
+					self.authFacebook({
+						data: {
 							'access': {
 								'token': response.authResponse.accessToken
 							}
-						};
-					self.request({
-						url: '/auth/facebook',
-						data: data,
-						method: 'post'
+						}
 					}, function(access) {
 						if (access.evrythngApiKey) {
 							if (typeof self.options.loginCallback === 'function') {
@@ -1038,10 +1724,10 @@ Evrythng.prototype.request = function(options, callback, errorHandler) {
 	e.g., buildUrl('/thngs/%s', thngId);
 */
 Evrythng.prototype.buildUrl = function(str) {
-		var args = [].slice.call(arguments, 1), i = 0;
-		return str.replace(/%s/g, function() {
-				return args[i++];
-		});
+	var args = [].slice.call(arguments, 1), i = 0;
+	return str.replace(/%s/g, function() {
+			return args[i++];
+	});
 };
 
 
