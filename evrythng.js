@@ -706,8 +706,21 @@ Evrythng.prototype.readAnalytics = function(options, callback, errorHandler) {
 
 
 /*
-	Users R
+	Users CRUD
 */
+Evrythng.prototype.createUser = function(options, callback, errorHandler) {
+	var self = this,
+		query = {
+			url: '/users',
+			params: options.params || {},
+			data: options.data,
+			method: 'post'
+		};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
 Evrythng.prototype.readUser = function(options, callback, errorHandler) {
 	var self = this,
 		query = {
@@ -715,6 +728,56 @@ Evrythng.prototype.readUser = function(options, callback, errorHandler) {
 			params: options.params || {}
 		};
 	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updateUser = function(options, callback, errorHandler) {
+	var self = this,
+		query = {
+			url: self.buildUrl('/users/%s', options.user),
+			params: options.params || {},
+			data: options.data,
+			method: 'put'
+		};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deleteUser = function(options, callback, errorHandler) {
+	var self = this,
+		query = {
+			url: self.buildUrl('/users/%s', options.user),
+			params: options.params || {},
+			method: 'delete'
+		};
+	if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+	return self.request(query, callback, errorHandler);
+};
+
+
+/*
+	User Status RU
+*/
+Evrythng.prototype.readUserStatus = function(options, callback, errorHandler) {
+	var self = this,
+		query = {
+			url: self.buildUrl('/users/%s/status', options.user),
+			params: options.params || {}
+		};
+	return self.request(query, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updateUserStatus = function(options, callback, errorHandler) {
+	var self = this,
+		query = {
+			url: self.buildUrl('/users/%s/status', options.user),
+			params: options.params || {},
+			data: options.data,
+			method: 'put'
+		};
 	return self.request(query, callback, errorHandler);
 };
 
@@ -926,11 +989,43 @@ Evrythng.prototype.deleteShare = function(options, callback, errorHandler) {
 /*
 	Places R
 */
-Evrythng.prototype.readPlaces = function(options, callback, errorHandler) {
+Evrythng.prototype.createPlace = function(options, callback, errorHandler) {
 	var self = this;
 	return self.request({
 		url: self.buildUrl('/places'),
+		params: options.params || {},
+   		data: options.data,
+   		method: 'post'
+	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.readPlace = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: options.place ? self.buildUrl('/places/%s', options.place) : '/places',
 		params: options.params || {}
+	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.updatePlace = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/places/%s', options.place),
+		params: options.params || {},
+   		data: options.data,
+   		method: 'put'
+	}, callback, errorHandler);
+};
+
+
+Evrythng.prototype.deletePlace = function(options, callback, errorHandler) {
+	var self = this;
+	return self.request({
+		url: self.buildUrl('/places/%s', options.place),
+		params: options.params || {},
+   		method: 'delete'
 	}, callback, errorHandler);
 };
 
