@@ -1,4 +1,4 @@
-/*global describe, it, Evrythng, expect, beforeEach*/
+/*global describe, it, Evrythng, expect, beforeEach, sinon, afterEach*/
 describe('Testing baby',function() {
     'use strict';
     it('the Everythng global var exists', function() {
@@ -50,24 +50,20 @@ describe('Testing baby',function() {
         }
     });
 
-    var xhr;
+    var xhr, requests;
     describe('Methods exist',function() {
-        it('sinon global exists', function() {
-            expect(sinon).toBeDefined();
-            console.log(JSON.stringify(sinon));
-            expect(sinon.spy).toBeDefined();
-            expect(sinon.useFakeXMLHttpRequest).toBeDefined();
-
-        });
         beforeEach(function () {
-            //xhr = sinon.useFakeXMLHttpRequest();
-            //requests = [];
-            // xhr.onCreate = function (req) { requests.push(req); };
+            xhr = sinon.useFakeXMLHttpRequest();
+            requests = [];
+            xhr.onCreate = function (req) { requests.push(req); };
         });
         for ( var m in methods ){
             if ( methods.hasOwnProperty( m ) ){
                 methodExistsTest( methods[m] );
             }
         }
+        afterEach( function() {
+            xhr.restore();
+        });
     });
 });

@@ -19,3 +19,5 @@ get-evrythngjs/get-evrythngjs.user.properties
 Session.vim
 docs
 bower_components
+_SpecRunner.html
+.grunt
