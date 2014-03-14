@@ -208,6 +208,11 @@ module.exports = function (grunt) {
                 ]
             }
         },
+        docco: {
+            app: {
+                src: ['<%= yeoman.app %>/{,*/}*.js']
+            }
+        },
 
         // Run some tasks in parallel to speed up build process
         concurrent: {
