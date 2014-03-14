@@ -19,9 +19,6 @@ module.exports = function (grunt) {
     // Define the configuration for all the tasks
     grunt.initConfig({
 
-        // Read the JSON file with the AWs keys
-        aws: grunt.file.readJSON('aws-keys.json'),
-
         // Read package.json
         pkg: grunt.file.readJSON('package.json'),
 
@@ -36,7 +33,7 @@ module.exports = function (grunt) {
         // Watches files for changes and runs tasks based on the changed files
         watch: {
             js: {
-                files: ['<%= yeoman.app %>/src/{,*/}*.js'],
+                files: ['<%= yeoman.app %>/{,*/}*.js'],
                 tasks: ['jshint'],
                 options: {
                     livereload: true
@@ -124,8 +121,8 @@ module.exports = function (grunt) {
             },
             all: [
                 'Gruntfile.js',
-                '<%= yeoman.app %>/src/{,*/}*.js',
-                '!<%= yeoman.app %>/src/vendor/*',
+                '<%= yeoman.app %>/{,*/}*.js',
+                '!<%= yeoman.app %>/vendor/*',
                 'test/spec/{,*/}*.js'
             ]
         },
@@ -136,7 +133,7 @@ module.exports = function (grunt) {
                 src: ['src/vendor/*.js', 'src/*.js', 'src/bower_components/jquery/jquery.js'],
                 options: {
                     specs: 'test/*Spec.js',
-                    helpers: 'test/*Helper.js'
+                    helpers: ['test/*Helper.js', 'test/lib/*.js']
                 }
             }
         },

@@ -17,3 +17,5 @@ node_modules
 .settings
 get-evrythngjs/get-evrythngjs.user.properties
 Session.vim
+docs
+bower_components
