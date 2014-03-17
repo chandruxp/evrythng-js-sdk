@@ -21,3 +21,5 @@ docs
 bower_components
 _SpecRunner.html
 .grunt
+aws-keys.json
+dist

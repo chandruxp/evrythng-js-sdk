@@ -22,6 +22,8 @@ module.exports = function (grunt) {
         // Read package.json
         pkg: grunt.file.readJSON('package.json'),
 
+        // Read aws-keys.json
+        aws: grunt.file.readJSON('aws-keys.json'),
 
         // Project settings
         yeoman: {
@@ -121,7 +123,8 @@ module.exports = function (grunt) {
             },
             all: [
                 'Gruntfile.js',
-                '<%= yeoman.app %>/{,*/}*.js',
+                //TODO: Improve evrythng.js code so that we can use jshint on it
+                '!<%= yeoman.app %>/{,*/}*.js',
                 '!<%= yeoman.app %>/vendor/*',
                 'test/spec/{,*/}*.js'
             ]
@@ -132,15 +135,18 @@ module.exports = function (grunt) {
             all: {
                 src: ['src/vendor/*.js', 'src/*.js', 'src/bower_components/jquery/jquery.js'],
                 options: {
-                    specs: 'test/*Spec.js',
+                    summary: true,
+                    display: 'short',
+                    keepRunner: true,
+                    specs: 'test/spec/*Spec.js',
                     helpers: ['test/*Helper.js', 'test/lib/*.js']
                 }
             }
         },
         uglify: {
-
+            options: {
 /*!
- * Client-side JavaScript library to access Evrythng API v1.1.1
+ * Client-side JavaScript library to access Evrythng API v1.2.0
  * https://github.com/evrythng/evrythng-java-sdk
  *
  * Copyright [2014] [EVRYTHNG Ltd. London / Zurich]
@@ -149,15 +155,14 @@ module.exports = function (grunt) {
  * https://github.com/evrythng/evrythng-java-sdk/blob/master/LICENSE.txt
  *
  */
-
-            options: {
                 banner: '/*!\n' +
-                        ' * Client-side Javascript library to use the ScanThng Service\n' +
+                        ' * Client-side Javascript library to access Evrythng API v<%= pkg.version %>\n' +
+                        ' * https://github.com/evrythng/evrythng-java-sdk\n' +
                         ' *\n' +
                         ' * Copyright [<%= grunt.template.today("yyyy") %>] [EVRYTHNG Ltd. London / Zurich]\n' +
                         ' *\n' +
-                        ' * <%= pkg.name %> - v<%= pkg.version %> -\n' +
-                        ' * All rights reserved\n' +
+                        ' * Released under the http://www.apache.org/licenses/LICENSE-2.0\n' +
+                        ' * https://github.com/evrythng/evrythng-java-sdk/blob/master/LICENSE.txt\n' +
                         ' */\n' +
                         '\n'
             },
@@ -177,16 +182,16 @@ module.exports = function (grunt) {
             },
             dist: {
                 src: ['<%= yeoman.app %>/{,*/}*.js'],
-                dest: '<%= yeoman.dist %>/concatenated/scanThng_<%= pkg.version %>.js'
+                dest: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js'
             }
         },
 
-        // Copy last release as scanThng.js (aka "latest", aka "current")
+        // Copy last release as evrythng.js (aka "latest", aka "current")
         copy: {
             dist: {
                 files: [{
-                    src: '<%= yeoman.dist %>/minified/scanThng_<%= pkg.version %>.js',
-                    dest: '<%= yeoman.dist %>/minified/scanThng.js'
+                    src: '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.js',
+                    dest: '<%= yeoman.dist %>/minified/evrythng.js'
                 }]
             },
         },
@@ -198,10 +203,16 @@ module.exports = function (grunt) {
             },
             production: {
                 options: {
-                    bucket: 'scanthngjs-dev',
+                    bucket: 'evtcdn',
                 },
                 files: [
-                    {expand: true, cwd: '<%= yeoman.dist %>/minified', src: ['**'], dest: '', filter: 'isFile'},
+                    {
+                        expand: true,
+                        cwd: '<%= yeoman.dist %>/minified',
+                        src: ['**'],
+                        dest: 'toolkit/evrythng-js-wrapper',
+                        filter: 'isFile'
+                    },
                 ]
             }
         },
