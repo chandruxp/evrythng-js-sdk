@@ -1,5 +1,5 @@
-/*global describe, it, Evrythng, expect, beforeEach, sinon, afterEach*/
-describe('Testing baby',function() {
+/*global describe, it, Evrythng, expect, beforeEach, sinon, afterEach, xdescribe*/
+describe('Prototype methods',function() {
     'use strict';
     it('the Everythng global var exists', function() {
         expect( Evrythng ).toBeDefined();
@@ -30,18 +30,21 @@ describe('Testing baby',function() {
         'deleteCollectionThng', 'readUserStatus', 'updateUserStatus'
     ];
 
+    // Append methods that don't support all 4 CRUD actions to the list
     methods = methods.concat( otherMethods );
 
+    // Function that tests that a method exists as a prototype
+    // property of the global Evrythng var
     var methodExistsTest = function( methodName ){
         it( 'The ' + methodName + ' prototype property exists',function() {
             expect( Evrythng.prototype[methodName] ).toBeDefined();
         });
-        it( methodName + ' is a method',function() {
+        it( 'and ' + methodName + ' is a method',function() {
             expect( typeof Evrythng.prototype[methodName] ).toBe('function');
         });
     };
 
-    // Testing that methods exist and they are met
+    // Testing that ALL methods exist
     describe('Methods exist',function() {
         for ( var m in methods ){
             if ( methods.hasOwnProperty( m ) ){
@@ -50,20 +53,38 @@ describe('Testing baby',function() {
         }
     });
 
-    var xhr, requests;
-    describe('Methods exist',function() {
-        beforeEach(function () {
-            xhr = sinon.useFakeXMLHttpRequest();
-            requests = [];
-            xhr.onCreate = function (req) { requests.push(req); };
+    describe('An Everything instance can be created',function() {
+        var evth = new Evrythng({
+            evrythngApiKey: 'xxxxxxxxxxxx'
         });
-        for ( var m in methods ){
-            if ( methods.hasOwnProperty( m ) ){
-                methodExistsTest( methods[m] );
-            }
-        }
-        afterEach( function() {
-            xhr.restore();
+        it('can be created', function() {
+            expect( evth ).toBeDefined();
+        });
+        it('is a valid object', function() {
+            expect( typeof evth ).toBe('object');
         });
     });
+
+    // Function that tests that a method exists as a prototype
+    // property of the evth instance
+    var publicMethodExistsTest = function( evth, methodName ){
+        it( 'The ' + methodName + ' property exists',function() {
+            expect( evth[methodName] ).toBeDefined();
+        });
+        it( methodName + ' is a method',function() {
+            expect( typeof evth[methodName] ).toBe('function');
+        });
+    };
+
+    // Testing that methods exist and they are met
+    describe('For an instance of the Evrythng class',function() {
+        var evth = new Evrythng({ evrythngApiKey: 'xxxxxxxxxxxx' });
+
+        for ( var m in methods ){
+            if ( methods.hasOwnProperty( m ) ){
+                publicMethodExistsTest( evth, methods[m] );
+            }
+        }
+    });
+
 });
