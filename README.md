@@ -57,7 +57,28 @@ _Example of CRUD call:_
 
 User authentication to the EVRYTHNG API happens through delegated authentication via Facebook. Here is a snippet of code that lets you do that in a snap.
 
-TODO FOR KIERAN
+
+	Evt.fbLogin(function(fbData) {
+	
+		// With the response from Facebook (which contains the access tokens we 
+		// need for the user), go ahead and register this user with the 
+		// EVRYTHNG engine...
+	
+		evt.authFacebook({ 
+			data: { 
+				access: { 
+					token: fbData.authResponse.accessToken 
+				} 
+			} 
+		}, function(evtData) {
+		
+			// Response from EVRYTHNG
+			console.log(evtData);
+		
+		};		
+	
+	});
+
 
 ## Configuration
 
