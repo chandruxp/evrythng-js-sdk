@@ -29,65 +29,7 @@ You can also set initial options:
 
 For security reasons, make sure the only key you put in your code is the App API key and not your Operator or User App key (see https://dev.evrythng.com/documentation/api#users).
 
-## Options
-
-	evrythngApiUrl				CORS or JSONP API URL (missing one will be deduced)
-	evrythngApiCorsUrl			CORS API URL
-	evrythngApiJsonpUrl			JSONP API URL
-
-	evrythngApiKey				API key, this should be your App API key.
-	evrythngAppId				id of Evrythng application
-	facebookAppId				id of Facebook application
-	
-	disableGeolocation			boolean, false by default
-	actionButton				reference to the DOM element to do FB login on click
-	forceLogin					don't wait for actionButton click, false by default
-	
-	loginCallback				function, called upon Evrythng login
-	loadingCallback				function, called upon change of loading state
-	
-	jQuery						reference to jQuery object
-
-All options can be read and written later via "options" property:
-
-	Evt.options.disableGeolocation = true;
-
-
-
-## jQuery
-
-The library can work both with and without jQuery.
-
-You might not need jQuery in case you don't have it in your project,
-but in some cases it can be useful (e.g. for RSVP/Deferred functionality to work with Ember.js).
-
-In order to use jQuery, pass its reference as an option:
-
-	Evt = new Evrythng({
-		jQuery: jQuery
-	});
-
-Please note, when you use jQuery all transport operations will be performed with jQuery methods.
-All Evrythng.js methods involving server requests will return Deferred object, so you can use .then() method for example:
-
-	Evt.readProduct({}).then(function(data) {
-		// here you have response data
-	});
-
-
-
-## CORS and JSONP
-
-Evrythng API is accessed via CORS, but if it's not supported, then JSONP fallback is used.
-If you want to specify custom URLs for the API, you can do it in two ways:
-
-1. Specify only "evrythngApiUrl" option, it can be either CORS or JSONP API URL (missing one will be deduced).
-   Note that both URLs have to follow the convention: hostname starts with "api" for CORS and with "js-api" for JSONP.
-2. Specify both "evrythngApiCorsUrl" and "evrythngApiJsonpUrl" options accordingly. URL convention can be ignored in this case.
-
-
-
-## CRUD methods
+## Using the library
 
 Evrythng.js includes many methods to interact with Evrythng API, they called CRUD methods and follows this convention:
 
@@ -111,9 +53,72 @@ _Example of CRUD call:_
 		
 	});
 
+### Facebook & EVRYTHNG login
+
+User authentication to the EVRYTHNG API happens through delegated authentication via Facebook. Here is a snippet of code that lets you do that in a snap.
+
+TODO FOR KIERAN
+
+## Configuration
+
+### Options
+
+	evrythngApiUrl				CORS or JSONP API URL (missing one will be deduced)
+	evrythngApiCorsUrl			CORS API URL
+	evrythngApiJsonpUrl			JSONP API URL
+
+	evrythngApiKey				API key, this should be your App API key.
+	evrythngAppId				id of Evrythng application
+	facebookAppId				id of Facebook application
+	
+	disableGeolocation			boolean, false by default
+	actionButton				reference to the DOM element to do FB login on click
+	forceLogin					don't wait for actionButton click, false by default
+	
+	loginCallback				function, called upon Evrythng login
+	loadingCallback				function, called upon change of loading state
+	
+	jQuery						reference to jQuery object
+
+All options can be read and written later via "options" property:
+
+	Evt.options.disableGeolocation = true;
 
 
-## Error handling
+### jQuery
+
+The library can work both with and without jQuery.
+
+You might not need jQuery in case you don't have it in your project,
+but in some cases it can be useful (e.g. for RSVP/Deferred functionality to work with Ember.js).
+
+In order to use jQuery, pass its reference as an option:
+
+	Evt = new Evrythng({
+		jQuery: jQuery
+	});
+
+Please note, when you use jQuery all transport operations will be performed with jQuery methods.
+All Evrythng.js methods involving server requests will return Deferred object, so you can use .then() method for example:
+
+	Evt.readProduct({}).then(function(data) {
+		// here you have response data
+	});
+
+
+
+### CORS and JSONP
+
+Evrythng API is accessed via CORS, but if it's not supported, then JSONP fallback is used.
+If you want to specify custom URLs for the API, you can do it in two ways:
+
+1. Specify only "evrythngApiUrl" option, it can be either CORS or JSONP API URL (missing one will be deduced).
+   Note that both URLs have to follow the convention: hostname starts with "api" for CORS and with "js-api" for JSONP.
+2. Specify both "evrythngApiCorsUrl" and "evrythngApiJsonpUrl" options accordingly. URL convention can be ignored in this case.
+
+
+
+### Error handling
 
 The library can help you to handle errors in a few ways:
 
@@ -154,9 +159,9 @@ If the type of the error is "server", then you will have the "responseError" as 
 		}
 	});
 
+## Advanced features
 
-
-## Upload
+### Upload
 
 Evrythng.js comes with built-in ajax upload functionality, with advanced features:
 
@@ -174,7 +179,7 @@ Example:
 	});
 
 
-## Upload options
+### Upload options
 
 	method				HTTP method to use for upload (usually PUT or POST)
 	uploadUrl			URL for upload (must not be used for Amazon S3 upload)
