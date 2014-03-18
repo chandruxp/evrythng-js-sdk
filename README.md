@@ -64,7 +64,7 @@ User authentication to the EVRYTHNG API happens through delegated authentication
 		// need for the user), go ahead and register this user with the 
 		// EVRYTHNG engine...
 	
-		evt.authFacebook({ 
+		Evt.authFacebook({ 
 			data: { 
 				access: { 
 					token: fbData.authResponse.accessToken 
