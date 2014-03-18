@@ -261,13 +261,17 @@ module.exports = function (grunt) {
         'concurrent:dist',
         'concat',
         'uglify',
-        'copy:dist',
-        'aws_s3'
+        'copy:dist'
     ]);
 
     grunt.registerTask('default', [
         'newer:jshint',
         'test',
         'build'
+    ]);
+
+    grunt.registerTask('deploy', [
+        'default',
+        'aws_s3'
     ]);
 };
