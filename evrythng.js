@@ -37,7 +37,7 @@ Evrythng = function(options) {
 /*
 	Version
 */
-Evrythng.prototype.version = '1.2.0';
+Evrythng.prototype.version = '1.2.1';
 
 
 /*
