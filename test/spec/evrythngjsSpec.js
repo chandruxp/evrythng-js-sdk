@@ -1,5 +1,4 @@
 /*global describe, it, Evrythng, expect*/
-
 describe('Prototype methods',function() {
     'use strict';
     it('the Everythng global var exists', function() {

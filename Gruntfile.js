@@ -145,16 +145,6 @@ module.exports = function (grunt) {
         },
         uglify: {
             options: {
-/*!
- * Client-side JavaScript library to access Evrythng API v1.2.0
- * https://github.com/evrythng/evrythng-java-sdk
- *
- * Copyright [2014] [EVRYTHNG Ltd. London / Zurich]
- *
- * Released under the http://www.apache.org/licenses/LICENSE-2.0
- * https://github.com/evrythng/evrythng-java-sdk/blob/master/LICENSE.txt
- *
- */
                 banner: '/*!\n' +
                         ' * Client-side Javascript library to access Evrythng API v<%= pkg.version %>\n' +
                         ' * https://github.com/evrythng/evrythng-java-sdk\n' +
