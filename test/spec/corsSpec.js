@@ -10,18 +10,59 @@ describe('CORS Spec',function() {
     var methods = [
         {
             name: 'search',
-            url: ''
+            route: 'search',
+            hmethod: 'GET',
+            options: { params: 'casa' }
+        },
+        {
+            name: 'createApplication',
+            route: 'applications',
+            hmethod: 'post',
+            options: { params: 'casa' }
+        },
+        {
+            name: 'readApplication',
+            route: 'applications',
+            hmethod: 'GET',
+            options: { params: 'casa' }
+        },
+        {
+            name: 'updateApplication',
+            route: 'applications',
+            hmethod: 'put',
+            options: { params: 'casa' }
+        },
+        {
+            name: 'deleteApplication',
+            route: 'applications',
+            hmethod: 'delete',
+            options: { params: 'casa' }
+        },
+        {
+            name: 'deleteProduct',
+            route: 'products',
+            hmethod: 'delete',
+            options: { params: 'casa' }
+        },
+        {
+            name: 'updateProduct',
+            route: 'products',
+            hmethod: 'put',
+            options: { params: 'casa' }
         }
     ];
 
     var methodCallCors = function( evth, method ){
         var name = method.name;
+        var route = method.route;
+        var hmethod = method.hmethod;
+        var options = method.options;
 
         describe(name, function() {
             var callback = sinon.spy();
 
             it( 'calls Evrythng.cors', function() {
-                evth[name]('article', callback);
+                evth[name](options, callback);
                 expect( evth.cors.called ).toBeTruthy();
             });
             it( 'doesn\'t call Evrythng.jsonp', function() {
@@ -33,8 +74,8 @@ describe('CORS Spec',function() {
 
                 var request = this.requests[0];
                 expect(request).toBeDefined();
-                expect(request.method).toBe('GET');
-                expect(request.url).toBe('https://api.evrythng.com/' + name + '?');
+                expect(request.method).toBe(hmethod);
+                expect(request.url).toBe('https://api.evrythng.com/' + route + '?');
             });
         });
     };
