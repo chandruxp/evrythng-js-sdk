@@ -78,7 +78,7 @@ The call to `authFacebook` needs to be done with your App API Key. The call then
 			// Response from EVRYTHNG
 			console.log(evtData);
 		
-		};		
+		});		
 	
 	});
 
