@@ -55,12 +55,11 @@ _Example of CRUD call:_
 
 ### Facebook & EVRYTHNG login
 
-User authentication to the EVRYTHNG API happens through delegated authentication via Facebook. Here is a snippet of code that lets you do that in a snap.
+To ensure that App User Keys are never disclosed in the client-side code, user authentication to the EVRYTHNG API happens through delegated authentication via Facebook. Here is a snippet of code that lets you do that in a snap.
 
 Basically this authenticates the user with the Facebook and then, using the Facebook token, with EVRYTHNG. At the end of the process you dynamically get an EVRYTHNG App User Key.
 
-The call to `authFacebook` needs to be done with your App API Key. The call then returns the App User Key which you should use for all subsequent calls. This ensures the User Key is generated dynamically at run-time and never exposed in the Javascript code.
-
+The call to `authFacebook` needs to be done with your App API Key. The call then returns the App User Key which you should use for all subsequent calls. 
 
 	Evt.fbLogin(function(fbData) {
 	
