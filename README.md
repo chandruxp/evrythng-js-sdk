@@ -1,4 +1,4 @@
-EVRYTHNG.js
+everythng.js
 ===========
 
 Client-side JavaScript library to access Evrythng API.
@@ -31,7 +31,7 @@ For security reasons, make sure the only key you put in your code is the App API
 
 ## Using the library
 
-Evrythng.js includes many methods to interact with Evrythng API, they called CRUD methods and follows this convention:
+evrythng.js includes many methods to interact with Evrythng API, they called CRUD methods and follows this convention:
 
 1.	CRUD methods named accordingly: read, create, update, delete. For example "readAction"
 2.	All CRUD methods use following signature: method(options, callback, errorHandler)
@@ -123,7 +123,7 @@ In order to use jQuery, pass its reference as an option:
 	});
 
 Please note, when you use jQuery all transport operations will be performed with jQuery methods.
-All Evrythng.js methods involving server requests will return Deferred object, so you can use .then() method for example:
+All evrythng.js methods involving server requests will return Deferred object, so you can use .then() method for example:
 
 	Evt.readProduct({}).then(function(data) {
 		// here you have response data
@@ -187,7 +187,7 @@ If the type of the error is "server", then you will have the "responseError" as 
 
 ### Upload
 
-Evrythng.js comes with built-in ajax upload functionality, with advanced features:
+evrythng.js comes with built-in ajax upload functionality, with advanced features:
 
 1.	ability to upload to Amazon S3 as well as to any custom server.
 2.	upload signature by the Evrythng Files API.
