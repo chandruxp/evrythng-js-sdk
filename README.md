@@ -1,7 +1,7 @@
 everythng.js
 ===========
 
-Client-side JavaScript library to access Evrythng API.
+Client-side JavaScript library to access EVRYTHNG API.
 
 ## Use it from our CDN
 
@@ -31,7 +31,7 @@ For security reasons, make sure the only key you put in your code is the App API
 
 ## Using the library
 
-evrythng.js includes many methods to interact with Evrythng API, they called CRUD methods and follows this convention:
+evrythng.js includes many methods to interact with EVRYTHNG API, they called CRUD methods and follows this convention:
 
 1.	CRUD methods named accordingly: read, create, update, delete. For example "readAction"
 2.	All CRUD methods use following signature: method(options, callback, errorHandler)
@@ -133,7 +133,7 @@ All evrythng.js methods involving server requests will return Deferred object, s
 
 ### CORS and JSONP
 
-Evrythng API is accessed via CORS, but if it's not supported, then JSONP fallback is used.
+EVRYTHNG API is accessed via CORS, but if it's not supported, then JSONP fallback is used.
 If you want to specify custom URLs for the API, you can do it in two ways:
 
 1. Specify only "evrythngApiUrl" option, it can be either CORS or JSONP API URL (missing one will be deduced).
@@ -147,7 +147,7 @@ If you want to specify custom URLs for the API, you can do it in two ways:
 The library can help you to handle errors in a few ways:
 
 1.	errorHandler third argument for CRUD methods (and some other methods as well).
-2.	onError callback option for Evrythng instance to get all errors in one place.
+2.	onError callback option for EVRYTHNG instance to get all errors in one place.
 3.	browser's console: all errors go there, no configuration is needed for that.
 
 _Example of using onError callback:_
@@ -190,7 +190,7 @@ If the type of the error is "server", then you will have the "responseError" as 
 evrythng.js comes with built-in ajax upload functionality, with advanced features:
 
 1.	ability to upload to Amazon S3 as well as to any custom server.
-2.	upload signature by the Evrythng Files API.
+2.	upload signature by the EVRYTHNG Files API.
 3.	generation of a thumbnail for video or image directly in the browser, and upload it along with the file.
 4.	file data can be sent as raw as well as a part of a form (for simple backends).
 
