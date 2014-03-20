@@ -143,6 +143,27 @@ module.exports = function (grunt) {
                 }
             }
         },
+
+        concat: {
+            options: {
+                separator: ';',
+                banner: '/*!\n' +
+                        ' * Client-side Javascript library to access Evrythng API v<%= pkg.version %>\n' +
+                        ' * https://github.com/evrythng/evrythng-java-sdk\n' +
+                        ' *\n' +
+                        ' * Copyright [<%= grunt.template.today("yyyy") %>] [EVRYTHNG Ltd. London / Zurich]\n' +
+                        ' *\n' +
+                        ' * Released under the http://www.apache.org/licenses/LICENSE-2.0\n' +
+                        ' * https://github.com/evrythng/evrythng-java-sdk/blob/master/LICENSE.txt\n' +
+                        ' */\n' +
+                        '\n'
+            },
+            dist: {
+                src: ['<%= yeoman.app %>/{,*/}*.js'],
+                dest: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js'
+            }
+        },
+
         uglify: {
             options: {
                 banner: '/*!\n' +
@@ -157,32 +178,24 @@ module.exports = function (grunt) {
                         '\n'
             },
             dist: {
-                files: [{
-                    expand: true,
-                    dot: true,
-                    cwd: '<%= yeoman.dist %>/concatenated',
-                    dest: '<%= yeoman.dist %>/minified',
-                    src: ['**/*.js']
-                }]
+                files: {
+                    '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.min.js': '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js'
+                }
             }
         },
-        concat: {
-            options: {
-                separator: ';'
-            },
-            dist: {
-                src: ['<%= yeoman.app %>/{,*/}*.js'],
-                dest: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js'
-            }
-        },
-
         // Copy last release as evrythng.js (aka "latest", aka "current")
         copy: {
             dist: {
-                files: [{
-                    src: '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.js',
-                    dest: '<%= yeoman.dist %>/minified/evrythng.js'
-                }]
+                files: [
+                    {
+                        src: '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.min.js',
+                        dest: '<%= yeoman.dist %>/minified/evrythng.min.js'
+                    },
+                    {
+                        src: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js',
+                        dest: '<%= yeoman.dist %>/concatenated/evrythng.js'
+                    }
+                ]
             },
         },
 
@@ -193,16 +206,25 @@ module.exports = function (grunt) {
             },
             production: {
                 options: {
-                    bucket: 'evtcdn',
+                    // 'scanthngjs-dev' is a bucket for testing purposes
+                    // bucket: 'scanthngjs-dev',
+                    bucket: 'evtcdn'
                 },
                 files: [
+                    {
+                        expand: true,
+                        cwd: '<%= yeoman.dist %>/concatenated',
+                        src: ['**'],
+                        dest: 'toolkit/evrythng-js-wrapper',
+                        filter: 'isFile'
+                    },
                     {
                         expand: true,
                         cwd: '<%= yeoman.dist %>/minified',
                         src: ['**'],
                         dest: 'toolkit/evrythng-js-wrapper',
                         filter: 'isFile'
-                    },
+                    }
                 ]
             }
         },

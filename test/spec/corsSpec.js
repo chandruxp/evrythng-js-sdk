@@ -1,5 +1,5 @@
-/*global describe, it, Evrythng, expect, beforeEach, sinon, afterEach*/
-describe('CORS Spec',function() {
+/*global describe, it, Evrythng, expect, beforeEach, sinon, afterEach, xdescribe*/
+xdescribe('CORS Spec',function() {
     'use strict';
     var evth = new Evrythng({
         evrythngApiKey: 'xxxxxxxxxxxx'

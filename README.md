@@ -222,3 +222,52 @@ Example:
 	onError				error callback, arguments: error object
 
 
+#Referring evrythng.js in projects
+
+##Overview
+The javascript wrapper evrythng.js is under version control in evrythng-tools project.
+
+It needs to be referred from different projects, using different manners during development cycles of those projects.
+
+An instant local version can be used during development
+The latest version available in github can be used for Test environments
+Two released versions:
+One for production
+One for demo
+This page explains how to setup evrythng.js in your project
+
+Instant development release
+A good solution consists in the usage of get-evrythngjs script to instantly push the local modifications and copy the file from evrythng-tools into different locations.
+
+get-evrythngjs utility is available in evrythng-tools repository
+Customize your file source and destinations by making a copy of get-evrythngjs.properties into your own get-evrythngjs.user.properties
+Run the script : java -jar get-evrythngjs nogui
+Alternatively run the script in watcher mode. Any change will be automatically copied to the destination dirs : java -jar get-evrythngjs watch
+Alternatively use the "GetEvrythng Mac OS X" builder in Eclipse to call the script whenever the workspace is built
+Documentation of portal project explains how this solution is enabled for that particular project.
+
+        https://github.com/evrythng/evrythng-devportal
+
+CDN version for demo and production
+See Updating the CDN with evrythng-js-sdk
+
+##Github version
+Using the automatic generator feature of github, the content of a repository can be accessed via a specific url.
+
+Thus, the evrythng-tools project is, and specifically the js wrapper is accessible here :
+
+http://evrythng.github.io/evrythng-tools/evrythng-js-wrapper/evrythng.js
+
+This url can be used for Test environment, and for development process which does not require to update the evrythng.js file an instantly see the changes
+
+To update this published version of the repository, it must be pushed in a specific gh-pages branch.
+
+        git push origin master:gh-pages
+
+This will update the published site with the current master HEAD
+
+More about this github feature :
+
+https://help.github.com/articles/creating-pages-with-the-automatic-generator
+
+
