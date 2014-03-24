@@ -1,5 +1,5 @@
-/*global describe, it, Evrythng, expect, beforeEach, sinon, afterEach, xdescribe*/
-xdescribe('CORS Spec',function() {
+/*global describe, it, Evrythng, expect, beforeEach, sinon, afterEach*/
+describe('AJAX',function() {
     'use strict';
     var evth = new Evrythng({
         evrythngApiKey: 'xxxxxxxxxxxx'
@@ -30,25 +30,25 @@ xdescribe('CORS Spec',function() {
             name: 'updateApplication',
             route: 'applications',
             hmethod: 'put',
-            options: { params: 'casa' }
+            options: { params: 'casa', application: 'app', product: 'prod' }
         },
         {
             name: 'deleteApplication',
             route: 'applications',
             hmethod: 'delete',
-            options: { params: 'casa' }
+            options: { params: 'casa', application: 'app', product: 'prod' }
         },
         {
             name: 'deleteProduct',
             route: 'products',
             hmethod: 'delete',
-            options: { params: 'casa' }
+            options: { params: 'casa', application: 'app', product: 'prod' }
         },
         {
             name: 'updateProduct',
             route: 'products',
             hmethod: 'put',
-            options: { params: 'casa' }
+            options: { params: 'casa', application: 'app', product: 'prod' }
         }
     ];
 
@@ -87,7 +87,7 @@ xdescribe('CORS Spec',function() {
         expect(typeof evth.jsonp).toBe('function');
     });
 
-    describe('Inner methods',function() {
+    describe('methods',function() {
         beforeEach(function () {
             xhr = sinon.useFakeXMLHttpRequest();
             var requests = this.requests = [];

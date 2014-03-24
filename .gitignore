@@ -23,3 +23,4 @@ _SpecRunner.html
 .grunt
 aws-keys.json
 dist
+.DS_Store

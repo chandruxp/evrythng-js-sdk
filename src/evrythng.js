@@ -1,3 +1,4 @@
+/*global Evrythng*/
 
 Evrythng = function(options) {
     this.options = {
