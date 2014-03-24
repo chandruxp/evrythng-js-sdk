@@ -199,6 +199,32 @@ module.exports = function (grunt) {
             },
         },
 
+        gittag: {
+            task: {
+                options: {
+                    tag: 'v<%= pkg.version %>'
+                }
+            }
+        },
+
+        checkrepo: {
+            // Check repo is clean before tagging
+            tag: {
+                clean: true,        // Check repo is clean
+            },
+            // Check repo is tagged and tag matches package 
+            // version number before deploying
+            deploy: {
+                clean: true,        // Check repo is clean
+                tagged: true,       // Checks whether the last commit (HEAD) is tagged.
+                tag: {
+                    eq: '<%= pkg.version %>',    // Check if highest repo tag is equal to pkg.version
+                    valid: '<%= pkg.version %>', // Check if pkg.version is valid semantic version
+                }
+            }
+        },
+
+        // Deploy to AWS bucket
         aws_s3: {
             options: {
                 accessKeyId: '<%= aws.AWSAccessKeyId %>', // Use the variables
@@ -228,6 +254,7 @@ module.exports = function (grunt) {
                 ]
             }
         },
+
         docco: {
             app: {
                 src: ['<%= yeoman.app %>/{,*/}*.js']
@@ -292,8 +319,15 @@ module.exports = function (grunt) {
         'build'
     ]);
 
+    grunt.registerTask('tag', [
+        'checkrepo:tag',
+        'gittag'
+    ]);
+
     grunt.registerTask('deploy', [
         'default',
+        'tag',
+        'checkrepo:deploy',
         'aws_s3'
     ]);
 };
