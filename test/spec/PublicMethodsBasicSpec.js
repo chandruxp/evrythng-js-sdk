@@ -78,11 +78,11 @@ describe('Public methods behaviour',function() {
 
     describe('the buildUrl method',function() {
         it('builds a URL properly', function() {
-            var url = evth.buildUrl('aaa/%s','bbbb','cccc');
-            expect( url ).toBe('aaa/bbbbcccc');
+            var url = evth.buildUrl('aaa/%s','bbbb');
+            expect( url ).toBe('aaa/bbbb');
         });
         it('builds a URL properly', function() {
-            var url = evth.buildUrl('aaa/%s/bbbb','cccc','dddd');
+            var url = evth.buildUrl('aaa/%s/bbbb/%s','cccc','dddd');
             expect( url ).toBe('aaa/cccc/bbbb/dddd');
         });
     });

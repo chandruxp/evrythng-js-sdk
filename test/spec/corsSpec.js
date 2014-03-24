@@ -10,51 +10,50 @@ describe('AJAX',function() {
     var methods = [
         {
             name: 'search',
-            route: 'search',
             hmethod: 'GET',
-            options: { params: 'casa' }
+            options: { params: ['casa'] },
+            expectUrl: 'https://api.evrythng.com/search?0=casa'
         },
         {
             name: 'createApplication',
-            route: 'applications',
             hmethod: 'post',
-            options: { params: 'casa' }
+            options: { params: ['casa'] },
+            expectUrl: 'https://api.evrythng.com/applications?0=casa'
         },
         {
             name: 'readApplication',
-            route: 'applications',
             hmethod: 'GET',
-            options: { params: 'casa' }
+            options: { params: ['casa'] },
+            expectUrl: 'https://api.evrythng.com/applications?0=casa'
         },
         {
             name: 'updateApplication',
-            route: 'applications',
             hmethod: 'put',
-            options: { params: 'casa', application: 'app', product: 'prod' }
+            options: { params: ['casa'], application: 'app', product: 'prod' },
+            expectUrl: 'https://api.evrythng.com/applications/app?0=casa'
         },
         {
             name: 'deleteApplication',
-            route: 'applications',
             hmethod: 'delete',
-            options: { params: 'casa', application: 'app', product: 'prod' }
+            options: { params: ['casa'], application: 'app', product: 'prod' },
+            expectUrl: 'https://api.evrythng.com/applications/app?0=casa'
         },
         {
             name: 'deleteProduct',
-            route: 'products',
             hmethod: 'delete',
-            options: { params: 'casa', application: 'app', product: 'prod' }
+            options: { params: ['casa'], application: 'app', product: 'prod' },
+            expectUrl: 'https://api.evrythng.com/products/prod?0=casa'
         },
         {
             name: 'updateProduct',
-            route: 'products',
             hmethod: 'put',
-            options: { params: 'casa', application: 'app', product: 'prod' }
+            options: { params: ['casa'], application: 'app', product: 'prod' },
+            expectUrl: 'https://api.evrythng.com/products/prod?0=casa'
         }
     ];
 
     var methodCallCors = function( evth, method ){
         var name = method.name;
-        var route = method.route;
         var hmethod = method.hmethod;
         var options = method.options;
 
@@ -70,12 +69,12 @@ describe('AJAX',function() {
                 expect( evth.jsonp.called ).toBeFalsy();
             });
             it('shows', function() {
-                evth[name]('article', callback);
+                evth[name](options, callback);
 
                 var request = this.requests[0];
                 expect(request).toBeDefined();
                 expect(request.method).toBe(hmethod);
-                expect(request.url).toBe('https://api.evrythng.com/' + route + '?');
+                expect(request.url).toBe(method.expectUrl);
             });
         });
     };
