@@ -212,7 +212,7 @@ module.exports = function (grunt) {
             tag: {
                 clean: true,        // Check repo is clean
             },
-            // Check repo is tagged and tag matches package 
+            // Check repo is tagged and tag matches package
             // version number before deploying
             deploy: {
                 clean: true,        // Check repo is clean
@@ -229,6 +229,21 @@ module.exports = function (grunt) {
             options: {
                 accessKeyId: '<%= aws.AWSAccessKeyId %>', // Use the variables
                 secretAccessKey: '<%= aws.AWSSecretKey %>', // You can also use env variables
+            },
+            demo: {
+                options: {
+                    bucket: 'evrythngjsdemo'
+                },
+                files: [
+                    {
+                        expand: true,
+                        cwd: '<%= yeoman.app %>',
+                        src: ['**'],
+                        // dest is for subfolders, so you don't need it here
+                        dest: '',
+                        filter: 'isFile'
+                    }
+                ]
             },
             production: {
                 options: {
@@ -328,6 +343,10 @@ module.exports = function (grunt) {
         'default',
         'tag',
         'checkrepo:deploy',
-        'aws_s3'
+        'aws_s3:production'
+    ]);
+
+    grunt.registerTask('deploydemo', [
+        'aws_s3:demo'
     ]);
 };
