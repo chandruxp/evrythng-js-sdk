@@ -242,6 +242,11 @@ for the different development tasks.
 from the terminal and, specifically, from the root folder of your local copy
 of this repository.
 
+Also notice that if you need to deploy your changes, either to the production or
+to the testing S3 buckets, you will need to have the necessary AWS keys set up 
+properly (See ##jshint)
+named `
+
 ##JSHint
 [JSHint](http://jshint.com) is a tool for detecting syntax errors and potential problems
 in your javascript files.
@@ -337,11 +342,9 @@ of the production S3 bucket.
 There are several versions you can use `evrythng.js` for internal purposes.
 
 * An instant local version can be used during development
-* Two released versions:
-    * One for production
-    * One for demo
-
-This page explains how to setup `evrythng.js` in your project
+* Two kinds of released versions:
+    * Production
+    * Demo
 
 ##Instant development release
 A good solution consists in the usage of `get-evrythngjs` script to instantly push the local modifications and copy the file from `evrythng-tools` into different locations.
@@ -352,29 +355,6 @@ A good solution consists in the usage of `get-evrythngjs` script to instantly pu
 * Alternatively run the script in watcher mode. Any change will be automatically copied to the destination dirs : java -jar get-evrythngjs watch
 * Alternatively use the "GetEvrythng Mac OS X" builder in Eclipse to call the script whenever the workspace is built
 
-Documentation of portal project explains how this solution is enabled for that particular project.
-
-        https://github.com/evrythng/evrythng-devportal
-
-
-##Github version
-Using the automatic generator feature of github, the content of a repository can be accessed via a specific url.
-
-Thus, the evrythng-tools project is, and specifically the js wrapper is accessible here :
-
-http://evrythng.github.io/evrythng-tools/evrythng-js-wrapper/evrythng.js
-
-This url can be used for Test environment, and for development process which does not require to update the evrythng.js file an instantly see the changes
-
-To update this published version of the repository, it must be pushed in a specific gh-pages branch.
-
-        git push origin master:gh-pages
-
-This will update the published site with the current master HEAD
-
-More about this github feature :
-
-https://help.github.com/articles/creating-pages-with-the-automatic-generator
 
 ##Updating the CDN with evrythng-js-sdk
 ###Requirements

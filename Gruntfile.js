@@ -222,6 +222,14 @@ module.exports = function (grunt) {
             }
         },
 
+        gitpush: {
+            task: {
+                options: {
+                    tags: true
+                }
+            }
+        },
+
         checkrepo: {
             // Check repo is clean before tagging
             tag: {
@@ -359,7 +367,8 @@ module.exports = function (grunt) {
         'default',
         'tag',
         'checkrepo:deploy',
-        'aws_s3:production'
+        'aws_s3:production',
+        'gitpush'
     ]);
 
     grunt.registerTask('deploydemo', [
