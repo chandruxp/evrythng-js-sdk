@@ -1,5 +1,5 @@
-everythng.js
-===========
+evrythng.js
+==========
 
 Client-side JavaScript library to access EVRYTHNG API.
 
@@ -234,11 +234,11 @@ install by issuing:
 
     npm install grunt-cli -g
 
-Before you start coding, make sure you run: `npm install`  from the root folder 
+Before you start coding, make sure you run: `npm install`  from the root folder
 of your local copy of this repo to ensure you have all the necessary packages
 for the different development tasks.
 
-Please notice that every time you want to run a grunt command, you must do it
+**Please notice** that every time you want to run a grunt command, you must do it
 from the terminal and, specifically, from the root folder of your local copy
 of this repository.
 
@@ -259,22 +259,23 @@ being checked.
 
 ##Testing
 The current test collection requires the use of [Jasmine](http://jasmine.github.io)
-and [Sinon](http://sinonjs.org).
+and [Sinon](http://sinonjs.org). These should have been installed for
+you when you ran `npm install`.
 
-You can run the full test collection against the current codebase by
+You can run the full test suite against the current codebase by
 executing:
 
     grunt jasmine
 
 You can also create a task that watches your javascript files (source files
-and test files) and runs the full test collection every time any of these
+and test files) and runs the full test suite every time any of these
 files changes. To do that just run:
 
     grunt watch:jstest
 
 ##Building
-The `build` will create a new build of the library by executing the following
-subtasks in the proper order:
+The `build` grunt task will create a new build of the library by executing 
+the following subtasks in the proper order:
 
 * jshint
 * jasmine
@@ -285,7 +286,7 @@ subtasks in the proper order:
 As an additional step, The `concat` and `uglify` tasks add the necessary
 banners at the beginning of their output files.
 
-To invoke this task you can execute:
+To invoke this whole build process you can execute:
 
     grunt build
 
@@ -293,7 +294,7 @@ Or simply:
 
     grunt
 
-##Deployment
+##Deploying evrythng.js to production
 To deploy `everythng.js` you can run:
 
     grunt deploy
@@ -313,6 +314,22 @@ Currently, there are 4 files being deployed:
 * evrythng-1.2.1.js
 * evrythng-1.2.1.min.js
 
+##Deploying a demo version for testing purposes
+While in development, you can build and deploy `evrythng.js` 
+to a different S3 bucket for testing.
+
+For doing that, just execute:
+
+    grunt deploydemo
+
+After that, grunt will attempt to go through the same building 
+process as
+for the production deployment, but it will attempt to deploy 
+two files (one minified and one unminified) with a timestamp
+on their names so that they don't conflict with other demo
+versions in use and to `evrythngjsdemo.s3.amazon.com` instead
+of the production S3 bucket.
+
 
 #Referring evrythng.js in projects
 
@@ -320,7 +337,6 @@ Currently, there are 4 files being deployed:
 There are several versions you can use `evrythng.js` for internal purposes.
 
 * An instant local version can be used during development
-* The latest version available in github can be used for Test environments
 * Two released versions:
     * One for production
     * One for demo
@@ -340,8 +356,6 @@ Documentation of portal project explains how this solution is enabled for that p
 
         https://github.com/evrythng/evrythng-devportal
 
-##CDN version for demo and production
-See Updating the CDN with evrythng-js-sdk
 
 ##Github version
 Using the automatic generator feature of github, the content of a repository can be accessed via a specific url.

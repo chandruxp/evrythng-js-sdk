@@ -265,7 +265,7 @@ module.exports = function (grunt) {
                 options: {
                     bucket: 'evtcdn',
                     // Debug option is for testing purposes
-                    debug: true
+                    // debug: true
                 },
                 files: [
                     {
