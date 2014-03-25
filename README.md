@@ -244,7 +244,7 @@ of this repository.
 
 Also notice that if you need to deploy your changes, either to the production or
 to the testing S3 buckets, you will need to have the necessary AWS keys set up 
-properly (See [Preparing for Deployment](#preparing_for_deployment) ).
+properly (See [Preparing for Deployment](#preparing-for-deployment) ).
 
 ##JSHint
 [JSHint](http://jshint.com) is a tool for detecting syntax errors and potential problems
@@ -256,15 +256,15 @@ file, which is in the root folder of this repo.
 You can run `grunt jshint` at any moment to verify that all your javascript
 files pass the syntax check.
 
-Currently (as of version 1.2.1) the `evrythng.js` files is not passing
+Currently (as of version 1.2.2) the main file (`evrythng.js`) is not passing
 this check. Therefore, it has currently been excluded from being checked.
 However, the test specs (which are also javascript files) are 
 being checked.
 
 ##Testing
-The current test collection requires the use of [Jasmine](http://jasmine.github.io)
-and [Sinon](http://sinonjs.org). These should have been installed for
-you when you ran `npm install`.
+The current test suite requires the use of two additional libraries:
+[Jasmine](http://jasmine.github.io) and [Sinon](http://sinonjs.org). 
+These should have been installed for you when you ran `npm install`.
 
 You can run the full test suite against the current codebase by
 executing:
@@ -272,7 +272,7 @@ executing:
     grunt jasmine
 
 You can also create a task that watches your javascript files (source files
-and test files) and runs the full test suite every time any of these
+and test files) and runs the full test suite every time any of those
 files changes. To do that just run:
 
     grunt watch:jstest
@@ -283,7 +283,7 @@ the following subtasks in the proper order:
 
 * jshint
 * jasmine
-* concat (this concatenates the different source files, currently not necessary)
+* concat (this concatenates the different source files)
 * copy (makes a copy of the concatenaded file with no version in the filename)
 * uglify (makes minified copies of both concatenated files)
 
@@ -305,10 +305,10 @@ To be able to deploy either to production or to the testing
 environments, you need to have a file name `aws-keys.json`
 with this content:
 
-  {
-    "AWSAccessKeyId": "aaaaaaaaaaaaaaaaaaaa",
-    "AWSSecretKey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-  }
+    {
+        "AWSAccessKeyId": "aaaaaaaaaaaaaaaaaaaa",
+        "AWSSecretKey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
 
 Of course, you need to replace these fake keys with the real ones.
 Ask the Ops person.
@@ -333,12 +333,12 @@ the generated tag.
 
 Currently, there are 4 files being deployed:
 
-* evrythng.js
-* evrythng.min.js
-* evrythng-1.2.1.js
-* evrythng-1.2.1.min.js
+    evrythng.js
+    evrythng.min.js
+    evrythng-1.2.1.js
+    evrythng-1.2.1.min.js
 
-##Deploying a demo version for testing purposes
+###Deploying a demo version for testing purposes
 While in development, you can build and deploy `evrythng.js` 
 to a different S3 bucket for testing.
 
@@ -358,16 +358,16 @@ of the production S3 bucket.
 #Referring evrythng.js in projects
 
 ##Overview
-There are several versions you can use `evrythng.js` for internal purposes.
+There are several ways you can use `evrythng.js` for internal purposes.
 
 * An instant local version can be used during development
 * Two kinds of released versions:
     * Production
     * Demo
 
-If you prefer not to use any the deployment process or any of the
+If you prefer not to use the deployment process or any of the
 deployed versions of `evrythng.js`, have a look at 
-[Instant development release](#instant_development_release) .
+[Instant development release](#instant-development-release) .
 
 ##Instant development release
 A good solution consists in the usage of `get-evrythngjs` script to instantly 
