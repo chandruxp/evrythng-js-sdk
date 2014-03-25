@@ -244,8 +244,7 @@ of this repository.
 
 Also notice that if you need to deploy your changes, either to the production or
 to the testing S3 buckets, you will need to have the necessary AWS keys set up 
-properly (See ##jshint)
-named `
+properly (See [Preparing for Deployment](#preparing_for_deployment) ).
 
 ##JSHint
 [JSHint](http://jshint.com) is a tool for detecting syntax errors and potential problems
@@ -288,6 +287,7 @@ the following subtasks in the proper order:
 * copy (makes a copy of the concatenaded file with no version in the filename)
 * uglify (makes minified copies of both concatenated files)
 
+
 As an additional step, The `concat` and `uglify` tasks add the necessary
 banners at the beginning of their output files.
 
@@ -299,7 +299,24 @@ Or simply:
 
     grunt
 
-##Deploying evrythng.js to production
+##Deploying
+###Preparing for deployment
+To be able to deploy either to production or to the testing
+environments, you need to have a file name `aws-keys.json`
+with this content:
+
+  {
+    "AWSAccessKeyId": "aaaaaaaaaaaaaaaaaaaa",
+    "AWSSecretKey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  }
+
+Of course, you need to replace these fake keys with the real ones.
+Ask the Ops person.
+
+After that, you are ready for deployment.
+
+
+###Deploying to production
 To deploy `everythng.js` you can run:
 
     grunt deploy
@@ -307,10 +324,12 @@ To deploy `everythng.js` you can run:
 This task will build the library by actually calling `grunt build` and
 if everything is fine it will attempt to do the following:
 
-1) `git tag` the current state of the repo with the package version
+* `git tag` the current state of the repo with the package version
 that is indicated in the `package.json` file.
-2) Upload all the compiled files to the correct S3 bucket, from where 
+* Upload all the compiled files to the correct S3 bucket, from where 
 they will be copied to the CDN (Cloudfront).
+* `git push --tags` to push your latest commits to GitHub alongside
+the generated tag.
 
 Currently, there are 4 files being deployed:
 
@@ -346,8 +365,13 @@ There are several versions you can use `evrythng.js` for internal purposes.
     * Production
     * Demo
 
+If you prefer not to use any the deployment process or any of the
+deployed versions of `evrythng.js`, have a look at 
+[Instant development release](#instant_development_release) .
+
 ##Instant development release
-A good solution consists in the usage of `get-evrythngjs` script to instantly push the local modifications and copy the file from `evrythng-tools` into different locations.
+A good solution consists in the usage of `get-evrythngjs` script to instantly 
+push the local modifications and copy the file from `evrythng-tools` into different locations.
 
 * get-evrythngjs utility is available in evrythng-tools repository
 * Customize your file source and destinations by making a copy of get-evrythngjs.properties into your own get-evrythngjs.user.properties
@@ -356,28 +380,5 @@ A good solution consists in the usage of `get-evrythngjs` script to instantly pu
 * Alternatively use the "GetEvrythng Mac OS X" builder in Eclipse to call the script whenever the workspace is built
 
 
-##Updating the CDN with evrythng-js-sdk
-###Requirements
-This short section should outline the requirements of the reader to use the guide.
-Instructions
-Make sure you have versions the file, in the license  and evrythngtools_version var
-Logon to the jumpbox
-Make sure you have AWS KEYS in your env
-You can do this by running:-
-
-    bashton@live-ops-bashton11:/opt/evrythng/adm-scripts# export  | grep AWS
-    declare -x AWS_ACCESS_KEY="DSFSDFDSfsSD"
-    declare -x AWS_SECRET_KEY="FDEFWEfwefew"
-
-Kick Ben if nothing shows up, but in the mean time, input the KEYS yourself
-Go to /opt/evrythng/adm-scripts and run the script cp_evrythng-js-wrapper2cf.sh {env to deploy}  e.g.: /opt/evrythng/adm-scripts/cp_evrythng-js-wrapper2cf.sh demo
-Tips & Warnings
+##Tips & Warnings
 It costs a lot of money to invalidate content from CloudFront, dont go stupid with invalidations. 
-
-Deploying Demo evrythng.js
-Do a git push on the demo branch of https://github.com/evrythng/evrythng-js-sdk/ and it will appear here:-
-
-//evrythngjsdemo.s3.amazonaws.com/evrythng-$(git rev-list --count HEAD).js
-You will get a email to confirm this
-
-
