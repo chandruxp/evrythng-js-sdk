@@ -10,6 +10,7 @@
 
 module.exports = function (grunt) {
 
+
     // Load grunt tasks automatically
     require('load-grunt-tasks')(grunt);
 
@@ -18,6 +19,8 @@ module.exports = function (grunt) {
 
     // Define the configuration for all the tasks
     grunt.initConfig({
+
+        timestamp: Date.now() + '',
 
         // Read package.json
         pkg: grunt.file.readJSON('package.json'),
@@ -196,7 +199,19 @@ module.exports = function (grunt) {
                         dest: '<%= yeoman.dist %>/concatenated/evrythng.js'
                     }
                 ]
-            },
+            }
+
+            // demo: {
+            //     files: [
+            //         {
+            //             expand: true,
+            //             flatten: true,
+            //             filter: 'isFile',
+            //             src: '<%= yeoman.dist %>/**',
+            //             dest: '<%= yeoman.demo %>'
+            //         }
+            //     ]
+            // }
         },
 
         gittag: {
@@ -232,24 +247,25 @@ module.exports = function (grunt) {
             },
             demo: {
                 options: {
-                    bucket: 'evrythngjsdemo'
+                    bucket: 'evrythngjsdemo',
+                    // debug: true
                 },
                 files: [
                     {
-                        expand: true,
-                        cwd: '<%= yeoman.app %>',
-                        src: ['**'],
-                        // dest is for subfolders, so you don't need it here
-                        dest: '',
-                        filter: 'isFile'
+                        src: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js',
+                        dest: 'evrythng-<%= pkg.version %>-<%= timestamp %>.js'
+                    },
+                    {
+                        src: '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.min.js',
+                        dest: 'evrythng-<%= pkg.version %>-<%= timestamp %>.min.js'
                     }
                 ]
             },
             production: {
                 options: {
-                    // 'scanthngjs-dev' is a bucket for testing purposes
-                    // bucket: 'scanthngjs-dev',
-                    bucket: 'evtcdn'
+                    bucket: 'evtcdn',
+                    // Debug option is for testing purposes
+                    debug: true
                 },
                 files: [
                     {
@@ -347,6 +363,7 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('deploydemo', [
+        'default',
         'aws_s3:demo'
     ]);
 };
