@@ -29,7 +29,7 @@ describe('Prototype methods',function() {
         'search', 'checkin', 'scan', 'share',
         'authFacebook', 'authEvrythng', 'authEvrythngUser', 'authEvrythngUserValidate', 'authLogout',
         'createCollectionThng',
-        'readCollectionThng', 'updateCollectionThngProperty', 'updateCollectionThngLocation',
+        'readCollectionThng',
         'deleteCollectionThng', 'readUserStatus', 'updateUserStatus',
         'readAnalytics', 'createLoyaltyTransaction', 'createRedemption',
         'readLoyaltyStatus', 'readLoyaltyTransactions', 'createActionType',

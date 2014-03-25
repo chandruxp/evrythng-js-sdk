@@ -25,15 +25,7 @@ Evrythng = function(options) {
 };
 
 
-/*
-    Version
-*/
-Evrythng.prototype.version = '1.2.1';
-
-
-/*
-    Search
-*/
+// Search
 Evrythng.prototype.search = function(options, callback, errorHandler) {
     var self = this,
         query = {
@@ -651,27 +643,27 @@ Evrythng.prototype.readCollectionThng = function(options, callback, errorHandler
     }, callback, errorHandler);
 };
 
-
-Evrythng.prototype.updateCollectionThngProperty = function(options, callback, errorHandler) {
-    var self = this;
-    return self.request({
-        url: self.buildUrl('/collections/%s/thngs/%s/properties', options.collection, options.thng),
-        params: options.params || {},
-        data: options.data,
-        method: 'put'
-    }, callback, errorHandler);
-};
-
-
-Evrythng.prototype.updateCollectionThngLocation = function(options, callback, errorHandler) {
-    var self = this;
-    return self.request({
-        url: self.buildUrl('/collections/%s/thngs/%s/location', options.collection, options.thng),
-        params: options.params || {},
-        data: options.data,
-        method: 'put'
-    }, callback, errorHandler);
-};
+//
+// Evrythng.prototype.updateCollectionThngProperty = function(options, callback, errorHandler) {
+//     var self = this;
+//     return self.request({
+//         url: self.buildUrl('/collections/%s/thngs/%s/properties', options.collection, options.thng),
+//         params: options.params || {},
+//         data: options.data,
+//         method: 'put'
+//     }, callback, errorHandler);
+// };
+//
+//
+// Evrythng.prototype.updateCollectionThngLocation = function(options, callback, errorHandler) {
+//     var self = this;
+//     return self.request({
+//         url: self.buildUrl('/collections/%s/thngs/%s/location', options.collection, options.thng),
+//         params: options.params || {},
+//         data: options.data,
+//         method: 'put'
+//     }, callback, errorHandler);
+// };
 
 
 Evrythng.prototype.deleteCollectionThng = function(options, callback, errorHandler) {

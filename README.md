@@ -224,13 +224,100 @@ Example:
     onFinish            finish callback, arguments: public_url, size
     onError             error callback, arguments: error object
 
+#Developing evrythng.js
+##Grunt workflow
+To develop `evrythng.js` you need to use [Grunt](http://gruntjs.com).
+
+After you have cloned this repo, make sure the `grunt-cli` utility
+is installed in your system as a global node-module. You can
+install by issuing:
+
+    npm install grunt-cli -g
+
+Before you start coding, make sure you run: `npm install`  from the root folder 
+of your local copy of this repo to ensure you have all the necessary packages
+for the different development tasks.
+
+Please notice that every time you want to run a grunt command, you must do it
+from the terminal and, specifically, from the root folder of your local copy
+of this repository.
+
+##JSHint
+[JSHint](http://jshint.com) is a tool for detecting syntax errors and potential problems
+in your javascript files.
+
+The rules that are applied to this particular project are written in the `.jshintrc`
+file, which is in the root folder of this repo.
+
+You can run `grunt jshint` at any moment to verify that all your javascript
+files pass the syntax check.
+
+Currently (as of version 1.2.1) the `evrythng.js` files is not passing
+this check. Therefore, it has currently been excluded from being checked.
+However, the test specs (which are also javascript files) are 
+being checked.
+
+##Testing
+The current test collection requires the use of [Jasmine](http://jasmine.github.io)
+and [Sinon](http://sinonjs.org).
+
+You can run the full test collection against the current codebase by
+executing:
+
+    grunt jasmine
+
+You can also create a task that watches your javascript files (source files
+and test files) and runs the full test collection every time any of these
+files changes. To do that just run:
+
+    grunt watch:jstest
+
+##Building
+The `build` will create a new build of the library by executing the following
+subtasks in the proper order:
+
+* jshint
+* jasmine
+* concat (this concatenates the different source files, currently not necessary)
+* copy (makes a copy of the concatenaded file with no version in the filename)
+* uglify (makes minified copies of both concatenated files)
+
+As an additional step, The `concat` and `uglify` tasks add the necessary
+banners at the beginning of their output files.
+
+To invoke this task you can execute:
+
+    grunt build
+
+Or simply:
+
+    grunt
+
+##Deployment
+To deploy `everythng.js` you can run:
+
+    grunt deploy
+
+This task will build the library by actually calling `grunt build` and
+if everything is fine it will attempt to do the following:
+
+1) `git tag` the current state of the repo with the package version
+that is indicated in the `package.json` file.
+2) Upload all the compiled files to the correct S3 bucket, from where 
+they will be copied to the CDN (Cloudfront).
+
+Currently, there are 4 files being deployed:
+
+* evrythng.js
+* evrythng.min.js
+* evrythng-1.2.1.js
+* evrythng-1.2.1.min.js
+
 
 #Referring evrythng.js in projects
 
 ##Overview
-The javascript wrapper `evrythng.js` is under version control in `evrythng-tools` project.
-
-It needs to be referred from different projects, using different manners during development cycles of those projects.
+There are several versions you can use `evrythng.js` for internal purposes.
 
 * An instant local version can be used during development
 * The latest version available in github can be used for Test environments
