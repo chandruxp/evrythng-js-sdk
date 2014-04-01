@@ -25,9 +25,6 @@ module.exports = function (grunt) {
         // Read package.json
         pkg: grunt.file.readJSON('package.json'),
 
-        // Read aws-keys.json
-        aws: grunt.file.readJSON('aws-keys.json'),
-
         // Project settings
         yeoman: {
             // Configurable paths
@@ -330,6 +327,10 @@ module.exports = function (grunt) {
         grunt.task.run(['serve']);
     });
 
+    grunt.registerTask('load_aws_keys', function() {
+        grunt.config.set('aws', grunt.file.readJSON('aws-keys.json'));
+    });
+
     grunt.registerTask('test', function(target) {
         if (target !== 'watch') {
             grunt.task.run([
@@ -367,12 +368,14 @@ module.exports = function (grunt) {
         'default',
         'tag',
         'checkrepo:deploy',
+        'load_aws_keys',
         'aws_s3:production',
         'gitpush'
     ]);
 
     grunt.registerTask('deploydemo', [
         'default',
+        'load_aws_keys',
         'aws_s3:demo'
     ]);
 };
