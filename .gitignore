@@ -23,3 +23,5 @@ _SpecRunner.html
 .grunt
 aws-keys.json
 dist
+
+.idea/workspace.xml
