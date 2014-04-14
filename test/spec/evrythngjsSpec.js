@@ -10,6 +10,7 @@ describe('Prototype methods',function() {
     var entities = [
         'Application', 'Product', 'ProductProperty', 'ProductRedirector',
         'Thng', 'ThngProperty', 'ThngRedirector', 'ThngLocation',
+        'Collection', 'Place', 'Multimedia', 'PhysicalAsset',
         'User', 'UserSegment', 'Campaign', 'CampaignRule'
     ];
 
@@ -25,9 +26,20 @@ describe('Prototype methods',function() {
     }
 
     var otherMethods = [
-        'search', 'checkin', 'scan', 'share', 'createCollectionThng',
-        'readCollectionThng', 'updateCollectionThngProperty', 'updateCollectionThngLocation',
-        'deleteCollectionThng', 'readUserStatus', 'updateUserStatus'
+        'search', 'checkin', 'scan', 'share',
+        'authFacebook', 'authEvrythng', 'authEvrythngUser', 'authEvrythngUserValidate', 'authLogout',
+        'createCollectionThng',
+        'readCollectionThng',
+        'deleteCollectionThng', 'readUserStatus', 'updateUserStatus',
+        'readAnalytics', 'createLoyaltyTransaction', 'createRedemption',
+        'readLoyaltyStatus', 'readLoyaltyTransactions', 'createActionType',
+        'readActionTypes', 'readThngRedirectorQr', 'createCollectionThng',
+        'createAction', 'readAction', 'deleteAction',
+        'createCheckin', 'readCheckin', 'deleteCheckin',
+        'createScan', 'readScan', 'deleteScan',
+        'createShare', 'readShare', 'deleteShare',
+        'readFile', 'deleteFile',
+        'readFileSignature', 'updateCampaignOrder', 'updateCampaignRuleOrder'
     ];
 
     // Append methods that don't support all 4 CRUD actions to the list

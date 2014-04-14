@@ -10,6 +10,7 @@
 
 module.exports = function (grunt) {
 
+
     // Load grunt tasks automatically
     require('load-grunt-tasks')(grunt);
 
@@ -19,11 +20,10 @@ module.exports = function (grunt) {
     // Define the configuration for all the tasks
     grunt.initConfig({
 
+        timestamp: Date.now() + '',
+
         // Read package.json
         pkg: grunt.file.readJSON('package.json'),
-
-        // Read aws-keys.json
-        aws: grunt.file.readJSON('aws-keys.json'),
 
         // Project settings
         yeoman: {
@@ -143,6 +143,27 @@ module.exports = function (grunt) {
                 }
             }
         },
+
+        concat: {
+            options: {
+                separator: ';',
+                banner: '/*!\n' +
+                        ' * Client-side Javascript library to access Evrythng API v<%= pkg.version %>\n' +
+                        ' * https://github.com/evrythng/evrythng-java-sdk\n' +
+                        ' *\n' +
+                        ' * Copyright [<%= grunt.template.today("yyyy") %>] [EVRYTHNG Ltd. London / Zurich]\n' +
+                        ' *\n' +
+                        ' * Released under the http://www.apache.org/licenses/LICENSE-2.0\n' +
+                        ' * https://github.com/evrythng/evrythng-java-sdk/blob/master/LICENSE.txt\n' +
+                        ' */\n' +
+                        '\n'
+            },
+            dist: {
+                src: ['<%= yeoman.app %>/{,*/}*.js'],
+                dest: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js'
+            }
+        },
+
         uglify: {
             options: {
                 banner: '/*!\n' +
@@ -157,55 +178,119 @@ module.exports = function (grunt) {
                         '\n'
             },
             dist: {
-                files: [{
-                    expand: true,
-                    dot: true,
-                    cwd: '<%= yeoman.dist %>/concatenated',
-                    dest: '<%= yeoman.dist %>/minified',
-                    src: ['**/*.js']
-                }]
+                files: {
+                    '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.min.js': '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js'
+                }
             }
         },
-        concat: {
-            options: {
-                separator: ';'
-            },
-            dist: {
-                src: ['<%= yeoman.app %>/{,*/}*.js'],
-                dest: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js'
-            }
-        },
-
         // Copy last release as evrythng.js (aka "latest", aka "current")
         copy: {
             dist: {
-                files: [{
-                    src: '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.js',
-                    dest: '<%= yeoman.dist %>/minified/evrythng.js'
-                }]
-            },
+                files: [
+                    {
+                        src: '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.min.js',
+                        dest: '<%= yeoman.dist %>/minified/evrythng.min.js'
+                    },
+                    {
+                        src: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js',
+                        dest: '<%= yeoman.dist %>/concatenated/evrythng.js'
+                    }
+                ]
+            }
+
+            // demo: {
+            //     files: [
+            //         {
+            //             expand: true,
+            //             flatten: true,
+            //             filter: 'isFile',
+            //             src: '<%= yeoman.dist %>/**',
+            //             dest: '<%= yeoman.demo %>'
+            //         }
+            //     ]
+            // }
         },
 
+        gittag: {
+            task: {
+                options: {
+                    tag: 'v<%= pkg.version %>'
+                }
+            }
+        },
+
+        gitpush: {
+            task: {
+                options: {
+                    tags: true
+                }
+            }
+        },
+
+        checkrepo: {
+            // Check repo is clean before tagging
+            tag: {
+                clean: true,        // Check repo is clean
+            },
+            // Check repo is tagged and tag matches package
+            // version number before deploying
+            deploy: {
+                clean: true,        // Check repo is clean
+                tagged: true,       // Checks whether the last commit (HEAD) is tagged.
+                tag: {
+                    eq: '<%= pkg.version %>',    // Check if highest repo tag is equal to pkg.version
+                    valid: '<%= pkg.version %>', // Check if pkg.version is valid semantic version
+                }
+            }
+        },
+
+        // Deploy to AWS bucket
         aws_s3: {
             options: {
                 accessKeyId: '<%= aws.AWSAccessKeyId %>', // Use the variables
                 secretAccessKey: '<%= aws.AWSSecretKey %>', // You can also use env variables
             },
+            demo: {
+                options: {
+                    bucket: 'evrythngjsdemo',
+                    // debug: true
+                },
+                files: [
+                    {
+                        src: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js',
+                        dest: 'evrythng-<%= pkg.version %>-<%= timestamp %>.js'
+                    },
+                    {
+                        src: '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.min.js',
+                        dest: 'evrythng-<%= pkg.version %>-<%= timestamp %>.min.js'
+                    }
+                ]
+            },
             production: {
                 options: {
                     bucket: 'evtcdn',
+                    // Debug option is for testing purposes
+                    // debug: true
                 },
                 files: [
+                    {
+                        expand: true,
+                        cwd: '<%= yeoman.dist %>/concatenated',
+                        src: ['**'],
+                        dest: 'toolkit/evrythng-js-wrapper',
+                        filter: 'isFile'
+                    },
                     {
                         expand: true,
                         cwd: '<%= yeoman.dist %>/minified',
                         src: ['**'],
                         dest: 'toolkit/evrythng-js-wrapper',
                         filter: 'isFile'
-                    },
+                    }
                 ]
             }
         },
+
         docco: {
             app: {
                 src: ['<%= yeoman.app %>/{,*/}*.js']
@@ -242,6 +327,10 @@ module.exports = function (grunt) {
         grunt.task.run(['serve']);
     });
 
+    grunt.registerTask('load_aws_keys', function() {
+        grunt.config.set('aws', grunt.file.readJSON('aws-keys.json'));
+    });
+
     grunt.registerTask('test', function(target) {
         if (target !== 'watch') {
             grunt.task.run([
@@ -270,8 +359,23 @@ module.exports = function (grunt) {
         'build'
     ]);
 
+    grunt.registerTask('tag', [
+        'checkrepo:tag',
+        'gittag'
+    ]);
+
     grunt.registerTask('deploy', [
         'default',
-        'aws_s3'
+        'tag',
+        'checkrepo:deploy',
+        'load_aws_keys',
+        'aws_s3:production',
+        'gitpush'
+    ]);
+
+    grunt.registerTask('deploydemo', [
+        'default',
+        'load_aws_keys',
+        'aws_s3:demo'
     ]);
 };

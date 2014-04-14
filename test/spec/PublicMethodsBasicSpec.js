@@ -75,5 +75,17 @@ describe('Public methods behaviour',function() {
             evth.request.restore();
         });
     });
+
+    describe('the buildUrl method',function() {
+        it('builds a URL properly', function() {
+            var url = evth.buildUrl('aaa/%s','bbbb');
+            expect( url ).toBe('aaa/bbbb');
+        });
+        it('builds a URL properly', function() {
+            var url = evth.buildUrl('aaa/%s/bbbb/%s','cccc','dddd');
+            expect( url ).toBe('aaa/cccc/bbbb/dddd');
+        });
+    });
+
 });
 
