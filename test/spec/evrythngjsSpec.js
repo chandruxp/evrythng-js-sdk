@@ -11,7 +11,7 @@ describe('Prototype methods',function() {
         'Application', 'Product', 'ProductProperty', 'ProductRedirector',
         'Thng', 'ThngProperty', 'ThngRedirector', 'ThngLocation',
         'Collection', 'Place', 'Multimedia', 'PhysicalAsset',
-        'User', 'UserSegment', 'Campaign', 'CampaignRule'
+        'User', 'UserSegment', 'Campaign', 'CampaignRule', 'Moderation'
     ];
 
     // Build method names for entities with all 4 CRUD actions
@@ -39,7 +39,8 @@ describe('Prototype methods',function() {
         'createScan', 'readScan', 'deleteScan',
         'createShare', 'readShare', 'deleteShare',
         'readFile', 'deleteFile',
-        'readFileSignature', 'updateCampaignOrder', 'updateCampaignRuleOrder'
+        'readFileSignature', 'updateCampaignOrder', 'updateCampaignRuleOrder',
+        'getNextModeration'
     ];
 
     // Append methods that don't support all 4 CRUD actions to the list

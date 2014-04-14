@@ -1,6 +1,6 @@
 /*global Evrythng*/
 
-Evrythng = function(options) {
+var Evrythng = function(options) {
     this.options = {
         evrythngApiCorsUrl: 'https://api.evrythng.com',
         evrythngApiJsonpUrl: 'https://js-api.evrythng.com'
@@ -368,7 +368,7 @@ Evrythng.prototype.deleteProductRedirector = function(options, callback, errorHa
     var query = {
         url: self.buildUrl('/products/%s/redirector', options.product),
         params: options.params || {},
-        method: 'delete',
+        method: 'delete'
     };
     if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
     return self.request(query, callback, errorHandler);
@@ -554,7 +554,7 @@ Evrythng.prototype.deleteThngRedirector = function(options, callback, errorHandl
     return self.request({
         url: self.buildUrl('/thngs/%s/redirector', options.thng),
         params: options.params || {},
-        method: 'delete',
+        method: 'delete'
     }, callback, errorHandler);
 };
 
@@ -1066,6 +1066,70 @@ Evrythng.prototype.deleteMultimedia = function(options, callback, errorHandler) 
     }, callback, errorHandler);
 };
 
+
+/*
+ Moderation CRUD
+ */
+Evrythng.prototype.createModeration = function(options, callback, errorHandler) {
+  var self = this,
+    query = {
+      url: '/moderations',
+      params: options.params || {},
+      data: options.data,
+      method: 'post',
+      evrythngApiKey: options.evrythngApiKey
+    };
+  if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+  return self.request(query, callback, errorHandler);
+};
+
+Evrythng.prototype.readModeration = function(options, callback, errorHandler) {
+  var self = this,
+    query = {
+      url: options.moderation ? self.buildUrl('/moderations/%s', options.moderation) : '/moderations',
+      params: options.params || {},
+      evrythngApiKey: options.evrythngApiKey
+    };
+  if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+  return self.request(query, callback, errorHandler);
+};
+
+Evrythng.prototype.updateModeration = function(options, callback, errorHandler) {
+  var self = this,
+    query = {
+      url: self.buildUrl('/moderations/%s', options.moderation),
+      params: options.params || {},
+      data: options.data,
+      method: 'put',
+      evrythngApiKey: options.evrythngApiKey
+    };
+  if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+  return self.request(query, callback, errorHandler);
+};
+
+Evrythng.prototype.deleteModeration = function(options, callback, errorHandler) {
+  var self = this;
+  return self.request({
+    url: self.buildUrl('/moderations/%s', options.moderation),
+    params: options.params || {},
+    method: 'delete',
+    evrythngApiKey: options.evrythngApiKey
+  }, callback, errorHandler);
+};
+
+/*
+ Moderation Next
+ */
+Evrythng.prototype.getNextModeration = function(options, callback, errorHandler) {
+  var self = this,
+    query = {
+      url: '/moderations/next',
+      evrythngApiKey: options.evrythngApiKey,
+      method: 'put'
+    };
+  if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
+  return self.request(query, callback, errorHandler);
+};
 
 /*
     Physical Assets CRUD
@@ -1994,7 +2058,8 @@ Evrythng.prototype.getMimeType = function(ext) {
             'vob':v+'mpeg-system',
             'm4v':v+'x-m4v',
             'vlc':'application/x-vlc-plugin',
-            'amc':'application/x-mpeg'
+            'amc':'application/x-mpeg',
+            'hls':'application/x-mpegurl'
         };
     })()[ext];
 };
