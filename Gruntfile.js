@@ -219,6 +219,8 @@ module.exports = function (grunt) {
             }
         },
 
+        // Creates the gitpush task and ensures that the --tags flag is included
+        // so that any tag is also pushed to the remote
         gitpush: {
             task: {
                 options: {

@@ -310,8 +310,9 @@ with this content:
         "AWSSecretKey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }
 
-Of course, you need to replace these fake keys with the real ones.
-Ask the Ops person.
+Of course, you need to replace these fake keys with your own ones.
+You need to ask the ops person, as every developer needs to 
+have **their own keys**.
 
 After that, you are ready for deployment.
 
@@ -331,12 +332,18 @@ they will be copied to the CDN (Cloudfront).
 * `git push --tags` to push your latest commits to GitHub alongside
 the generated tag.
 
+Make sure you change the version number in the `package.json` file
+before deploying.
+
 Currently, there are 4 files being deployed:
 
     evrythng.js
     evrythng.min.js
     evrythng-1.2.1.js
     evrythng-1.2.1.min.js
+
+Where `1.2.1` will be replaced which whatever version number
+is in `package.json`.
 
 ###Deploying a demo version for testing purposes
 While in development, you can build and deploy `evrythng.js` 
