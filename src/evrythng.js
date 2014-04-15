@@ -1125,6 +1125,7 @@ Evrythng.prototype.getNextModeration = function(options, callback, errorHandler)
     query = {
       url: '/moderations/next',
       evrythngApiKey: options.evrythngApiKey,
+      params: options.params || {},
       method: 'put'
     };
   if (self.options.evrythngAppId) query.params.app = self.options.evrythngAppId;
