@@ -13,7 +13,7 @@ or a specific version
     
     http://cdn.evrythng.net/toolkit/evrythng-js-wrapper/evrythng-1.2.4.min.js
 
-for HTTPS support use: 
+for HTTPS support use 
 
     //d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng.min.js 
     
