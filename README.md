@@ -5,13 +5,17 @@ Client-side JavaScript library to access EVRYTHNG API.
 
 ## Use it from our CDN
 
-Simply reference 
+Simply reference the latest version
 
-    http://cdn.evrythng.net/toolkit/evrythng-js-wrapper/evrythng-1.2.1.min.js
+    http://cdn.evrythng.net/toolkit/evrythng-js-wrapper/evrythng.min.js
+    
+or a specific version 
+    
+    http://cdn.evrythng.net/toolkit/evrythng-js-wrapper/evrythng-1.2.4.min.js
 
 for HTTPS support use: 
 
-    //d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng-1.2.1.min.js 
+    //d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng.min.js 
     
 in your javascript code.
 
