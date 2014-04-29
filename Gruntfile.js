@@ -246,6 +246,12 @@ module.exports = function (grunt) {
             }
         },
 
+        // Read AWS environment variables (if available) into an object
+        aws: {
+            AWSAccessKeyId : process.env.AWS_ACCESS_KEY_ID,
+            AWSSecretKey : process.env.AWS_SECRET_KEY
+        },
+
         // Deploy to AWS bucket
         aws_s3: {
             options: {
@@ -330,7 +336,12 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('load_aws_keys', function() {
-        grunt.config.set('aws', grunt.file.readJSON('aws-keys.json'));
+        var key = grunt.config.get('aws.AWSAccessKeyId');
+        grunt.log.writeln('Env variable for AWS key : ', key);
+        if (!key) {
+            grunt.log.writeln('Try to load key from file "aws-keys.json"');
+            grunt.config.set('aws', grunt.file.readJSON('aws-keys.json'));
+        }
     });
 
     grunt.registerTask('test', function(target) {

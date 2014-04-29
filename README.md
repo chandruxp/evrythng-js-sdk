@@ -4,16 +4,23 @@ evrythng.js
 Client-side JavaScript library to access EVRYTHNG API.
 
 ## Use it from our CDN
+To add **evrythng.js** to your site, you can just use our CDN to serve the file by using a
+script tag like this:
 
-Simply reference 
+    <script src='//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng-1.2.3.min.js'></script>
 
-    http://cdn.evrythng.net/toolkit/evrythng-js-wrapper/evrythng-1.2.1.min.js
+Alternatively, you can download the library from 
+[the same URL](//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng-1.2.3.min.js)
+and serve it from your own server.
 
-for HTTPS support use: 
+Whatever version you are using, you can always find the latest version of evrythng.js at:
 
-    //d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng-1.2.1.min.js 
-    
-in your javascript code.
+    d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng.min.js
+
+But please be aware that we may introduce backwards incompatible changes into the 
+library now and then. So we do suggest that you use a numbered version of 
+**evrythng.js** in the production version of your apps.
+
 
 ## Initialization
 
@@ -302,7 +309,10 @@ Or simply:
 ##Deploying
 ###Preparing for deployment
 To be able to deploy either to production or to the testing
-environments, you need to have a file name `aws-keys.json`
+environments, you need to have the `AWS_ACCESS_KEY_ID` and
+`AWS_SECRET_KEY` environment variables properly set up.
+
+Alternatively you can have a file named `aws-keys.json`
 with this content:
 
     {
@@ -339,10 +349,10 @@ Currently, there are 4 files being deployed:
 
     evrythng.js
     evrythng.min.js
-    evrythng-1.2.1.js
-    evrythng-1.2.1.min.js
+    evrythng-1.2.3.js
+    evrythng-1.2.3.min.js
 
-Where `1.2.1` will be replaced which whatever version number
+Where `1.2.3` will be replaced which whatever version number
 is in `package.json`.
 
 ###Deploying a demo version for testing purposes
