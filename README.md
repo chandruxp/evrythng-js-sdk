@@ -21,7 +21,6 @@ But please be aware that we may introduce backwards incompatible changes into th
 library now and then. So we do suggest that you use a numbered version of 
 **evrythng.js** in the production version of your apps.
 
-
 ## Initialization
 
 Just create an instance of Evrythng class:
