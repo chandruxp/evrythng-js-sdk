@@ -249,18 +249,20 @@ module.exports = function (grunt) {
         // Read AWS environment variables (if available) into an object
         aws: {
             AWSAccessKeyId : process.env.AWS_ACCESS_KEY_ID,
-            AWSSecretKey : process.env.AWS_SECRET_KEY
+            AWSSecretKey : process.env.AWS_SECRET_KEY,
+            AWSProductionBucket: process.env.AWS_EVTHJS_PROD_BUCKET,
+            AWSDemoBucket: process.env.AWS_EVTHJS_DEMO_BUCKET
         },
 
         // Deploy to AWS bucket
         aws_s3: {
             options: {
-                accessKeyId: '<%= aws.AWSAccessKeyId %>', // Use the variables
-                secretAccessKey: '<%= aws.AWSSecretKey %>', // You can also use env variables
+                accessKeyId: '<%= aws.AWSAccessKeyId %>',
+                secretAccessKey: '<%= aws.AWSSecretKey %>'
             },
             demo: {
                 options: {
-                    bucket: 'evrythngjsdemo',
+                    bucket: '<%= aws.AWSDemoBucket %>',
                     // debug: true
                 },
                 files: [
@@ -276,7 +278,7 @@ module.exports = function (grunt) {
             },
             production: {
                 options: {
-                    bucket: 'evtcdn',
+                    bucket: '<%= aws.AWSProductionBucket %>',
                     // Debug option is for testing purposes
                     // debug: true
                 },
@@ -335,15 +337,6 @@ module.exports = function (grunt) {
         grunt.task.run(['serve']);
     });
 
-    grunt.registerTask('load_aws_keys', function() {
-        var key = grunt.config.get('aws.AWSAccessKeyId');
-        grunt.log.writeln('Env variable for AWS key : ', key);
-        if (!key) {
-            grunt.log.writeln('Try to load key from file "aws-keys.json"');
-            grunt.config.set('aws', grunt.file.readJSON('aws-keys.json'));
-        }
-    });
-
     grunt.registerTask('test', function(target) {
         if (target !== 'watch') {
             grunt.task.run([
@@ -381,14 +374,12 @@ module.exports = function (grunt) {
         'default',
         'tag',
         'checkrepo:deploy',
-        'load_aws_keys',
         'aws_s3:production',
         'gitpush'
     ]);
 
     grunt.registerTask('deploydemo', [
         'default',
-        'load_aws_keys',
         'aws_s3:demo'
     ]);
 };

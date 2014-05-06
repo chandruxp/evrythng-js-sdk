@@ -248,10 +248,6 @@ for the different development tasks.
 from the terminal and, specifically, from the root folder of your local copy
 of this repository.
 
-Also notice that if you need to deploy your changes, either to the production or
-to the testing S3 buckets, you will need to have the necessary AWS keys set up 
-properly (See [Preparing for Deployment](#preparing-for-deployment) ).
-
 ##JSHint
 [JSHint](http://jshint.com) is a tool for detecting syntax errors and potential problems
 in your javascript files.
@@ -304,97 +300,3 @@ To invoke this whole build process you can execute:
 Or simply:
 
     grunt
-
-##Deploying
-###Preparing for deployment
-To be able to deploy either to production or to the testing
-environments, you need to have the `AWS_ACCESS_KEY_ID` and
-`AWS_SECRET_KEY` environment variables properly set up.
-
-Alternatively you can have a file named `aws-keys.json`
-with this content:
-
-    {
-        "AWSAccessKeyId": "aaaaaaaaaaaaaaaaaaaa",
-        "AWSSecretKey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-    }
-
-Of course, you need to replace these fake keys with your own ones.
-You need to ask the ops person, as every developer needs to 
-have **their own keys**.
-
-After that, you are ready for deployment.
-
-
-###Deploying to production
-To deploy `everythng.js` you can run:
-
-    grunt deploy
-
-This task will build the library by actually calling `grunt build` and
-if everything is fine it will attempt to do the following:
-
-* `git tag` the current state of the repo with the package version
-that is indicated in the `package.json` file.
-* Upload all the compiled files to the correct S3 bucket, from where 
-they will be copied to the CDN (Cloudfront).
-* `git push --tags` to push your latest commits to GitHub alongside
-the generated tag.
-
-Make sure you change the version number in the `package.json` file
-before deploying.
-
-Currently, there are 4 files being deployed:
-
-    evrythng.js
-    evrythng.min.js
-    evrythng-1.2.3.js
-    evrythng-1.2.3.min.js
-
-Where `1.2.3` will be replaced which whatever version number
-is in `package.json`.
-
-###Deploying a demo version for testing purposes
-While in development, you can build and deploy `evrythng.js` 
-to a different S3 bucket for testing.
-
-For doing that, just execute:
-
-    grunt deploydemo
-
-After that, grunt will attempt to go through the same building 
-process as
-for the production deployment, but it will attempt to deploy 
-two files (one minified and one unminified) with a timestamp
-on their names so that they don't conflict with other demo
-versions in use and to `evrythngjsdemo.s3.amazon.com` instead
-of the production S3 bucket.
-
-
-#Referring evrythng.js in projects
-
-##Overview
-There are several ways you can use `evrythng.js` for internal purposes.
-
-* An instant local version can be used during development
-* Two kinds of released versions:
-    * Production
-    * Demo
-
-If you prefer not to use the deployment process or any of the
-deployed versions of `evrythng.js`, have a look at 
-[Instant development release](#instant-development-release) .
-
-##Instant development release
-A good solution consists in the usage of `get-evrythngjs` script to instantly 
-push the local modifications and copy the file from `evrythng-tools` into different locations.
-
-* get-evrythngjs utility is available in evrythng-tools repository
-* Customize your file source and destinations by making a copy of get-evrythngjs.properties into your own get-evrythngjs.user.properties
-* Run the script : java -jar get-evrythngjs nogui
-* Alternatively run the script in watcher mode. Any change will be automatically copied to the destination dirs : java -jar get-evrythngjs watch
-* Alternatively use the "GetEvrythng Mac OS X" builder in Eclipse to call the script whenever the workspace is built
-
-
-##Tips & Warnings
-It costs a lot of money to invalidate content from CloudFront, dont go stupid with invalidations. 
