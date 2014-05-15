@@ -7,10 +7,10 @@ Client-side JavaScript library to access EVRYTHNG API.
 To add **evrythng.js** to your site, you can just use our CDN to serve the file by using a
 script tag like this:
 
-    <script src='//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng-1.2.3.min.js'></script>
+    <script src='//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng-1.2.4.min.js'></script>
 
 Alternatively, you can download the library from 
-[the same URL](//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng-1.2.3.min.js)
+[the same URL](//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-wrapper/evrythng-1.2.4.min.js)
 and serve it from your own server.
 
 Whatever version you are using, you can always find the latest version of evrythng.js at:
