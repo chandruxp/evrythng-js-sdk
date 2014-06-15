@@ -1,29 +1,33 @@
-<!DOCTYPE html><html lang="en"><head><title>src/core</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/core"><meta name="groc-project-path" content="src/core.js"><meta name="groc-github-url" content="git://github.com/evrythng/evrythng-js-sdk.git"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="git://github.com/evrythng/evrythng-js-sdk.git/blob/master/src/core.js">src/core.js</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
+<!DOCTYPE html><html lang="en"><head><title>src/core</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/core"><meta name="groc-project-path" content="src/core.js"><meta name="groc-github-url" content="https://github.com/evrythng/evrythng-js-sdk"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/evrythng/evrythng-js-sdk/blob/master/src/core.js">src/core.js</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h2 id="corejs">CORE.JS</h2></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>The Core module specifies the core EVT module and the client
+default settings. The library is built by adding functionality or
+sub-modules to EVT.</strong></p></div></div><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
   <span class="s1">&#39;utils&#39;</span>
 <span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
-  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Private properties
-Version is udpated from package.json</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">version</span> <span class="o">=</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup default settings:
-- API URL: String, change the default API host
-- Async: Boolean, set to false to block UI during requests
-- FetchCascade: Boolean, set to true to automatically fetch nested entities
-- OnStartRequest: Function, run before each HTTP call (e.g. start Spinner)
-- OnFinishRequest: Function, run after each HTTP call
-- Geolocation: Boolean, true to ask for Geolocation when needed (e.g. actions)</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">defaultSettings</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Version is udpated from package.json using <code>grunt-version</code> on build.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">version</span> <span class="o">=</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup default settings:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li><strong><em>apiUrl</strong>: String - change the default API host</em></li>
+<li><strong><em>async</strong>: Boolean - set to false to make synchronous requests (blocks UI)</em></li>
+<li><strong><em>geolocation</strong>: Boolean - set to true to ask for Geolocation when needed</em></li>
+<li><strong><em>fetchCascade</strong>: Boolean - set to true to automagically fetch nested entities
+(e.g. thng.product is an EVT.Product instead of string id)</em></li>
+<li><strong><em>onStartRequest</strong>: Function - run before each HTTP call (e.g. start Spinner)</em></li>
+<li><strong><em>onFinishRequest</strong>: Function - run after each HTTP call</em></li>
+</ul></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">defaultSettings</span> <span class="o">=</span> <span class="p">{</span>
     <span class="nx">apiUrl</span><span class="o">:</span> <span class="s1">&#39;https://api.evrythng.com&#39;</span><span class="p">,</span>
     <span class="nx">async</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-    <span class="nx">fullResponse</span><span class="o">:</span> <span class="kc">false</span>
+    <span class="nx">fullResponse</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nx">geolocation</span><span class="o">:</span> <span class="kc">true</span>
     <span class="cm">/*fetchCascade: false,</span>
 <span class="cm">    onStartRequest: null,</span>
-<span class="cm">    onFinishRequest: null,</span>
-<span class="cm">    geolocation: true*/</span>
-  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Module definition and public API</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">EVT</span> <span class="o">=</span> <span class="p">{</span>
+<span class="cm">    onFinishRequest: null*/</span>
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Module definition and raw API.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">EVT</span> <span class="o">=</span> <span class="p">{</span>
     <span class="nx">version</span><span class="o">:</span> <span class="nx">version</span><span class="p">,</span>
 
-    <span class="nx">settings</span><span class="o">:</span> <span class="nx">defaultSettings</span><span class="p">,</span>
+    <span class="nx">settings</span><span class="o">:</span> <span class="nx">defaultSettings</span><span class="p">,</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup method allows the developer to change overall settings for every
+subsequent request. However, these can be overriden for each request as well.
+Setup merges current settings with the new custom ones.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">setup</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">customSettings</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="nx">setup</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span><span class="p">)){</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">settings</span> <span class="o">=</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">defaultSettings</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">customSettings</span><span class="p">)){</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">settings</span> <span class="o">=</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">settings</span><span class="p">,</span> <span class="nx">customSettings</span><span class="p">);</span>
       <span class="p">}</span><span class="k">else</span><span class="p">{</span>
         <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Setup should be called with an options object.&#39;</span><span class="p">);</span>
       <span class="p">}</span>
@@ -33,4 +37,5 @@ Version is udpated from package.json</p></div></div><div class="code"><div class
   <span class="p">};</span>
 
   <span class="k">return</span> <span class="nx">EVT</span><span class="p">;</span>
+
 <span class="p">});</span></div></div></div></div></body></html>

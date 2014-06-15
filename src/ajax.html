@@ -1,29 +1,53 @@
-<!DOCTYPE html><html lang="en"><head><title>src/ajax</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/ajax"><meta name="groc-project-path" content="src/ajax.js"><meta name="groc-github-url" content="git://github.com/evrythng/evrythng-js-sdk.git"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="git://github.com/evrythng/evrythng-js-sdk.git/blob/master/src/ajax.js">src/ajax.js</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
+<!DOCTYPE html><html lang="en"><head><title>src/ajax</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/ajax"><meta name="groc-project-path" content="src/ajax.js"><meta name="groc-github-url" content="https://github.com/evrythng/evrythng-js-sdk"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/evrythng/evrythng-js-sdk/blob/master/src/ajax.js">src/ajax.js</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h2 id="ajaxjs">AJAX.JS</h2></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>The Ajax module attaches the api() method to the EVT module.
+It controls the raw request to the API, first by trying a CORS
+request and if it fails, continuing with JSON-P.</strong></p></div></div><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
   <span class="s1">&#39;core&#39;</span><span class="p">,</span>
   <span class="s1">&#39;ajax/cors&#39;</span><span class="p">,</span>
   <span class="s1">&#39;ajax/jsonp&#39;</span><span class="p">,</span>
   <span class="s1">&#39;utils&#39;</span><span class="p">,</span>
   <span class="s1">&#39;logger&#39;</span>
-<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">corsRequest</span><span class="p">,</span> <span class="nx">jsonpRequest</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">,</span> <span class="nx">Logger</span><span class="p">)</span> <span class="p">{</span>
-  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>EVT.api interface:
-- EVT.api(obj)
-- EVT.api(obj, successCb, errorCb)</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">ajaxRequest</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Merge options with defaults</p></div></div><div class="code"><div class="wrapper">    <span class="kd">var</span> <span class="nx">requestOptions</span> <span class="o">=</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">cors</span><span class="p">,</span> <span class="nx">jsonp</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">,</span> <span class="nx">Logger</span><span class="p">)</span> <span class="p">{</span>
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The ajax() method or EVT.api() returns a <strong>Promise</strong>. Nevertheless,
+it still allows the old-styled callback API as follows:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li><strong><em>EVT.api(options)</strong> - options object can contain <code>success</code> or <code>error</code>
+properties to define success and error callbacks</em></li>
+<li><strong><em>EVT.api(options, successCb, errorCb)</em></strong></li>
+</ul></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Options available are:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><pre><code>fullResponse - override fullResponse global setting (see module `core`)
+async - override async global setting (see module `core`)
+url - URL of the request, relative to `EVT.settings.apiUrl`
+method - HTTP method, default: `GET`
+authorization - Authorization header content, should contain API Key
+success - success handler function
+error - error handler function
+</code></pre></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">ajax</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Merge options with defaults setup in EVT.settings.</p></div></div><div class="code"><div class="wrapper">    <span class="kd">var</span> <span class="nx">requestOptions</span> <span class="o">=</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
       <span class="nx">async</span><span class="o">:</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">async</span><span class="p">,</span>
       <span class="nx">fullResponse</span><span class="o">:</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">fullResponse</span>
     <span class="p">},</span> <span class="nx">options</span><span class="p">);</span>
 
-    <span class="nx">requestOptions</span><span class="p">.</span><span class="nx">url</span> <span class="o">=</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">apiUrl</span> <span class="o">+</span> <span class="nx">requestOptions</span><span class="p">.</span><span class="nx">url</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Returns the Promise or imediate response if async = false.
-Fallback to Jsonp.</p></div></div><div class="code"><div class="wrapper">    <span class="k">try</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">corsRequest</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
-    <span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">ex</span><span class="p">){</span>
-      <span class="k">if</span><span class="p">(</span><span class="nx">ex</span><span class="p">.</span><span class="nx">name</span> <span class="o">!=</span> <span class="s1">&#39;CorsError&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="nx">ex</span><span class="p">;</span> <span class="p">}</span>
+    <span class="nx">requestOptions</span><span class="p">.</span><span class="nx">url</span> <span class="o">=</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">apiUrl</span> <span class="o">+</span> <span class="nx">requestOptions</span><span class="p">.</span><span class="nx">url</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup callbacks giving priority to parameters.</p></div></div><div class="code"><div class="wrapper">    <span class="kd">var</span> <span class="nx">successCb</span><span class="p">,</span> <span class="nx">errorCb</span><span class="p">;</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">)){</span>
+      <span class="nx">successCb</span> <span class="o">=</span> <span class="nx">successCallback</span><span class="p">;</span>
+    <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">success</span><span class="p">)){</span>
+      <span class="nx">successCb</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">success</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">errorCallback</span><span class="p">)){</span>
+      <span class="nx">errorCb</span> <span class="o">=</span> <span class="nx">errorCallback</span><span class="p">;</span>
+    <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">error</span><span class="p">)){</span>
+      <span class="nx">errorCb</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">error</span><span class="p">;</span>
+    <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Returns a promise or imediate response if async = false.
+Try to use XmlHttpRequest with CORS and fallback to JSON-P.</p></div></div><div class="code"><div class="wrapper">    <span class="k">try</span> <span class="p">{</span>
+
+      <span class="k">return</span> <span class="nx">cors</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">successCb</span><span class="p">,</span> <span class="nx">errorCb</span><span class="p">);</span>
+
+    <span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">ex</span><span class="p">){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Re-throw error, if it is not a CORS problem.</p></div></div><div class="code"><div class="wrapper">      <span class="k">if</span><span class="p">(</span><span class="nx">ex</span><span class="p">.</span><span class="nx">name</span> <span class="o">!==</span> <span class="s1">&#39;CorsError&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="nx">ex</span><span class="p">;</span> <span class="p">}</span>
 
       <span class="nx">Logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s1">&#39;CORS not supported. Continuing with JSONP...&#39;</span><span class="p">);</span>
-      <span class="k">return</span> <span class="nx">jsonpRequest</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">jsonp</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">successCb</span><span class="p">,</span> <span class="nx">errorCb</span><span class="p">);</span>
     <span class="p">}</span>
-  <span class="p">}</span>
-
-  <span class="nx">EVT</span><span class="p">.</span><span class="nx">api</span> <span class="o">=</span> <span class="nx">ajaxRequest</span><span class="p">;</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Attach ajax method to the EVT module.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">EVT</span><span class="p">.</span><span class="nx">api</span> <span class="o">=</span> <span class="nx">ajax</span><span class="p">;</span>
 
   <span class="k">return</span> <span class="nx">EVT</span><span class="p">;</span>
+
 <span class="p">});</span></div></div></div></div></body></html>
