@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="en"><head><title>src/authentication</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/authentication"><meta name="groc-project-path" content="src/authentication.js"><meta name="groc-github-url" content="git://github.com/evrythng/evrythng-js-sdk.git"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="git://github.com/evrythng/evrythng-js-sdk.git/blob/master/src/authentication.js">src/authentication.js</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
+  <span class="s1">&#39;core&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;rsvp&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;social/facebook&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;utils&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;ajax&#39;</span>
+<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">RSVP</span><span class="p">,</span> <span class="nx">Facebook</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Login into Evryhtng. Accepts:
+- login('facebook')
+- login('facebook', 'email,user_birthday')
+- login({email/id: "", password: ""})</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">login</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">customOptions</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">successCb</span> <span class="o">=</span> <span class="nx">successCallback</span><span class="p">,</span>
+      <span class="nx">errorCb</span> <span class="o">=</span> <span class="nx">errorCallback</span><span class="p">;</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">type</span><span class="p">){</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Credentials (for Evrythng) or type (for Third party) are missing.&#39;</span><span class="p">);</span>
+    <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Authenticate using third parties</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">type</span><span class="p">)){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>login with facebook</p></div></div><div class="code"><div class="wrapper">      <span class="k">if</span><span class="p">(</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;facebook&#39;</span><span class="p">){</span>
+        <span class="k">return</span> <span class="nx">_loginFacebook</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">customOptions</span><span class="p">,</span> <span class="nx">successCb</span><span class="p">,</span> <span class="nx">errorCb</span><span class="p">);</span>
+
+      <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;evrythng&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">_loginEvrythng</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">customOptions</span><span class="p">,</span> <span class="nx">successCb</span><span class="p">,</span> <span class="nx">errorCb</span><span class="p">);</span>
+      <span class="p">}</span>
+
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Evrythng login does not need first param - default method.
+Call AuthEvrythng with shifted arguments.</p></div></div><div class="code"><div class="wrapper">      <span class="k">return</span> <span class="nx">_loginEvrythng</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">customOptions</span><span class="p">,</span> <span class="nx">successCb</span><span class="p">);</span>
+
+    <span class="p">}</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Login with Facebook. Custom Options are optional.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">_loginFacebook</span><span class="p">(</span><span class="nx">customOptions</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span><span class="nx">scope</span><span class="o">:</span> <span class="s1">&#39;email&#39;</span><span class="p">},</span>
+      <span class="nx">$this</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">customOptions</span><span class="p">)</span> <span class="o">||</span> <span class="nx">customOptions</span> <span class="o">===</span> <span class="kc">null</span><span class="p">){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If there are no customOptions, first param can be callback</p></div></div><div class="code"><div class="wrapper">      <span class="kd">var</span> <span class="nx">temp</span> <span class="o">=</span> <span class="nx">successCallback</span><span class="p">;</span>
+      <span class="nx">successCallback</span> <span class="o">=</span> <span class="nx">customOptions</span><span class="p">;</span>
+      <span class="nx">errorCallback</span> <span class="o">=</span> <span class="nx">temp</span><span class="p">;</span>
+
+    <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">customOptions</span><span class="p">)){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If customOptions is object, use this instead of the defaults</p></div></div><div class="code"><div class="wrapper">      <span class="nx">options</span> <span class="o">=</span> <span class="nx">customOptions</span><span class="p">;</span>
+
+    <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Return promise and resolve only once authenticated with EVRYTHNG</p></div></div><div class="code"><div class="wrapper">    <span class="k">return</span> <span class="k">new</span> <span class="nx">RSVP</span><span class="p">.</span><span class="nx">Promise</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Login using Facebook with options above</p></div></div><div class="code"><div class="wrapper">      <span class="nx">Facebook</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="nx">options</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">userResponse</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If successful, authenticate with Evrythng
+and apply successCb and resolve promise</p></div></div><div class="code"><div class="wrapper">        <span class="nx">authFb</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">userResponse</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">fullResponse</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">successCallback</span><span class="p">)</span> <span class="p">{</span> <span class="nx">successCallback</span><span class="p">(</span><span class="nx">fullResponse</span><span class="p">);}</span>
+          <span class="nx">resolve</span><span class="p">(</span><span class="nx">fullResponse</span><span class="p">);</span>
+        <span class="p">});</span>
+
+      <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Login was not successful, apply errorCb and reject promise</p></div></div><div class="code"><div class="wrapper">        <span class="k">if</span> <span class="p">(</span><span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span> <span class="nx">errorCallback</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span> <span class="p">}</span>
+        <span class="nx">reject</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+
+      <span class="p">});</span>
+
+    <span class="p">});</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Login with Evrythng</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">_loginEvrythng</span><span class="p">(</span><span class="nx">credentials</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">credentials</span> <span class="o">||</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">credentials</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Credentials are missing.&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">_authEvrythng</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">credentials</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">userResponse</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Login was successful, apply callback and return promise value</p></div></div><div class="code"><div class="wrapper">      <span class="k">if</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">)</span> <span class="p">{</span> <span class="nx">successCallback</span><span class="p">(</span><span class="nx">userResponse</span><span class="p">);</span> <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">userResponse</span><span class="p">;</span>
+
+    <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Login was not successful, call error callback and pass error</p></div></div><div class="code"><div class="wrapper">      <span class="k">if</span><span class="p">(</span><span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span> <span class="nx">errorCallback</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span> <span class="p">}</span>
+      <span class="k">throw</span> <span class="nx">response</span><span class="p">;</span>
+
+    <span class="p">});</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Send authenticaiton request with FB token</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">authFb</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">$this</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">api</span><span class="p">({</span>
+      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/auth/facebook&#39;</span><span class="p">,</span>
+      <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;post&#39;</span><span class="p">,</span>
+      <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">access</span><span class="o">:</span> <span class="p">{</span>
+          <span class="nx">token</span><span class="o">:</span> <span class="nx">response</span><span class="p">.</span><span class="nx">authResponse</span><span class="p">.</span><span class="nx">accessToken</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="nx">authorization</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">apiKey</span>
+    <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">access</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Create User Scope</p></div></div><div class="code"><div class="wrapper">      <span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">User</span><span class="p">({</span>
+        <span class="nx">id</span><span class="o">:</span> <span class="nx">access</span><span class="p">.</span><span class="nx">evrythngUser</span><span class="p">,</span>
+        <span class="nx">apiKey</span><span class="o">:</span> <span class="nx">access</span><span class="p">.</span><span class="nx">evrythngApiKey</span>
+      <span class="p">},</span> <span class="nx">$this</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Prepare resolve object. Move facebook user data
+to 'user.facebook' object</p></div></div><div class="code"><div class="wrapper">      <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="p">{</span> <span class="nx">facebook</span><span class="o">:</span> <span class="nx">response</span><span class="p">.</span><span class="nx">user</span> <span class="p">},</span> <span class="kc">true</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">user</span> <span class="o">=</span> <span class="nx">user</span><span class="p">;</span>
+
+      <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Send authentication request using evrythng</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">_authEvrythng</span><span class="p">(</span><span class="nx">credentials</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">$this</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Login with Evrythng, credentials contain user (id or email) and password</p></div></div><div class="code"><div class="wrapper">    <span class="k">return</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">api</span><span class="p">({</span>
+      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/auth/evrythng&#39;</span><span class="p">,</span>
+      <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;post&#39;</span><span class="p">,</span>
+      <span class="nx">data</span><span class="o">:</span> <span class="nx">credentials</span><span class="p">,</span>
+      <span class="nx">authorization</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">apiKey</span>
+    <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">access</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">return</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">api</span><span class="p">({</span>
+        <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/users/&#39;</span> <span class="o">+</span> <span class="nx">access</span><span class="p">.</span><span class="nx">evrythngUser</span><span class="p">,</span>
+        <span class="nx">authorization</span><span class="o">:</span> <span class="nx">$this</span><span class="p">.</span><span class="nx">apiKey</span>
+      <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">userInfo</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">userObj</span> <span class="o">=</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">userInfo</span><span class="p">,</span> <span class="p">{</span>
+          <span class="nx">id</span><span class="o">:</span> <span class="nx">access</span><span class="p">.</span><span class="nx">evrythngUser</span><span class="p">,</span>
+          <span class="nx">apiKey</span><span class="o">:</span> <span class="nx">access</span><span class="p">.</span><span class="nx">evrythngApiKey</span>
+        <span class="p">});</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Create User Scope</p></div></div><div class="code"><div class="wrapper">        <span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">User</span><span class="p">(</span><span class="nx">userObj</span><span class="p">,</span> <span class="nx">$this</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="p">{</span> <span class="nx">user</span><span class="o">:</span> <span class="nx">user</span> <span class="p">};</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Logout from Evrythng</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">logout</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">type</span> <span class="o">&amp;&amp;</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">type</span><span class="p">)){</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;facebook&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">_logoutFacebook</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
+
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;evrythng&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">_logoutEvrythng</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
+      <span class="p">}</span>
+
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+      <span class="k">return</span> <span class="nx">_logoutEvrythng</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">);</span>
+    <span class="p">}</span>
+
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">_logoutFacebook</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">$this</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Login using Facebook with options above</p></div></div><div class="code"><div class="wrapper">    <span class="k">return</span> <span class="nx">Facebook</span><span class="p">.</span><span class="nx">logout</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If successful, logout of Evrythng and resolve/reject promise</p></div></div><div class="code"><div class="wrapper">      <span class="k">return</span> <span class="nx">_logoutEvrythng</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
+
+    <span class="p">});</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">_logoutEvrythng</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">return</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">api</span><span class="p">({</span>
+      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/auth/all/logout&#39;</span><span class="p">,</span>
+      <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;post&#39;</span><span class="p">,</span>
+      <span class="nx">authorization</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">apiKey</span>
+
+    <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">)</span> <span class="p">{</span> <span class="nx">successCallback</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span> <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+
+    <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span> <span class="nx">errorCallback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span> <span class="p">}</span>
+      <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+
+
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">login</span><span class="o">:</span> <span class="nx">login</span><span class="p">,</span>
+    <span class="nx">logout</span><span class="o">:</span> <span class="nx">logout</span><span class="p">,</span>
+    <span class="nx">authFb</span><span class="o">:</span> <span class="nx">authFb</span>
+  <span class="p">};</span>
+<span class="p">});</span></div></div></div></div></body></html>

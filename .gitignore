@@ -1,0 +1,13 @@
+bower_components/
+node_modules/
+test/results
+
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+
+.idea/

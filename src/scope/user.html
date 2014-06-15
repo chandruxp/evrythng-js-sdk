@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en"><head><title>src/scope/user</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../"><meta name="groc-document-path" content="src/scope/user"><meta name="groc-project-path" content="src/scope/user.js"><meta name="groc-github-url" content="git://github.com/evrythng/evrythng-js-sdk.git"><link rel="stylesheet" type="text/css" media="all" href="../../assets/style.css"><script type="text/javascript" src="../../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="git://github.com/evrythng/evrythng-js-sdk.git/blob/master/src/scope/user.js">src/scope/user.js</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
+  <span class="s1">&#39;../core&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;./scope&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;entity/product&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;entity/thng&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;entity/action&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;entity/appUser&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;entity/collection&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;authentication&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;utils&#39;</span>
+<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Scope</span><span class="p">,</span> <span class="nx">Product</span><span class="p">,</span> <span class="nx">Thng</span><span class="p">,</span> <span class="nx">Action</span><span class="p">,</span> <span class="nx">AppUser</span><span class="p">,</span> <span class="nx">Collection</span><span class="p">,</span> <span class="nx">Authentication</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>User Scope constructor
+- obj contains user information</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">UserScope</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">parentScope</span><span class="p">){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup base Scope</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">obj</span><span class="p">)){</span>
+      <span class="nx">Scope</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">apiKey</span><span class="p">);</span>
+      <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">obj</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+      <span class="nx">Scope</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">obj</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">parentScope</span> <span class="k">instanceof</span> <span class="nx">Scope</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">parentScope</span> <span class="o">=</span> <span class="nx">parentScope</span><span class="p">;</span>
+    <span class="p">}</span>
+
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>setup inheritance</p></div></div><div class="code"><div class="wrapper">  <span class="nx">UserScope</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Scope</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
+  <span class="nx">UserScope</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">UserScope</span><span class="p">;</span>
+
+
+  <span class="kd">function</span> <span class="nx">search</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{};</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">query</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">params</span><span class="p">.</span><span class="nx">q</span> <span class="o">=</span> <span class="nx">query</span><span class="p">;</span>
+      <span class="nx">params</span> <span class="o">=</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">params</span> <span class="o">=</span> <span class="nx">query</span><span class="p">;</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">api</span><span class="p">({</span>
+      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/search&#39;</span><span class="p">,</span>
+      <span class="nx">params</span><span class="o">:</span> <span class="nx">params</span><span class="p">,</span>
+      <span class="nx">authorization</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">apiKey</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">update</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">$this</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span>
+      <span class="nx">self</span> <span class="o">=</span> <span class="nx">AppUser</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">().</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">arguments</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">updated</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">updated</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">updated</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Implement Public API</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">UserScope</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+
+    <span class="nx">product</span><span class="o">:</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
+
+    <span class="nx">action</span><span class="o">:</span> <span class="nx">Action</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
+
+    <span class="nx">thng</span><span class="o">:</span> <span class="nx">Thng</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">(),</span>
+
+    <span class="nx">collection</span><span class="o">:</span> <span class="nx">Collection</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
+
+    <span class="nx">logout</span><span class="o">:</span> <span class="nx">Authentication</span><span class="p">.</span><span class="nx">logout</span><span class="p">,</span>
+
+    <span class="nx">search</span><span class="o">:</span> <span class="nx">search</span><span class="p">,</span>
+
+    <span class="nx">update</span><span class="o">:</span> <span class="nx">update</span>
+
+  <span class="p">},</span> <span class="kc">true</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Attach class</p></div></div><div class="code"><div class="wrapper">  <span class="nx">EVT</span><span class="p">.</span><span class="nx">User</span> <span class="o">=</span> <span class="nx">UserScope</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="nx">EVT</span><span class="p">;</span>
+<span class="p">});</span></div></div></div></div></body></html>
