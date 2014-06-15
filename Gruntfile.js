@@ -1,385 +1,270 @@
-// Generated on 2014-02-06 using generator-webapp 0.4.7
-/*jshint camelcase: false*/
 'use strict';
 
-// # Globbing
-// for performance reasons we're only matching one level down:
-// 'test/spec/{,*/}*.js'
-// use this if you want to recursively match all subfolders:
-// 'test/spec/**/*.js'
+module.exports = function(grunt) {
 
-module.exports = function (grunt) {
+  require('load-grunt-tasks')(grunt);
+
+  var banner = '// EVRYTHNG JS SDK v<%= pkg.version %>\n' +
+    '\n' +
+    '// (c) 2012-<%= grunt.template.today("yyyy") %> EVRYTHNG Ltd. London / New York / Zurich.\n' +
+    '// Released under the Apache Software License, Version 2.0.\n' +
+    '// For all details and usage:\n' +
+    '// https://github.com/evrythng/evrythng-js-sdk.\n' +
+    '\n';
 
 
-    // Load grunt tasks automatically
-    require('load-grunt-tasks')(grunt);
+  grunt.initConfig({
 
-    // Time how long tasks take. Can help when optimizing build times
-    require('time-grunt')(grunt);
+    pkg: grunt.file.readJSON('package.json'),
 
-    // Define the configuration for all the tasks
-    grunt.initConfig({
+    clean: {
+      dist: ['dist'],
+      build: ['dist/build.txt', 'dist/versioned']
+    },
 
-        timestamp: Date.now() + '',
+    // Update version in Core
+    version: {
+      defaults: {
+        src: ['src/core.js', 'bower.json']
+      }
+    },
 
-        // Read package.json
-        pkg: grunt.file.readJSON('package.json'),
-
-        // Project settings
-        yeoman: {
-            // Configurable paths
-            app: 'src',
-            dist: 'dist'
-        },
-
-        // Watches files for changes and runs tasks based on the changed files
-        watch: {
-            js: {
-                files: ['<%= yeoman.app %>/{,*/}*.js'],
-                tasks: ['jshint'],
-                options: {
-                    livereload: true
-                }
-            },
-            jstest: {
-                files: ['test/spec/{,*/}*.js'],
-                tasks: ['test:watch']
-            },
-            gruntfile: {
-                files: ['Gruntfile.js']
-            },
-            styles: {
-                files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
-                tasks: ['newer:copy:styles', 'autoprefixer']
-            },
-            livereload: {
-                options: {
-                    livereload: '<%= connect.options.livereload %>'
-                },
-                files: [
-                    '<%= yeoman.app %>/{,*/}*.html',
-                    '.tmp/styles/{,*/}*.css',
-                    '<%= yeoman.app %>/images/{,*/}*.{gif,jpeg,jpg,png,svg,webp}'
-                ]
+    // build evrythng.js files from RequireJS modules
+    requirejs: {
+      compile: {
+        options: {
+          appDir: "src",
+          baseUrl: ".",
+          dir: "dist",
+          modules: [
+            {
+              name: 'evrythng',
+              include: ["almond","rsvp"]
             }
-        },
-
-        // The actual grunt server settings
-        connect: {
-            options: {
-                port: 9000,
-                livereload: 35729,
-                // Change this to '0.0.0.0' to access the server from outside
-                hostname: 'localhost'
-            },
-            livereload: {
-                options: {
-                    open: true,
-                    base: [
-                        '.tmp',
-                        '<%= yeoman.app %>'
-                    ]
-                }
-            },
-            test: {
-                options: {
-                    port: 9001,
-                    base: [
-                        '.tmp',
-                        'test',
-                        '<%= yeoman.app %>'
-                    ]
-                }
-            },
-            dist: {
-                options: {
-                    open: true,
-                    base: '<%= yeoman.dist %>',
-                    livereload: false
-                }
-            }
-        },
-
-        // Empties folders to start fresh
-        clean: {
-            dist: {
-                files: [{
-                    dot: true,
-                    src: [
-                        '.tmp',
-                        '<%= yeoman.dist %>/*',
-                        '!<%= yeoman.dist %>/.git*'
-                    ]
-                }]
-            },
-            server: '.tmp'
-        },
-
-        // Make sure code styles are up to par and there are no obvious mistakes
-        jshint: {
-            options: {
-                jshintrc: '.jshintrc',
-                reporter: require('jshint-stylish')
-            },
-            all: [
-                'Gruntfile.js',
-                //TODO: Improve evrythng.js code so that we can use jshint on it
-                '!<%= yeoman.app %>/{,*/}*.js',
-                '!<%= yeoman.app %>/vendor/*',
-                'test/spec/{,*/}*.js'
-            ]
-        },
-
-        // Jasmine testing framework configuration options
-        jasmine: {
-            all: {
-                src: ['src/vendor/*.js', 'src/*.js', 'src/bower_components/jquery/jquery.js'],
-                options: {
-                    summary: true,
-                    display: 'short',
-                    keepRunner: true,
-                    specs: 'test/spec/*Spec.js',
-                    helpers: ['test/*Helper.js', 'test/lib/*.js']
-                }
-            }
-        },
-
-        concat: {
-            options: {
-                separator: ';',
-                banner: '/*!\n' +
-                        ' * Client-side Javascript library to access Evrythng API v<%= pkg.version %>\n' +
-                        ' * https://github.com/evrythng/evrythng-java-sdk\n' +
-                        ' *\n' +
-                        ' * Copyright [<%= grunt.template.today("yyyy") %>] [EVRYTHNG Ltd. London / Zurich]\n' +
-                        ' *\n' +
-                        ' * Released under the http://www.apache.org/licenses/LICENSE-2.0\n' +
-                        ' * https://github.com/evrythng/evrythng-java-sdk/blob/master/LICENSE.txt\n' +
-                        ' */\n' +
-                        '\n'
-            },
-            dist: {
-                src: ['<%= yeoman.app %>/{,*/}*.js'],
-                dest: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js'
-            }
-        },
-
-        uglify: {
-            options: {
-                banner: '/*!\n' +
-                        ' * Client-side Javascript library to access Evrythng API v<%= pkg.version %>\n' +
-                        ' * https://github.com/evrythng/evrythng-java-sdk\n' +
-                        ' *\n' +
-                        ' * Copyright [<%= grunt.template.today("yyyy") %>] [EVRYTHNG Ltd. London / Zurich]\n' +
-                        ' *\n' +
-                        ' * Released under the http://www.apache.org/licenses/LICENSE-2.0\n' +
-                        ' * https://github.com/evrythng/evrythng-java-sdk/blob/master/LICENSE.txt\n' +
-                        ' */\n' +
-                        '\n'
-            },
-            dist: {
-                files: {
-                    '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.min.js': '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js'
-                }
-            }
-        },
-        // Copy last release as evrythng.js (aka "latest", aka "current")
-        copy: {
-            dist: {
-                files: [
-                    {
-                        src: '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.min.js',
-                        dest: '<%= yeoman.dist %>/minified/evrythng.min.js'
-                    },
-                    {
-                        src: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js',
-                        dest: '<%= yeoman.dist %>/concatenated/evrythng.js'
-                    }
-                ]
-            }
-
-            // demo: {
-            //     files: [
-            //         {
-            //             expand: true,
-            //             flatten: true,
-            //             filter: 'isFile',
-            //             src: '<%= yeoman.dist %>/**',
-            //             dest: '<%= yeoman.demo %>'
-            //         }
-            //     ]
-            // }
-        },
-
-        gittag: {
-            task: {
-                options: {
-                    tag: 'v<%= pkg.version %>'
-                }
-            }
-        },
-
-        // Creates the gitpush task and ensures that the --tags flag is included
-        // so that any tag is also pushed to the remote
-        gitpush: {
-            task: {
-                options: {
-                    tags: true
-                }
-            }
-        },
-
-        checkrepo: {
-            // Check repo is clean before tagging
-            tag: {
-                clean: true,        // Check repo is clean
-            },
-            // Check repo is tagged and tag matches package
-            // version number before deploying
-            deploy: {
-                clean: true,        // Check repo is clean
-                tagged: true,       // Checks whether the last commit (HEAD) is tagged.
-                tag: {
-                    eq: '<%= pkg.version %>',    // Check if highest repo tag is equal to pkg.version
-                    valid: '<%= pkg.version %>', // Check if pkg.version is valid semantic version
-                }
-            }
-        },
-
-        // Read AWS environment variables (if available) into an object
-        aws: {
-            AWSAccessKeyId : process.env.AWS_ACCESS_KEY_ID,
-            AWSSecretKey : process.env.AWS_SECRET_KEY,
-            AWSProductionBucket: process.env.AWS_EVTHJS_PROD_BUCKET,
-            AWSDemoBucket: process.env.AWS_EVTHJS_DEMO_BUCKET
-        },
-
-        // Deploy to AWS bucket
-        aws_s3: {
-            options: {
-                accessKeyId: '<%= aws.AWSAccessKeyId %>',
-                secretAccessKey: '<%= aws.AWSSecretKey %>'
-            },
-            demo: {
-                options: {
-                    bucket: '<%= aws.AWSDemoBucket %>',
-                    // debug: true
-                },
-                files: [
-                    {
-                        src: '<%= yeoman.dist %>/concatenated/evrythng-<%= pkg.version %>.js',
-                        dest: 'evrythng-<%= pkg.version %>-<%= timestamp %>.js'
-                    },
-                    {
-                        src: '<%= yeoman.dist %>/minified/evrythng-<%= pkg.version %>.min.js',
-                        dest: 'evrythng-<%= pkg.version %>-<%= timestamp %>.min.js'
-                    }
-                ]
-            },
-            production: {
-                options: {
-                    bucket: '<%= aws.AWSProductionBucket %>',
-                    // Debug option is for testing purposes
-                    // debug: true
-                },
-                files: [
-                    {
-                        expand: true,
-                        cwd: '<%= yeoman.dist %>/concatenated',
-                        src: ['**'],
-                        dest: 'toolkit/evrythng-js-wrapper',
-                        filter: 'isFile'
-                    },
-                    {
-                        expand: true,
-                        cwd: '<%= yeoman.dist %>/minified',
-                        src: ['**'],
-                        dest: 'toolkit/evrythng-js-wrapper',
-                        filter: 'isFile'
-                    }
-                ]
-            }
-        },
-
-        docco: {
-            app: {
-                src: ['<%= yeoman.app %>/{,*/}*.js']
-            }
-        },
-
-        // Run some tasks in parallel to speed up build process
-        concurrent: {
-            server: [
-            ],
-            test: [
-            ],
-            dist: [
-            ]
+          ],
+          paths: {
+            rsvp: "../lib/rsvp",
+            almond: "../tools/almond"
+          },
+          wrap: {
+            "start": banner + grunt.file.read("tools/wrap.start.js"),
+            "endFile": "tools/wrap.end.js"
+          },
+          removeCombined: true,
+          // don't optimize now.. we'll do it after with uglify
+          optimize: "none",
+          normalizeDirDefines: "all"
         }
-    });
+      }
+    },
 
+    // Create the anotated source code
+    groc: {
+      javascript: [
+        "src/**/*.js"
+      ],
+      options: {
+        out: "docs/",
+        //github: true,
+        'repository-url': '<%= pkg.repository.url %>',
+        index: 'src/evrythng.js'
+      }
+    },
 
-    grunt.registerTask('serve', function (target) {
-        if (target === 'dist') {
-            return grunt.task.run(['build', 'connect:dist:keepalive']);
+    // Minimize the file and create source maps
+    uglify: {
+      options: {
+        sourceMap: true,
+        report: 'gzip'
+      },
+      dist: {
+        files: {
+          'dist/evrythng.min.js': ["dist/evrythng.js"]
         }
+      }
+    },
 
-        grunt.task.run([
-            'clean:server',
-            'concurrent:server',
-            'connect:livereload',
-            'watch'
-        ]);
-    });
-
-    grunt.registerTask('server', function () {
-        grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-        grunt.task.run(['serve']);
-    });
-
-    grunt.registerTask('test', function(target) {
-        if (target !== 'watch') {
-            grunt.task.run([
-                'clean:server',
-                'concurrent:test'
-            ]);
+    karma: {
+      unit: {
+        options: {
+          configFile: 'karma.conf.js',
+          singleRun: true
         }
+      },
+      dist: {
+        options:{
+          configFile: 'karma.conf-dist.js'
+        },
+        browserAMD:{
+          // configFile is already prepared for AMD
+        },
+        browserGlobals: {
+          frameworks: ['jasmine'],
+          files: [
+            'dist/*.min.js',
+            'test/*DistSpec.js'
+          ]
+        }
+      },
+      sauce: {
+        options: {
+          configFile: 'karma.conf-sauce.js'
+        }
+      }
+    },
 
-        grunt.task.run([
-            'connect:test',
-            'jasmine'
-        ]);
-    });
+    jasmine_node: {
+      options: {
+        specNameMatcher: 'DistSpec'
+      },
+      all: ['test/']
+    },
 
-    grunt.registerTask('build', [
-        'clean:dist',
-        'concurrent:dist',
-        'concat',
-        'uglify',
-        'copy:dist'
-    ]);
+    jshint: {
+      files: ['src/**/*.js', 'test/**/*Spec.js'],
+      options: {
+        jshintrc: '.jshintrc'
+      }
+    },
 
-    grunt.registerTask('default', [
-        'newer:jshint',
-        'test',
-        'build'
-    ]);
+    // Copy last release as scanthng.js (aka "latest", aka "current")
+    copy: {
+      dist: {
+        files: [{
+          src: 'dist/evrythng.js',
+          dest: 'dist/versioned/evrythng-<%= pkg.version %>.js'
+        },{
+          src: 'dist/evrythng.min.js',
+          dest: 'dist/versioned/evrythng-<%= pkg.version %>.min.js'
+        },{
+          src: 'dist/evrythng.min.map',
+          dest: 'dist/versioned/evrythng-<%= pkg.version %>.min.map'
+        }]
+      }
+    },
 
-    grunt.registerTask('tag', [
+    //Git tag current commit
+    gittag: {
+      task: {
+        options: {
+          tag: 'v<%= pkg.version %>'
+        }
+      }
+    },
+
+    // Creates the gitpush task and ensures that the --tags flag is included
+    // so that any tag is also pushed to the remote
+    gitpush: {
+      task: {
+        options: {
+          tags: true
+        }
+      }
+    },
+
+    // Check repo is clean and it is tagged and tag matches package version number
+    checkrepo: {
+      tag: {
+        clean: true         // Check repo is clean
+      },
+      deploy: {
+        clean: true,        // Check repo is clean
+        tagged: true,       // Checks whether the last commit (HEAD) is tagged.
+        tag: {
+          eq: '<%= pkg.version %>',    // Check if highest repo tag is equal to pkg.version
+          valid: '<%= pkg.version %>'  // Check if pkg.version is valid semantic version
+        }
+      }
+    },
+
+
+    aws_s3: {
+      options: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_KEY
+      },
+      dev: {
+        options: {
+          bucket: process.env.AWS_EVTJS_DEV_BUCKET,
+          debug: true
+        },
+        files: [{
+          expand: true,
+          cwd: 'dist',
+          src: '*',
+          dest: 'libs/evrythngjs',
+          filter: 'isFile'
+        }]
+      },
+      release: {
+        options: {
+          bucket: process.env.AWS_EVTJS_RELEASE_BUCKET,
+          // Debug option is for testing purposes
+          debug: true,
+          params: {
+            ContentEncoding: 'gzip' // applies to all the files!
+          }
+        },
+        files: [{
+          expand: true,
+          cwd: 'dist',
+          src: '*',
+          dest: 'libs/evrythngjs',
+          filter: 'isFile'
+        },{
+          expand: true,
+          cwd: 'dist/versioned',
+          src: ['*'],
+          dest: 'libs/evrythngjs',
+          filter: 'isFile'
+        }]
+      }
+    }
+  });
+
+  grunt.registerTask('test', function (target) {
+    if (target === 'dist') {
+      return grunt.task.run([
+        'karma:dist:browserAMD',
+        'karma:dist:browserGlobals',
+        'jasmine_node'
+      ]);
+    } else if (target === 'sauce') {
+      return grunt.task.run(['karma:sauce']);
+    }
+
+    grunt.task.run(['karma:unit']);
+  });
+
+  grunt.registerTask('build', [
+    'clean:dist',
+    'jshint',
+    'test',
+    'version',
+    'groc',
+    'requirejs',
+    'uglify',
+    'test:dist',
+    'clean:build'
+  ]);
+
+  grunt.registerTask('deploy', function (target) {
+    if (target === 'release') {
+      return grunt.task.run([
+        'build',
         'checkrepo:tag',
-        'gittag'
-    ]);
-
-    grunt.registerTask('deploy', [
-        'default',
-        'tag',
+        'gittag',
         'checkrepo:deploy',
-        'aws_s3:production',
+        'copy:dist',
+        'aws_s3:release',
+        'clean:build',
         'gitpush'
-    ]);
+      ]);
+    }
 
-    grunt.registerTask('deploydemo', [
-        'default',
-        'aws_s3:demo'
+    grunt.task.run([
+      'build',
+      'aws_s3:dev'
     ]);
+  });
 };
