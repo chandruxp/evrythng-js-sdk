@@ -1,22 +1,44 @@
 {
-    "node": true,
-    "browser": true,
-    "esnext": true,
-    "bitwise": true,
-    "camelcase": true,
-    "curly": true,
-    "eqeqeq": true,
-    "immed": true,
-    "indent": 4,
-    "latedef": true,
-    "newcap": true,
-    "noarg": true,
-    "quotmark": "single",
-    "regexp": true,
-    "undef": true,
-    "unused": true,
-    "strict": true,
-    "trailing": true,
-    "smarttabs": true,
-    "jquery": true
+  // Predefined globals whom JSHint will ignore.
+  "browser"       : true,  // Standard browser globals e.g. `window`, `document`.
+  "jquery"        : true,
+  "node"          : true,
+
+  "camelcase"     : true,
+  "curly"         : true,
+  "immed"         : true,
+  "latedef"       : true,
+  "newcap"        : true,
+  "noarg"         : true,
+  "undef"         : true,
+  "unused"        : true,
+  "strict"        : true,
+  "trailing"      : true,
+  "smarttabs"     : true,
+
+  "validthis"     : true,
+
+  // Custom globals. RequireJS
+  "predef"        : [
+    "define",
+    "require",
+
+    // Jasmine helpers
+    "TestResponses",
+    "inspectJsonpRequest",
+    "respondToJsonpRequest"
+  ],
+
+  "globals"       :{
+    // Test globals. Jasmine
+    "describe"      : false,
+    "it"            : false,
+    "beforeEach"    : false,
+    "afterEach"     : false,
+    "expect"        : false,
+    "spyOn"         : false,
+    "xdescribe"     : false,
+    "xit"           : false,
+    "jasmine"       :false
+  }
 }

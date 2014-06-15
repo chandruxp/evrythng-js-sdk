@@ -92,7 +92,7 @@ define([
       }
 
       return new Resource(this, fullPath, classFn);
-    }
+    };
   };
 
   return Entity;

@@ -1,4 +1,7 @@
-lib-cov
+bower_components/
+node_modules/
+test/results
+
 *.seed
 *.log
 *.csv
@@ -7,22 +10,4 @@ lib-cov
 *.pid
 *.gz
 
-pids
-logs
-results
-
-npm-debug.log
-node_modules
-.project
-.settings
-get-evrythngjs/get-evrythngjs.user.properties
-Session.vim
-docs
-bower_components
-_SpecRunner.html
-.grunt
-aws-keys.json
-dist
-
 .idea/
-.DS_Store

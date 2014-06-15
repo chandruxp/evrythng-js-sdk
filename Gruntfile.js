@@ -241,7 +241,6 @@ module.exports = function(grunt) {
     'jshint',
     'test',
     'version',
-    'groc',
     'requirejs',
     'uglify',
     'test:dist',
@@ -258,7 +257,8 @@ module.exports = function(grunt) {
         'copy:dist',
         'aws_s3:release',
         'clean:build',
-        'gitpush'
+        'gitpush',
+        'groc'
       ]);
     }
 
