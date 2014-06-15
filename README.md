@@ -25,26 +25,49 @@ This module can also be loaded as an AMD or CommonJS module.
 Example using RequireJS:
 
     require(['evrythng'], function (EVT) {
-        var Evt = new EVT();
+    
+        EVT.setup({
+            apiUrl: 'xxx',
+            fullResponse: true
+        });
+        
+        var app = new EVT.App('appApiKey');
 
-        // call EVT API methods here...
+        app.product('123').read().then(function(prod){
+            ...
+        });
+        
+        app.login('facebook').then(function(response){
+            var user = response.user;
+            
+            user.thng().read().then(function(thngs){
+            
+                thngs[0].description = 'newDesc';              
+                return thngs[0].update();
+                
+            }).then(function(thng){
+            
+                console.log('thng updated');
+                
+            });
+        });
+        
+        ...
     });
 
+Using Node.js:
+
+    var EVT = require('evrythng');
+    
+    var app = new EVT.App('apiKey');
+    ...
 
 If you aren't using any of the above script loading mechanisms, the EVT module is available
 as a browser global:
 
-    var EVT = new EVT();
+    var app = new EVT.App('apiKey');
+    ...
 
-
-The EVT constructor also accepts an options parameter defining the settings to access your
-Evrythng Account or App.
-
-	var Evt = new EVT({
-		evrythngApiKey: 'xxxxxxxxxxxx',
-		facebookAppId: 'xxxxxxxxxxx'
-		...
-	});
 
 **Note:** Be sure to only include your Evrythng App API key and **not** your Operator or User
 App key in any public application code (read more [here](https://dev.evrythng.com/documentation/api#users)).
@@ -53,7 +76,7 @@ App key in any public application code (read more [here](https://dev.evrythng.co
 For advanced usage and options, see the documentation on [Evrythng's Developer
 Portal](https://dev.evrythng.com/documentation). If you would like to know more about the
 library's features and implementation you can also look at
-the Developer Notes in `docs/DEVELOPMENT.md`.
+the Developer Notes in `DEVELOPMENT.md`.
 
 ## Documentation
 
