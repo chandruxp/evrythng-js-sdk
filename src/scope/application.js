@@ -1,3 +1,16 @@
+// ## APPLICATION.JS
+
+// **Here it is defined the ApplicationScope or `EVT.App`. EVT.App
+// is a sub-class of scope and it defines the public API this scope
+// can access to.**
+
+// An Application scope currently has access to:
+
+// - Product resource (`R`)
+// - Action resource (`C`)
+// - App User resource (`C`)
+// - Login
+
 define([
   'core',
   './scope',
@@ -10,32 +23,40 @@ define([
   'utils',
   'logger',
   'ajax'
-], function (EVT, Scope, Resource, Product, Action, AppUser, Authentication,
-             Facebook, Utils, Logger) {
+], function (EVT, Scope, Resource, Product, Action, AppUser,
+             Authentication, Facebook, Utils, Logger) {
   'use strict';
 
-  // Application Scope constructor
-  // Expect apiKey string
-  // Optional options object with { facebook: true } to bind FB App with this app
+  // Application Scope constructor. It can be called with the parameters:
+
+  // - ***new EVT.App(apiKey)** - API Key string*
+  // - ***new EVT.App(options)** - Options object should contain `apiKey`,
+  // and optionally `facebook` boolean. Passing `facebook: true` automatically
+  // initializes Facebook SDK with this application's FB App Id - setup in
+  // EVRYTHNG's Dashboard Project Preferences.*
   var ApplicationScope = function(obj){
+
     var $this = this;
 
-    // Setup base Scope
+    // Setup base Scope with the provided API Key.
     if(Utils.isObject(obj)){
       Scope.call(this, obj.apiKey);
     }else{
       Scope.call(this, obj);
     }
 
-    // Get app information from Engine, using already defined scope.
-    // Use new EVT.App('a').$init.then(success) if need to wait
+    // Get app information from the Engine using already defined scope.
+    // Use **new EVT.App('apiKey').$init.then(success)** if need to wait
     // for app information.
     this.$init = EVT.api({
       url: '/applications',
       authorization: this.apiKey
     }).then(function (apps) {
 
-      // Store app information in scope
+      // Apps return array of a single application that matches this
+      // API Key. The response's API Key is defined in property `appApiKey`
+      // instead of `apiKey`, so remove it to prevent redundant apiKey
+      // properties in the scope. Also, attach app details into the scope.
       delete apps[0].appApiKey;
       return Utils.extend($this, apps[0], true);
 
@@ -44,34 +65,59 @@ define([
 
     }).then(function (app) {
 
-      // If using Facebook, return new promise after FB is initialized
-      // and user login status is retrieved
+      // If using Facebook, the $init promise is only resolved after FB
+      // is initialized and user login status is retrieved. In this situation,
+      // the resolved object of `$init` is a wrapped object:
+
+      // ```
+      // {
+      //  status: <Facebook's connected status>,
+      //  authResponse: <Facebook's auth response>,
+      //  user: {
+      //    facebook: { <Facebook's user info>}
+      //    <Evrythng's user information>
+      //  },
+      //  app: {
+      //    <Evrythng's app information>
+      //  }
+      // ```
       if(obj.facebook){
+
+        // Get Facebook App ID from the Evrythng App social networks list.
         return Facebook.init(app.socialNetworks.facebook.appId)
           .then(function (response) {
 
             if(response.status === 'connected') {
+
+              // If user is connected with Faceobok, return a promise with his details.
               return Authentication.authFb.call($this, response);
+
             } else {
               return response;
             }
 
           }).then(function (response) {
+
+            // Add app information to the already wrapped object.
             return Utils.extend(response, { app: app });
+
           });
+
       }else{
+
+        // If not using Facebook, simply return app details after they are received.
         return app;
       }
 
     });
   };
 
-  // Setup inheritance
+  // Setup Scope inheritance.
   ApplicationScope.prototype = Object.create(Scope.prototype);
   ApplicationScope.prototype.constructor = ApplicationScope;
 
 
-  // Implement Public API
+  // Implement Public API by extending the prototype.
   Utils.extend(ApplicationScope.prototype, {
 
     product: Product.resourceConstructor,
@@ -85,8 +131,9 @@ define([
   }, true);
 
 
-  // Attach class
+  // Attach ApplicationScope class to the EVT module.
   EVT.App = ApplicationScope;
 
   return EVT;
+
 });

@@ -1,6 +1,5 @@
 bower_components/
 node_modules/
-test/results
 
 *.seed
 *.log
@@ -11,3 +10,5 @@ test/results
 *.gz
 
 .idea/
+test/results
+docs

@@ -1,40 +1,51 @@
+// ## CORE.JS
+
+// **The Core module specifies the core EVT module and the client
+// default settings. The library is built by adding functionality or
+// sub-modules to EVT.**
+
 define([
   'utils'
 ], function (Utils) {
   'use strict';
 
-  // Private properties
-  // Version is udpated from package.json
+  // Version is udpated from package.json using `grunt-version` on build.
   var version = '2.0.0';
 
 
   // Setup default settings:
-  // - API URL: String, change the default API host
-  // - Async: Boolean, set to false to block UI during requests
-  // - FetchCascade: Boolean, set to true to automatically fetch nested entities
-  // - OnStartRequest: Function, run before each HTTP call (e.g. start Spinner)
-  // - OnFinishRequest: Function, run after each HTTP call
-  // - Geolocation: Boolean, true to ask for Geolocation when needed (e.g. actions)
+
+  // - ***apiUrl**: String - change the default API host*
+  // - ***async**: Boolean - set to false to make synchronous requests (blocks UI)*
+  // - ***geolocation**: Boolean - set to true to ask for Geolocation when needed*
+  // - ***fetchCascade**: Boolean - set to true to automagically fetch nested entities
+  // (e.g. thng.product is an EVT.Product instead of string id)*
+  // - ***onStartRequest**: Function - run before each HTTP call (e.g. start Spinner)*
+  // - ***onFinishRequest**: Function - run after each HTTP call*
   var defaultSettings = {
     apiUrl: 'https://api.evrythng.com',
     async: true,
-    fullResponse: false
+    fullResponse: false,
+    geolocation: true
     /*fetchCascade: false,
     onStartRequest: null,
-    onFinishRequest: null,
-    geolocation: true*/
+    onFinishRequest: null*/
   };
 
 
-  // Module definition and public API
+  // Module definition and raw API.
   var EVT = {
     version: version,
 
     settings: defaultSettings,
 
-    setup: function (options) {
-      if(Utils.isObject(options)){
-        this.settings = Utils.extend(defaultSettings, options);
+    // Setup method allows the developer to change overall settings for every
+    // subsequent request. However, these can be overriden for each request as well.
+    // Setup merges current settings with the new custom ones.
+    setup: function (customSettings) {
+
+      if(Utils.isObject(customSettings)){
+        this.settings = Utils.extend(this.settings, customSettings);
       }else{
         throw new TypeError('Setup should be called with an options object.');
       }
@@ -44,4 +55,5 @@ define([
   };
 
   return EVT;
+
 });

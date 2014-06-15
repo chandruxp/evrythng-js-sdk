@@ -58,7 +58,6 @@ define([
   // - method: String
   // - url: String
   // - authorization: String
-  // - accept: String
   // - fullResponse: Boolean
   // - success: Function
   // - error: Function
@@ -73,28 +72,10 @@ define([
     if (xhr) {
 
       // Data to send in request
-      var data = options.data ? JSON.stringify(options.data) : null,
-        successCb, errorCb;
-
-      // TODO: pass this verification to EVT.api()
-      // Setup Success Callback (priority to second parameter)
-      if(Utils.isFunction(successCallback)){
-        successCb = successCallback;
-      }else if(Utils.isFunction(options.success)){
-        successCb = options.success;
-      }
-
-      // Setup Error Callback (priority to third parameter)
-      if(Utils.isFunction(errorCallback)){
-        errorCb = errorCallback;
-      }else if(Utils.isFunction(options.error)){
-        errorCb = options.error;
-      }
-
+      var data = options.data ? JSON.stringify(options.data) : null;
 
       // Setup headers
       xhr.setRequestHeader('Content-Type', 'application/json');
-      if(options.accept) { xhr.setRequestHeader('Accept', options.accept); }
       if(options.authorization) { xhr.setRequestHeader('Authorization', options.authorization); }
 
 
@@ -125,14 +106,14 @@ define([
 
               // Resolve or reject promise given the response status
               if (this.status >= 200 && this.status < 300) {
-                if(successCb) { successCb(response); }
+                if(successCallback) { successCallback(response); }
                 resolve(response);
 
               } else {
                 var errorData = _buildError(this, url, method, response);
                 Logger.error(errorData);
 
-                if(errorCb) { errorCb(errorData); }
+                if(errorCallback) { errorCallback(errorData); }
                 reject(errorData);
               }
             }

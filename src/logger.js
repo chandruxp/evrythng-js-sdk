@@ -1,24 +1,23 @@
+// ## LOGGER.JS
+
+// **The Logger module is simple wrapper for console log
+// that prefixes EvrythngJS's logs with a custom header.**
+
 define(function () {
   'use strict';
 
-  function _console(type, data){
-    if(!console) { return; }
-
-    if (type === 'error') {
-      console.error('EvrythngJS Error: ', data);
-    } else {
-      console.info('EvrythngJS Info: ', data);
-    }
-  }
-
+  var header = 'EvrythngJS';
 
   return {
+
     error: function(data){
-      return _console('error', data);
+      console.error(header + ' Error: ', data);
     },
 
     info: function(data){
-      return _console('info', data);
+      console.info(header + ' Info: ', data);
     }
+
   };
+
 });
