@@ -3,6 +3,9 @@
 evrythng.js is a [UMD](link here)-compatible JavaScript library for Client-side applications
 interacting with the Evrythng API.
 
+**We are updgrading EvrythngJS to the new 2.0 version. In the meantime, please refer to 
+the [`v.1.x` branch](https://github.com/evrythng/evrythng-js-sdk/tree/v1.x) for the previous documentation.**
+
 ## Installation
 
 ### Bower

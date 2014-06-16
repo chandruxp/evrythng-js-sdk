@@ -19,7 +19,7 @@
 // - [Almond](https://github.com/jrburke/almond): a minimal AMD script loader
 // - [RSVP](https://github.com/tildeio/rsvp.js): a lightweight Promises/A+ (1.1) library
 
-// See the final [uncompressed library](https://github.com/evrythng/evrythng-js-sdk/tree/master/dist/evrythng.js) @ Github.
+// See the full [uncompressed library](https://github.com/evrythng/evrythng-js-sdk/tree/master/dist/evrythng.js) @ Github.
 
 define([
   "scope/application",

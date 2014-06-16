@@ -45,9 +45,9 @@ define([
       Scope.call(this, obj);
     }
 
-    // Get app information from the Engine using already defined scope.
-    // Use **new EVT.App('apiKey').$init.then(success)** if need to wait
-    // for app information.
+    // Get app information asynchronously from the Engine using already
+    // defined scope. Use **new EVT.App('apiKey').$init.then(success)** if need
+    // to wait for app information.
     this.$init = EVT.api({
       url: '/applications',
       authorization: this.apiKey
