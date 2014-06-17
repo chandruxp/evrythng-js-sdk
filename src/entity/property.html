@@ -4,22 +4,37 @@
   <span class="s1">&#39;resource&#39;</span><span class="p">,</span>
   <span class="s1">&#39;utils&#39;</span>
 <span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Entity</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
-  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup Property inheritance from Entity.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">Property</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">Entity</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+  <span class="p">};</span>
 
-  <span class="kd">var</span> <span class="nx">Property</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup base Scope</p></div></div><div class="code"><div class="wrapper">    <span class="nx">Entity</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup inheritance</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Property</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Entity</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
-  <span class="nx">Property</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">Property</span><span class="p">;</span>
-
-  <span class="kd">function</span> <span class="nx">_normalizeArguments</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">Property</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Entity</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
+  <span class="nx">Property</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">Property</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The property update normalization of arguments allows to
+make easier and more intuitive calls, such as:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li>Single property update:</li>
+</ul></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><pre><code> thng.property('status').update('off');
+ thng.property('status').update({
+   value: 'off'
+ });
+</code></pre></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li>Multi property update:</li>
+</ul></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><pre><code> thng.property().update({
+   status: 'off',
+   level: '80'
+ });
+</code></pre></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">_normalizeArguments</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
 
-    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">data</span><span class="p">)){</span>
-      <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">data</span><span class="p">)){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Update single property using string.</p></div></div><div class="code"><div class="wrapper">      <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span>
         <span class="nx">value</span><span class="o">:</span> <span class="nx">data</span>
       <span class="p">}];</span>
-    <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">data</span><span class="p">))</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>update single property using obj notation</p></div></div><div class="code"><div class="wrapper">      <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">data</span><span class="p">];</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>update multiple properties</p></div></div><div class="code"><div class="wrapper">      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span>
+
+    <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">data</span><span class="p">))</span> <span class="p">{</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Update single property using object notation.</p></div></div><div class="code"><div class="wrapper">        <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">data</span><span class="p">];</span>
+
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Update multiple properties, creating an object for
+each key-value pair.</p></div></div><div class="code"><div class="wrapper">        <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span>
         <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
           <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">push</span><span class="p">({</span>
             <span class="nx">key</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span>
@@ -30,30 +45,35 @@
     <span class="p">}</span>
 
     <span class="k">return</span> <span class="nx">args</span><span class="p">;</span>
-  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Return resource constructor</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">resourceConstructor</span><span class="p">(</span><span class="nx">property</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;This Entity does not have a Resource.&#39;</span><span class="p">);</span>
-    <span class="p">}</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Attach class to EVT module.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">EVT</span><span class="p">.</span><span class="nx">Property</span> <span class="o">=</span> <span class="nx">Property</span><span class="p">;</span>
 
-    <span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">.</span><span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;/properties&#39;</span><span class="p">,</span>
-      <span class="nx">resource</span><span class="p">;</span>
-
-    <span class="k">if</span><span class="p">(</span><span class="nx">property</span><span class="p">){</span>
-      <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">property</span><span class="p">)){</span>
-        <span class="nx">path</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">property</span><span class="p">;</span>
-      <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Property must be a key/name string&#39;</span><span class="p">);</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="nx">resource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Resource</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">.</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">Property</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Override property resource update to allow a single string value</p></div></div><div class="code"><div class="wrapper">    <span class="nx">resource</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">_normalizeArguments</span><span class="p">(</span><span class="nx">arguments</span><span class="p">));</span>
-    <span class="p">};</span>
-
-    <span class="k">return</span> <span class="nx">resource</span><span class="p">;</span>
-  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Attach class</p></div></div><div class="code"><div class="wrapper">  <span class="nx">EVT</span><span class="p">.</span><span class="nx">Property</span> <span class="o">=</span> <span class="nx">Property</span><span class="p">;</span>
 
   <span class="k">return</span> <span class="p">{</span>
-    <span class="nx">resourceConstructor</span><span class="o">:</span> <span class="nx">resourceConstructor</span>
+
+    <span class="nx">resourceConstructor</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">property</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;This Entity does not have a Resource.&#39;</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">.</span><span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;/properties&#39;</span><span class="p">,</span>
+        <span class="nx">resource</span><span class="p">;</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="nx">property</span><span class="p">){</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">property</span><span class="p">)){</span>
+          <span class="nx">path</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">property</span><span class="p">;</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+          <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Property must be a key/name string&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="nx">resource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Resource</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">.</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">Property</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Override property resource update to allow custom values params.
+See <em>_normalizeArguments()</em>.</p></div></div><div class="code"><div class="wrapper">      <span class="nx">resource</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">_normalizeArguments</span><span class="p">(</span><span class="nx">arguments</span><span class="p">));</span>
+      <span class="p">};</span>
+
+      <span class="k">return</span> <span class="nx">resource</span><span class="p">;</span>
+    <span class="p">}</span>
+
   <span class="p">};</span>
 <span class="p">});</span></div></div></div></div></body></html>

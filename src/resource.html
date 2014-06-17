@@ -84,8 +84,8 @@ handler</p></div></div><div class="code"><div class="wrapper">      <span class=
     <span class="p">}</span>
   <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h3 id="resource-api">Resource API</h3></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Any resource create in a scope will inherit these methods. However, it
 is possible to add custom methods to a resource in a custom Entity
-<em>resourceConstructor</em> (e.g. refer to the <code>entity/appUser</code> doc, where a
-<em>.validate()</em> method is added to every AppUser resource).</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>Remember that all CRUD methods forward to <code>EVT.api()</code> which returns a Promise.</strong></p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h4 id="parse">Parse</h4></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Parse a given JSON data or object into an instance of this resource's
+<em>resourceConstructor</em> (e.g. refer to the <a href="entity/appUser.html"><code>entity/appUser</code> doc</a>,
+where a <em>.validate()</em> method is added to every AppUser resource).</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>Remember that all CRUD methods forward to <code>EVT.api()</code> which returns a Promise.</strong></p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h4 id="parse">Parse</h4></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Parse a given JSON data or object into an instance of this resource's
 class/entity, if possible. An entity always keeps a reference to its
 mother resource, in order to alias methods (e.g. the <em>entity.update()</em>
 method calls the mother <em>resource.update(entity.toJSON())</em> ).</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">parse</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">jsonData</span><span class="p">)</span> <span class="p">{</span>
@@ -181,6 +181,22 @@ response on success.</p></div></div></div><div class="segment"><div class="comme
 
     <span class="k">return</span> <span class="nx">_request</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
 
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Given we don't have subclasses of Resource, this static factory method
+allows to generate a resource constructor given a path and class.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>By default all resource constructors receive a string ID for single
+entity resources.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">constructorFactory</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">classFn</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">fullPath</span> <span class="o">=</span> <span class="nx">path</span> <span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="nx">id</span><span class="p">){</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">id</span><span class="p">))</span> <span class="p">{</span>
+          <span class="nx">fullPath</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;ID must be a string&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="k">new</span> <span class="nx">Resource</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">fullPath</span><span class="p">,</span> <span class="nx">classFn</span><span class="p">);</span>
+    <span class="p">};</span>
   <span class="p">};</span>
 
 

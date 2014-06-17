@@ -1,30 +1,46 @@
-<!DOCTYPE html><html lang="en"><head><title>src/entity/entity</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../"><meta name="groc-document-path" content="src/entity/entity"><meta name="groc-project-path" content="src/entity/entity.js"><meta name="groc-github-url" content="https://github.com/evrythng/evrythng-js-sdk"><link rel="stylesheet" type="text/css" media="all" href="../../assets/style.css"><script type="text/javascript" src="../../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/evrythng/evrythng-js-sdk/blob/master/src/entity/entity.js">src/entity/entity.js</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
+<!DOCTYPE html><html lang="en"><head><title>src/entity/entity</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../"><meta name="groc-document-path" content="src/entity/entity"><meta name="groc-project-path" content="src/entity/entity.js"><meta name="groc-github-url" content="https://github.com/evrythng/evrythng-js-sdk"><link rel="stylesheet" type="text/css" media="all" href="../../assets/style.css"><script type="text/javascript" src="../../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/evrythng/evrythng-js-sdk/blob/master/src/entity/entity.js">src/entity/entity.js</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h2 id="entityjs">ENTITY.JS</h2></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>Entity is a private super class that implements base common methods for
+all Evrythng objects. It establishes the way objects are converted
+to JSON, and provide an <em>update()</em> and <em>delete()</em> method for all entities.</strong></p></div></div><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
   <span class="s1">&#39;resource&#39;</span><span class="p">,</span>
   <span class="s1">&#39;utils&#39;</span>
 <span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">Resource</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
-  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Entity Constructor. Accepts:
-- Entity()
-- Entity(obj)
-- Entity(resource)
-- Entity(obj, resource)</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">Entity</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">objData</span><span class="p">,</span> <span class="nx">resource</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Allow resource on first parameter without object</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">objData</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">objData</span> <span class="k">instanceof</span> <span class="nx">Resource</span><span class="p">){</span>
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The entity constructor, and therefore all the standard inheritances,
+accepts:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li><strong><em>new Entity()</strong>: create an empty entity</em></li>
+<li><strong><em>new Entity(obj)</strong>: entity with merged obj properties</em></li>
+<li><strong><em>new Entity(resource)</strong>: empty entity bound to a Resource</em></li>
+<li><strong><em>new Entity(obj, resource)</strong>: fully build entity bound to a Resource</em></li>
+</ul></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><em>Nevertheless, an Entity without Resource cannot request any
+update or delete. It can however be passed to resources as
+'payload' instead of JSON.</em></p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><pre><code class="js"> var prod = new EVT.Product({ foo: 'bar' };
+ // prod.update() // throws error
+ app.product().create(prod); // create product
+</code></pre></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">Entity</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">objData</span><span class="p">,</span> <span class="nx">resource</span><span class="p">)</span> <span class="p">{</span>
 
-      <span class="k">this</span><span class="p">.</span><span class="nx">resource</span> <span class="o">=</span> <span class="nx">objData</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">objData</span><span class="p">)){</span>
 
-    <span class="p">}</span><span class="k">else</span><span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>normal constructor</p></div></div><div class="code"><div class="wrapper">      <span class="k">this</span><span class="p">.</span><span class="nx">resource</span> <span class="o">=</span> <span class="nx">resource</span><span class="p">;</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">objData</span> <span class="k">instanceof</span> <span class="nx">Resource</span><span class="p">){</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">resource</span> <span class="o">=</span> <span class="nx">objData</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
-      <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">objData</span><span class="p">)){</span>
-        <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">objData</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">resource</span> <span class="o">=</span> <span class="nx">resource</span><span class="p">;</span>
 
-        <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">resource</span> <span class="o">&amp;&amp;</span> <span class="nx">objData</span><span class="p">.</span><span class="nx">id</span><span class="p">){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Add or replace path with ID</p></div></div><div class="code"><div class="wrapper">          <span class="kd">var</span> <span class="nx">pathSplit</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">);</span>
+        <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">objData</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If entity was created by a list resource (e.g. '/thngs')
+then update its resource path to be = parent resource path +
+objData ID. This allows a newly created object to be <em>updated</em>
+and <em>deleted</em> straight away.</p></div></div><div class="code"><div class="wrapper">        <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">resource</span> <span class="o">&amp;&amp;</span> <span class="nx">objData</span><span class="p">.</span><span class="nx">id</span><span class="p">){</span>
+
+          <span class="kd">var</span> <span class="nx">pathSplit</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">);</span>
           <span class="k">if</span><span class="p">(</span><span class="nx">pathSplit</span><span class="p">[</span><span class="nx">pathSplit</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!==</span> <span class="nx">objData</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">.</span><span class="nx">path</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">objData</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
           <span class="p">}</span>
+
         <span class="p">}</span>
       <span class="p">}</span>
 
     <span class="p">}</span>
-
-  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Return updated JSON object that is stored in engine</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Entity</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">toJSON</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Return the JSON object that is stored in engine. All non-function properties
+except <em>resource</em> are properties of the object.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Entity</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">toJSON</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">json</span> <span class="o">=</span> <span class="p">{};</span>
 
     <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">prop</span> <span class="k">in</span> <span class="k">this</span><span class="p">){</span>
@@ -34,29 +50,35 @@
     <span class="p">}</span>
 
     <span class="k">return</span> <span class="nx">json</span><span class="p">;</span>
-  <span class="p">};</span>
-
-  <span class="nx">Entity</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Every entity can update itself via its resource reference. It does so by
+passing its JSON representation to the <em>resouce.update()</em>.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An entity update, as every request, returns a Promise. Although it also
+allows callbacks as:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li><strong><em>update()</strong>: simple update itself with modified properties</em></li>
+<li><strong><em>update(obj)</strong>: update itself with new properties</em></li>
+<li><strong><em>update(obj, successCb, errorCb)</strong>: previous, with callbacks</em></li>
+<li><strong><em>update(successCb, errorCb)</strong>: update itself and use callbacks</em></li>
+</ul></div></div><div class="code"><div class="wrapper">  <span class="nx">Entity</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">){</span>
-      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">,</span>
-        <span class="nx">$this</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 
-      <span class="k">if</span><span class="p">(</span><span class="nx">obj</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!</span><span class="nx">obj</span> <span class="o">||</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">obj</span><span class="p">))</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Make real array from arguments</p></div></div><div class="code"><div class="wrapper">        <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">$this</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>No object is passed, shift arguments. Add its JSON representation
+as the first argument.</p></div></div><div class="code"><div class="wrapper">      <span class="k">if</span><span class="p">(</span><span class="nx">obj</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!</span><span class="nx">obj</span> <span class="o">||</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">obj</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
         <span class="nx">args</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">());</span>
       <span class="p">}</span>
 
       <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">.</span><span class="nx">update</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">args</span><span class="p">)</span>
-        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">updated</span><span class="p">)</span> <span class="p">{</span>
-          <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">updated</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">updated</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Update itself with the result and return raw response from API.</p></div></div><div class="code"><div class="wrapper">          <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">updated</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
           <span class="k">return</span> <span class="nx">updated</span><span class="p">;</span>
+
         <span class="p">});</span>
 
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
       <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;This entity has no resource&#39;</span><span class="p">);</span>
     <span class="p">}</span>
-  <span class="p">};</span>
-
-  <span class="nx">Entity</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="s1">&#39;delete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Delete method also accepts callbacks as:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li><strong><em>delete()</strong>: handle with promise</em></li>
+<li><strong><em>delete(successCb, errorCb)</strong>: handle with callbacks</em></li>
+</ul></div></div><div class="code"><div class="wrapper">  <span class="nx">Entity</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="s1">&#39;delete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">[</span><span class="s1">&#39;delete&#39;</span><span class="p">].</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -64,21 +86,6 @@
     <span class="p">}</span>
   <span class="p">};</span>
 
-  <span class="nx">Entity</span><span class="p">.</span><span class="nx">resourceConstructor</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">classFn</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-      <span class="kd">var</span> <span class="nx">fullPath</span> <span class="o">=</span> <span class="nx">path</span> <span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
-
-      <span class="k">if</span><span class="p">(</span><span class="nx">id</span><span class="p">){</span>
-        <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">id</span><span class="p">))</span> <span class="p">{</span>
-          <span class="nx">fullPath</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">;</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-          <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;ID must be a string&#39;</span><span class="p">);</span>
-        <span class="p">}</span>
-      <span class="p">}</span>
-
-      <span class="k">return</span> <span class="k">new</span> <span class="nx">Resource</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">fullPath</span><span class="p">,</span> <span class="nx">classFn</span><span class="p">);</span>
-    <span class="p">};</span>
-  <span class="p">};</span>
 
   <span class="k">return</span> <span class="nx">Entity</span><span class="p">;</span>
 
