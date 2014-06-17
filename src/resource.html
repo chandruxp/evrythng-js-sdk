@@ -1,88 +1,131 @@
-<!DOCTYPE html><html lang="en"><head><title>src/resource</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/resource"><meta name="groc-project-path" content="src/resource.js"><meta name="groc-github-url" content="https://github.com/evrythng/evrythng-js-sdk"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/evrythng/evrythng-js-sdk/blob/master/src/resource.js">src/resource.js</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
+<!DOCTYPE html><html lang="en"><head><title>src/resource</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/resource"><meta name="groc-project-path" content="src/resource.js"><meta name="groc-github-url" content="https://github.com/evrythng/evrythng-js-sdk"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/evrythng/evrythng-js-sdk/blob/master/src/resource.js">src/resource.js</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h2 id="resourcejs">RESOURCE.JS</h2></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>The private Resource module setups up the base resource CRUD methods.
+All requests made on a resource are scoped, meaning they will send the
+resouce's owner scope's API Key.</strong></p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>Another important feature is that if the resource has a class/entity, which
+it allows to serialize and deserialize requests and responses. Also, with the
+<code>fetchCascade</code> option enabled, an entity knows how to automatically fetch nested
+entities.</strong></p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><em>For example, the result of a .read() can be a Thng entity, that has specific
+methods to update itself, get the corresponding product or manage properties.</em></p></div></div><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
   <span class="s1">&#39;core&#39;</span><span class="p">,</span>
   <span class="s1">&#39;scope/scope&#39;</span><span class="p">,</span>
   <span class="s1">&#39;utils&#39;</span><span class="p">,</span>
   <span class="s1">&#39;logger&#39;</span><span class="p">,</span>
   <span class="s1">&#39;ajax&#39;</span>
 <span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Scope</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">,</span> <span class="nx">Logger</span><span class="p">)</span> <span class="p">{</span>
-  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Resource constructor</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">Resource</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">classFn</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup scope for each of the subsequent calls</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="nx">scope</span> <span class="o">&amp;&amp;</span> <span class="nx">scope</span> <span class="k">instanceof</span> <span class="nx">Scope</span><span class="p">){</span>
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Resource constructor. As this is a private module, all resource constructors
+are called within scopes. It accepts:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li><strong><em>scope</strong>: scope that owns this resource (<code>EVT.App</code>, <code>EVT.User</code>)</em></li>
+<li><strong><em>path</strong>: relative path to <code>EVT.settings.apiUrl</code> of this resource.
+It can represent a list or a single object (e.g. '/thngs', '/thngs/1')</em></li>
+<li><strong><em>classFn</strong>: class of the current resource, used to serialize/deserialize
+requests/responses. If the response does not need special treatment and the
+JSON representation is enough, the classFn can be omitted.</em></li>
+</ul></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">Resource</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">classFn</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup scope for each of the subsequent calls.</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="nx">scope</span> <span class="o">&amp;&amp;</span> <span class="nx">scope</span> <span class="k">instanceof</span> <span class="nx">Scope</span><span class="p">){</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">scope</span> <span class="o">=</span> <span class="nx">scope</span><span class="p">;</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Scope must be instance of Scope (e.g. EVT.App).&#39;</span><span class="p">);</span>
-    <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup path</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">path</span><span class="p">)){</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Scope should inherit from Scope (e.g. EVT.App).&#39;</span><span class="p">);</span>
+    <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup path and allow to omit leading '/'.</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">path</span><span class="p">)){</span>
+
       <span class="k">if</span> <span class="p">(</span><span class="nx">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="nx">path</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">path</span><span class="p">;</span> <span class="p">}</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">path</span> <span class="o">=</span> <span class="nx">path</span><span class="p">;</span>
+
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
       <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Resource must have a String path.&#39;</span><span class="p">);</span>
-    <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup class for serializing and deserializing results</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">classFn</span><span class="p">)){</span>
+    <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup class for serializing and deserializing results. It must implement
+a <em>toJSON()</em> method. This method is in the Entity prototype. Since all of our
+entities inherit from Entity, by default all of them will have this.</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">classFn</span><span class="p">)){</span>
+
       <span class="k">if</span> <span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">classFn</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">))</span> <span class="p">{</span>
         <span class="k">this</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">classFn</span><span class="p">;</span>
       <span class="p">}</span><span class="k">else</span><span class="p">{</span>
         <span class="nx">Logger</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Class for resource &quot;&#39;</span> <span class="o">+</span> <span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;&quot; does not implement toJSON().&#39;</span><span class="p">);</span>
       <span class="p">}</span>
+
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
       <span class="nx">Logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s1">&#39;Class for resource &quot;&#39;</span> <span class="o">+</span> <span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;&quot; undefined. It will not return &#39;</span> <span class="o">+</span>
         <span class="s1">&#39;proper Entities nor cascaded Entities.&#39;</span><span class="p">);</span>
     <span class="p">}</span>
 
-  <span class="p">};</span>
-
-
-  <span class="kd">function</span> <span class="nx">_request</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">userOptions</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Helper method to prepare and handle a request giving the parameters passed to
+any of the resource methods. Allow to have callbacks as separate parameters or
+included in the options object, providing exactly the same interface as <code>EVT.api()</code>.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">_request</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">userOptions</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">successCb</span> <span class="o">=</span> <span class="nx">successCallback</span><span class="p">,</span>
       <span class="nx">errorCb</span> <span class="o">=</span> <span class="nx">errorCallback</span><span class="p">,</span>
-      <span class="nx">request</span><span class="p">;</span>
+      <span class="nx">request</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This verification allows not to pass any options, and have callbacks in
+its place. It also allows passing <em>null</em> if there is no success callback.</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">userOptions</span><span class="p">)</span> <span class="o">||</span> <span class="nx">userOptions</span> <span class="o">===</span> <span class="kc">null</span><span class="p">){</span>
 
-    <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">userOptions</span><span class="p">)</span> <span class="o">||</span> <span class="nx">userOptions</span> <span class="o">===</span> <span class="kc">null</span><span class="p">){</span>
       <span class="nx">successCb</span> <span class="o">=</span> <span class="nx">userOptions</span><span class="p">;</span>
       <span class="nx">errorCb</span> <span class="o">=</span> <span class="nx">successCallback</span><span class="p">;</span>
-    <span class="p">}</span><span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">userOptions</span><span class="p">))</span> <span class="p">{</span>
-      <span class="nx">requestOptions</span> <span class="o">=</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">userOptions</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">);</span>
-    <span class="p">}</span>
 
-    <span class="nx">request</span> <span class="o">=</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">api</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">successCb</span><span class="p">,</span> <span class="nx">errorCb</span><span class="p">);</span>
-    <span class="k">return</span> <span class="nx">_handleResponse</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">userOptions</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">parse</span><span class="p">);</span>
-  <span class="p">}</span>
+    <span class="p">}</span><span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">userOptions</span><span class="p">))</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If options is an object, merge it with the request options. Callbacks
+can be included in this object or as separate parameters (same as
+<code>EVT.api()</code>).</p></div></div><div class="code"><div class="wrapper">      <span class="nx">requestOptions</span> <span class="o">=</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">userOptions</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">);</span>
 
+    <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Actually make the request and handle its response, by forwarding to
+the raw <code>EVT.api()</code> method.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">request</span> <span class="o">=</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">api</span><span class="p">(</span><span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">successCb</span><span class="p">,</span> <span class="nx">errorCb</span><span class="p">);</span>
 
-  <span class="kd">function</span> <span class="nx">_handleResponse</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">userOptions</span><span class="p">,</span> <span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">async</span> <span class="o">=</span> <span class="p">(</span><span class="nx">userOptions</span> <span class="o">&amp;&amp;</span> <span class="nx">userOptions</span><span class="p">.</span><span class="nx">async</span> <span class="o">!==</span> <span class="kc">undefined</span><span class="p">)</span> <span class="o">?</span> <span class="nx">userOptions</span><span class="p">.</span><span class="nx">async</span> <span class="o">:</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">async</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">_handleResponse</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">userOptions</span><span class="p">);</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Handle synchronous or asynchronous requests based on the custom or
+default options.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">_handleResponse</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">userOptions</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">async</span> <span class="o">=</span> <span class="p">(</span><span class="nx">userOptions</span> <span class="o">&amp;&amp;</span> <span class="nx">userOptions</span><span class="p">.</span><span class="nx">async</span> <span class="o">!==</span> <span class="kc">undefined</span><span class="p">)</span> <span class="o">?</span>
+      <span class="nx">userOptions</span><span class="p">.</span><span class="nx">async</span> <span class="o">:</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">async</span><span class="p">;</span>
 
     <span class="k">if</span><span class="p">(</span><span class="nx">async</span><span class="p">){</span>
-      <span class="kd">var</span> <span class="nx">$this</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The success callback below is called from RSVP in a completely different
-context. So we should explicitly pass this Resource context to the success call.</p></div></div><div class="code"><div class="wrapper">      <span class="k">return</span> <span class="nx">req</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">success</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">response</span><span class="p">);</span>
-      <span class="p">});</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>By not providing a error interceptor, we will let the error propagate
-from EVT.api to the .read() error handler</p></div></div><div class="code"><div class="wrapper">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">req</span><span class="p">;</span>
+
+      <span class="kd">var</span> <span class="nx">$this</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If request is async, and before returning the response, parse it.
+This success handler is called inside RSVP, so we need to keep the
+current context.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Also, By not providing an error interceptor, we will let the error
+propagate from <code>EVT.api()</code> to the <code>resource.read()</code> promise error
+handler</p></div></div><div class="code"><div class="wrapper">      <span class="k">return</span> <span class="nx">request</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">$this</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+      <span class="p">});</span>
+
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">request</span><span class="p">;</span>
     <span class="p">}</span>
-  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define the Resource API
-Create class instance from provided json object data, if possible</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">parse</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">jsonData</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h3 id="resource-api">Resource API</h3></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Any resource create in a scope will inherit these methods. However, it
+is possible to add custom methods to a resource in a custom Entity
+<em>resourceConstructor</em> (e.g. refer to the <code>entity/appUser</code> doc, where a
+<em>.validate()</em> method is added to every AppUser resource).</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>Remember that all CRUD methods forward to <code>EVT.api()</code> which returns a Promise.</strong></p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h4 id="parse">Parse</h4></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Parse a given JSON data or object into an instance of this resource's
+class/entity, if possible. An entity always keeps a reference to its
+mother resource, in order to alias methods (e.g. the <em>entity.update()</em>
+method calls the mother <em>resource.update(entity.toJSON())</em> ).</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">parse</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">jsonData</span><span class="p">)</span> <span class="p">{</span>
+
     <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">jsonData</span><span class="p">){</span>
-      <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">jsonData</span><span class="p">))</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="p">[];</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">jsonData</span><span class="p">))</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If response is an array, also create array of entities.</p></div></div><div class="code"><div class="wrapper">        <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="p">[];</span>
         <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">jsonData</span><span class="p">){</span>
           <span class="nx">ret</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">new</span> <span class="k">this</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">](</span><span class="nx">jsonData</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="k">this</span><span class="p">));</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
         <span class="k">return</span> <span class="k">new</span> <span class="k">this</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">](</span><span class="nx">jsonData</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
       <span class="p">}</span>
+
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
       <span class="k">return</span> <span class="nx">jsonData</span><span class="p">;</span>
     <span class="p">}</span>
-  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Return the json object part of the class</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">jsonify</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">classObject</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h4 id="jsonify">Jsonify</h4></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The opposite of parse. It takes an entity and returns only the JSON
+part of it, used to make the calls to the REST API. If the passed object
+is a plain object, do nothing.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">jsonify</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">classObject</span><span class="p">)</span> <span class="p">{</span>
+
     <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">classObject</span> <span class="k">instanceof</span> <span class="k">this</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">])){</span>
       <span class="k">return</span> <span class="nx">classObject</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">();</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
       <span class="k">return</span> <span class="nx">classObject</span><span class="p">;</span>
     <span class="p">}</span>
-  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Send POST request to the api for the given path
-.create() interface:
-- .create(data) &lt;- no options, no callbacks
-- .create(data, options) &lt;- no callbacks or included in options
-- .create(data, options, successCb, errorCb) &lt;- all explicit
-- .create(data, successCb, errorCb) &lt;- no options</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h4 id="create">Create</h4></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Create sends a <code>POST</code> request to the REST API with the provided object data.
+It always returns an entity or JSON object on success. It accepts the
+following parameters:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li><strong><em>create(data)</strong>: just send data (entity or plain JSON), no options,
+no callbacks</em></li>
+<li><strong><em>create(data, options)</strong>: no callbacks or they are included in options</em></li>
+<li><strong><em>create(data, options, successCb, errorCb)</strong>: all explicit params</em></li>
+<li><strong><em>create(data, successCb, errorCb)</strong>: no options, just callbacks</em></li>
+</ul></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+
     <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">data</span> <span class="o">||</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">data</span><span class="p">)){</span>
       <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Create method should have payload.&#39;</span><span class="p">);</span>
     <span class="p">}</span>
@@ -95,24 +138,29 @@ Create class instance from provided json object data, if possible</p></div></div
     <span class="p">};</span>
 
     <span class="k">return</span> <span class="nx">_request</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
-  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Send GET request to the api for the given path
-.read() interface:
-- .read()
-- .read(options)
-- .read(options, successCb, errorCb)
-- .read(successCb, errorCb)</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h4 id="read">Read</h4></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Read sends a <code>GET</code> request to the REST API. It always returns an entity
+or JSON object on success. It accepts the following parameters:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li><strong><em>read()</strong>: no options, no callbacks</em></li>
+<li><strong><em>read(options)</strong>: no callbacks or they are included in options</em></li>
+<li><strong><em>read(options, successCb, errorCb)</strong>: all explicit params</em></li>
+<li><strong><em>read(successCb, errorCb)</strong>: no options, just callbacks</em></li>
+</ul></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+
     <span class="kd">var</span> <span class="nx">requestOptions</span> <span class="o">=</span> <span class="p">{</span>
       <span class="nx">url</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span>
       <span class="nx">authorization</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">scope</span><span class="p">.</span><span class="nx">apiKey</span>
     <span class="p">};</span>
 
     <span class="k">return</span> <span class="nx">_request</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
-  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Send PUT request to the api for the given path
-.update() interface:
-- .update(data) &lt;- no options, no callbacks
-- .update(data, options) &lt;- no callbacks or included in options
-- .update(data, options, successCb, errorCb) &lt;- all explicit
-- .update(data, successCb, errorCb) &lt;- no options</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h4 id="update">Update</h4></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Update sends a <code>PUT</code> request to the REST API. It always returns an entity
+or JSON object on success.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>The interface is the same as <em>.create()</em></strong></p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">data</span> <span class="o">||</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">data</span><span class="p">)){</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Update method should have payload.&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+
     <span class="kd">var</span> <span class="nx">requestOptions</span> <span class="o">=</span> <span class="p">{</span>
       <span class="nx">url</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span>
       <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;put&#39;</span><span class="p">,</span>
@@ -121,7 +169,10 @@ Create class instance from provided json object data, if possible</p></div></div
     <span class="p">};</span>
 
     <span class="k">return</span> <span class="nx">_request</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
-  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Send DELETE request to the api for the given path</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="s1">&#39;delete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h4 id="delete">Delete</h4></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Delete sends a <code>DELETE</code> request to the REST API. It always returns an <em>null</em>
+response on success.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>The interface is the same as <em>.read()</em></strong></p></div></div><div class="code"><div class="wrapper">  <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="s1">&#39;delete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
+
     <span class="kd">var</span> <span class="nx">requestOptions</span> <span class="o">=</span> <span class="p">{</span>
       <span class="nx">url</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span>
       <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span>
@@ -129,7 +180,10 @@ Create class instance from provided json object data, if possible</p></div></div
     <span class="p">};</span>
 
     <span class="k">return</span> <span class="nx">_request</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">requestOptions</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
+
   <span class="p">};</span>
 
+
   <span class="k">return</span> <span class="nx">Resource</span><span class="p">;</span>
+
 <span class="p">});</span></div></div></div></div></body></html>

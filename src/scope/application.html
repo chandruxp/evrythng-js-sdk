@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><title>src/scope/application</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../"><meta name="groc-document-path" content="src/scope/application"><meta name="groc-project-path" content="src/scope/application.js"><meta name="groc-github-url" content="https://github.com/evrythng/evrythng-js-sdk"><link rel="stylesheet" type="text/css" media="all" href="../../assets/style.css"><script type="text/javascript" src="../../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/evrythng/evrythng-js-sdk/blob/master/src/scope/application.js">src/scope/application.js</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h2 id="applicationjs">APPLICATION.JS</h2></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>Here it is defined the ApplicationScope or <code>EVT.App</code>. EVT.App
-is a sub-class of scope and it defines the public API this scope
+is a sub-class of scope and it defines the public API that an App Api Key
 can access to.</strong></p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An Application scope currently has access to:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
 <li>Product resource (<code>R</code>)</li>
 <li>Action resource (<code>C</code>)</li>
@@ -47,20 +47,21 @@ properties in the scope. Also, attach app details into the scope.</p></div></div
 
     <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">app</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If using Facebook, the $init promise is only resolved after FB
 is initialized and user login status is retrieved. In this situation,
-the resolved object of <code>$init</code> is a wrapped object:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><pre><code>{
- status: &lt;Facebook's connected status&gt;,
- authResponse: &lt;Facebook's auth response&gt;,
- user: {
-   facebook: { &lt;Facebook's user info&gt;}
-   &lt;Evrythng's user information&gt;
- },
- app: {
-   &lt;Evrythng's app information&gt;
+the resolved object of <code>$init</code> is a wrapped object:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><pre><code> {
+   status: &lt;Facebook's connected status&gt;,
+   authResponse: &lt;Facebook's auth response&gt;,
+   user: {
+     facebook: { &lt;Facebook's user info&gt;}
+     &lt;Evrythng's user information&gt;
+   },
+   app: {
+     &lt;Evrythng's app information&gt;
+   }
  }
 </code></pre></div></div><div class="code"><div class="wrapper">      <span class="k">if</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">facebook</span><span class="p">){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Get Facebook App ID from the Evrythng App social networks list.</p></div></div><div class="code"><div class="wrapper">        <span class="k">return</span> <span class="nx">Facebook</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">app</span><span class="p">.</span><span class="nx">socialNetworks</span><span class="p">.</span><span class="nx">facebook</span><span class="p">.</span><span class="nx">appId</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
 
-            <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="s1">&#39;connected&#39;</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If user is connected with Faceobok, return a promise with his details.</p></div></div><div class="code"><div class="wrapper">              <span class="k">return</span> <span class="nx">Authentication</span><span class="p">.</span><span class="nx">authFb</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">response</span><span class="p">);</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="s1">&#39;connected&#39;</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If user is connected with Faceobok, return a promise with his details.</p></div></div><div class="code"><div class="wrapper">              <span class="k">return</span> <span class="nx">Authentication</span><span class="p">.</span><span class="nx">authFacebook</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">response</span><span class="p">);</span>
 
             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
               <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
@@ -75,13 +76,17 @@ the resolved object of <code>$init</code> is a wrapped object:</p></div></div></
 
     <span class="p">});</span>
   <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup Scope inheritance.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">ApplicationScope</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Scope</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
-  <span class="nx">ApplicationScope</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">ApplicationScope</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Implement Public API by extending the prototype.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">ApplicationScope</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">ApplicationScope</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">ApplicationScope</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Implement Public API by extending the prototype.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>By default all resource constructors are themselves factory functions
+that are called by the scopes, can receive an ID and return a Resource.
+However, in some situations in our API, the output of different endpoints can
+return be the same. Thus we need to setup the resource constructor to use a certain
+path, and return the correct factory function. This is what happens here with the
+<strong>appUser()</strong> resource constructor.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">ApplicationScope</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
 
     <span class="nx">product</span><span class="o">:</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
 
-    <span class="nx">action</span><span class="o">:</span> <span class="nx">Action</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
-
-    <span class="nx">appUser</span><span class="o">:</span> <span class="nx">AppUser</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">(</span><span class="s1">&#39;/auth/evrythng/users&#39;</span><span class="p">),</span>
+    <span class="nx">action</span><span class="o">:</span> <span class="nx">Action</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup AppUser resource to use <em>'/auth/evrythng/users'</em> instead
+of the default <em>'/users'</em>. Both endpoints return a list of User entities.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">appUser</span><span class="o">:</span> <span class="nx">AppUser</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">(</span><span class="s1">&#39;/auth/evrythng/users&#39;</span><span class="p">),</span>
 
     <span class="nx">login</span><span class="o">:</span> <span class="nx">Authentication</span><span class="p">.</span><span class="nx">login</span>
 
