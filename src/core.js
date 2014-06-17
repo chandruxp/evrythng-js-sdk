@@ -17,6 +17,18 @@ define([
 
   // - ***apiUrl**: String - change the default API host*
   // - ***async**: Boolean - set to false to make synchronous requests (blocks UI)*
+  // - ***fullResponse**: Boolean - by default the response of every call if the JSON
+  // body. However if you need to access the 'status' or 'responseHeaders' in responses
+  // set this to 'true'. The full response has the structure:*
+
+  // ```
+  //  {
+  //    data: <JSON data>,
+  //    headers: <response headers map>
+  //    status: <HTTP status code>
+  //  }
+  // ```
+
   // - ***geolocation**: Boolean - set to true to ask for Geolocation when needed*
   // - ***fetchCascade**: Boolean - set to true to automagically fetch nested entities
   // (e.g. thng.product is an EVT.Product instead of string id)*

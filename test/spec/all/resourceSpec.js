@@ -470,6 +470,14 @@ define([
 
       describe('.update()', function () {
 
+        it('should need some payload', function () {
+          var badCall = function () {
+            productResource.create();
+          };
+
+          expect(badCall).toThrow();
+        });
+
         it('should send PUT request, api Key and payload', function () {
           productResource.update({
             test: 'a'

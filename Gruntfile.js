@@ -64,8 +64,8 @@ module.exports = function(grunt) {
         "src/**/*.js"
       ],
       options: {
-        //out: "docs/",
-        github: true,
+        out: "docs/",
+        //github: true,
         'repository-url': 'https://github.com/evrythng/evrythng-js-sdk',
         index: 'src/evrythng.js'
       }

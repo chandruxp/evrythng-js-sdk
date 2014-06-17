@@ -1,35 +1,53 @@
+// ## FACEBOOK.JS
+
+// **The Facebook module exports wrapped *login*, *logout* and *init* methods
+// from the Facebook SDK, always returning Promises.**
+
 define([
   'rsvp',
   'utils'
 ], function (RSVP, Utils) {
-  /* global FB */
   'use strict';
+  /*global FB*/
 
-  // Load FB SDK asynchronously (using RequireJS) and get status
-  // of logged in user, if any
+  // Load Facebook SDK asynchronously. This means that by default
+  // it is not bundled with EvrythngJS, and is only loaded if an application
+  // needs Facebook authentication.
+
+  // The *init()* method also gets the current user information in one
+  // is already logged in.
   function init(appId) {
 
-    // Return promise and resolve once user status is retrieved
+    // Return promise and resolve once user status is retrieved.
     return new RSVP.Promise(function(resolve){
+
+      // Notice that the FB SDK only works in the browser. Thus, an Evrtyhng
+      // application cannot use Facebook authentication if it is not intended
+      // to run in the browser, as well.
       window.fbAsyncInit = function () {
-        // Initialize FB using Evryhtngs Facebook App ID
+
         FB.init({
           appId: appId,
           version: 'v2.0'
         });
 
-        // Get Login status and user info if connected
+        // Get Login status and user info if connected. Build response as we
+        // fetch more information.
         FB.getLoginStatus(function (response) {
 
-          // response = authResponse + status
+          /*response = authResponse + status*/
           _getUser(response).then(function(userResponse){
 
-            // userResponse = authResponse + status + user
+            /*userResponse = authResponse + status + user*/
             resolve(userResponse);
+
           });
+
         });
       };
 
+      // Inject Facebook SDK script in document (see
+      // [Facebook Developer Docs](https://developers.facebook.com/docs/javascript/quickstart/v2.0)).
       (function(d, s, id){
         var js, fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id)) {return;}
@@ -37,67 +55,77 @@ define([
         js.src = "//connect.facebook.net/en_US/sdk.js";
         fjs.parentNode.insertBefore(js, fjs);
       }(document, 'script', 'facebook-jssdk'));
+
     });
   }
 
-  // Invoke FB login popup, using specified options
+  // Invoke standard Facebook login popup, using specified options.
   function login(options) {
 
-    // Return promise and resolve once user info is received
+    // Return promise and resolve once user info is retrieved.
     return new RSVP.Promise(function (resolve, reject) {
 
-      // Call Facebooks login method
       FB.login(function (response) {
 
-        // response = authResponse + status
+        /*response = authResponse + status*/
         _getUser(response).then(function (userResponse) {
 
-          // userResponse = authResponse + status + user
           if(userResponse.user) {
+
+            /*userResponse = authResponse + status + user*/
             resolve(userResponse);
+
           } else {
+
+            // Reject login promise if the user canceled the FB login.
             reject(userResponse);
+
           }
 
         });
+
       }, options);
 
     });
   }
 
-  // Invoke FB logout and return promise
+  // Invoke Facebook's logout and return promise.
   function logout() {
 
-    // Return promise and resolve once user info is received
     return new RSVP.Promise(function (resolve) {
-
-      // Call Facebooks logout method
-      FB.logout(function (response) {
-        resolve(response);
-      });
-
+      FB.logout(resolve);
     });
   }
 
-  // Get user info if successfully connected
+  // Fetch user info from Facebook if user is successfully connected.
   function _getUser(response) {
+
     if(response.status == 'connected') {
 
-      // Get user details
+      // Return a Promise for the response with user details.
       return new RSVP.Promise(function (resolve) {
+
+        // Until here, `response` was FB's auth response. Here
+        // we start to build bigger response by appending the Facebook's
+        // user info in the `user` property.
         FB.api('/me', function (userInfo) {
           resolve(Utils.extend(response, { user: userInfo }));
         });
+
       });
 
     }else{
+
+      // Return an already resolved promise.
       return new RSVP.Promise(function (resolve) {
         resolve(response);
       });
+
     }
+
   }
 
-  // Export only init and login methods
+  // Expose only the higher level methods.
   return {
     init: init,
     login: login,

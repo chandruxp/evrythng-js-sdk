@@ -1,7 +1,7 @@
 // ## APPLICATION.JS
 
 // **Here it is defined the ApplicationScope or `EVT.App`. EVT.App
-// is a sub-class of scope and it defines the public API this scope
+// is a sub-class of scope and it defines the public API that an App Api Key
 // can access to.**
 
 // An Application scope currently has access to:
@@ -70,15 +70,16 @@ define([
       // the resolved object of `$init` is a wrapped object:
 
       // ```
-      // {
-      //  status: <Facebook's connected status>,
-      //  authResponse: <Facebook's auth response>,
-      //  user: {
-      //    facebook: { <Facebook's user info>}
-      //    <Evrythng's user information>
-      //  },
-      //  app: {
-      //    <Evrythng's app information>
+      //  {
+      //    status: <Facebook's connected status>,
+      //    authResponse: <Facebook's auth response>,
+      //    user: {
+      //      facebook: { <Facebook's user info>}
+      //      <Evrythng's user information>
+      //    },
+      //    app: {
+      //      <Evrythng's app information>
+      //    }
       //  }
       // ```
       if(obj.facebook){
@@ -90,7 +91,7 @@ define([
             if(response.status === 'connected') {
 
               // If user is connected with Faceobok, return a promise with his details.
-              return Authentication.authFb.call($this, response);
+              return Authentication.authFacebook.call($this, response);
 
             } else {
               return response;
@@ -118,12 +119,21 @@ define([
 
 
   // Implement Public API by extending the prototype.
+
+  // By default all resource constructors are themselves factory functions
+  // that are called by the scopes, can receive an ID and return a Resource.
+  // However, in some situations in our API, the output of different endpoints can
+  // return be the same. Thus we need to setup the resource constructor to use a certain
+  // path, and return the correct factory function. This is what happens here with the
+  // **appUser()** resource constructor.
   Utils.extend(ApplicationScope.prototype, {
 
     product: Product.resourceConstructor,
 
     action: Action.resourceConstructor,
 
+    // Setup AppUser resource to use *'/auth/evrythng/users'* instead
+    // of the default *'/users'*. Both endpoints return a list of User entities.
     appUser: AppUser.resourceConstructor('/auth/evrythng/users'),
 
     login: Authentication.login

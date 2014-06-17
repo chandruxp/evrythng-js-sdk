@@ -34,7 +34,7 @@ define([
       }
     }
 
-    return new Resource(this.resource.scope, path, EVT.Thngs);
+    return new Resource(this.resource.scope, path, EVT.Thng);
   }
 
   /**

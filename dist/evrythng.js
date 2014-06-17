@@ -3507,7 +3507,7 @@ define('authentication',[
 
         // If successful, authenticate with Evrythng
         // and apply successCb and resolve promise
-        authFb.call($this, userResponse).then(function (fullResponse) {
+        authFacebook.call($this, userResponse).then(function (fullResponse) {
           if (successCallback) { successCallback(fullResponse);}
           resolve(fullResponse);
         });
