@@ -140,9 +140,7 @@ define([
 
     action: Action.resourceConstructor,
 
-    // Thngs can be retrieved from multiple endpoints. In here we create
-    // a custom resource constructor using the default path.
-    thng: Thng.resourceConstructor(),
+    thng: Thng.resourceConstructor,
 
     collection: Collection.resourceConstructor,
 

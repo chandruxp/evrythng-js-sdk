@@ -1,4 +1,4 @@
-// EVRYTHNG JS SDK v2.0.0
+// EVRYTHNG JS SDK v2.0.0-beta
 
 // (c) 2012-2014 EVRYTHNG Ltd. London / New York / Zurich.
 // Released under the Apache Software License, Version 2.0.
@@ -359,43 +359,57 @@ var requirejs, require, define;
 
 define("almond", function(){});
 
+// ## UTILS.JS
+
+// **The Utils module provide a set of utility methods used
+// across the whole library. For that, it doesn't have any
+// dependency.**
+
 define('utils',[],function () {
   
 
-  function _object(source, override) {
-    var out;
-    if(override) {
-      out = source;
-    } else {
-      out = {};
-      for(var i in source){
-        out[i] = source[i];
-      }
-    }
-    return out;
-  }
-
-  // Helper functions needed to build the module
   return {
+
+    // Check if a variable is a function.
     isFunction: function(fn){
       return Object.prototype.toString.call(fn) == "[object Function]";
     },
 
+    // Check if a variable is a string.
     isString: function(str){
       return Object.prototype.toString.call(str) == "[object String]";
     },
 
+    // Check if a variable is an array.
     isArray: function(arr){
       return Object.prototype.toString.call(arr) == "[object Array]";
     },
 
+    // Check if a variable is an Object (includes Object functions and
+    // plain objects)
     isObject: function(obj) {
       return obj === Object(obj) && !this.isArray(obj);
     },
 
+    // Simple and shallow extend method, used to extend an object's properties
+    // with another object's. The `override` parameter defines if the
+    // source object should be overriden or if this method should return a new
+    // object (it is *false by default*).
     extend: function(source, obj, override) {
-      var out = _object(source, override);
+      var out;
 
+      // Create extensible object.
+      if(override) {
+        out = source;
+      } else {
+        // Create shallow copy of source.
+        out = {};
+        for(var i in source){
+          out[i] = source[i];
+        }
+      }
+
+      // Copy properties.
       for(var j in obj) {
         if(obj.hasOwnProperty(j)) {
           out[j] = obj[j];
@@ -405,17 +419,22 @@ define('utils',[],function () {
       return out;
     },
 
-    // Helper method to build query string
+    // Build URL query string params out of a javascript object.
+    // Encode key and value components as they are appended to query string.
     buildParams: function (params) {
       var paramsStr = [];
+
       for (var key in params) {
         if (params.hasOwnProperty(key) && params[key] !== undefined) {
           paramsStr.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
         }
       }
+
+      // Build string from the array.
       return paramsStr.join('&');
     },
 
+    // Build full URL from a base url and params, if there are any.
     buildUrl: function(options){
       var url = options.url || '';
 
@@ -425,45 +444,70 @@ define('utils',[],function () {
 
       return url;
     }
+
   };
+
 });
+// ## CORE.JS
+
+// **The Core module specifies the core EVT module and the client
+// default settings. The library is built by adding functionality or
+// sub-modules to EVT.**
+
 define('core',[
   'utils'
 ], function (Utils) {
   
 
-  // Private properties
-  // Version is udpated from package.json
-  var version = '2.0.0';
+  // Version is udpated from package.json using `grunt-version` on build.
+  var version = '2.0.0-beta';
 
 
   // Setup default settings:
-  // - API URL: String, change the default API host
-  // - Async: Boolean, set to false to block UI during requests
-  // - FetchCascade: Boolean, set to true to automatically fetch nested entities
-  // - OnStartRequest: Function, run before each HTTP call (e.g. start Spinner)
-  // - OnFinishRequest: Function, run after each HTTP call
-  // - Geolocation: Boolean, true to ask for Geolocation when needed (e.g. actions)
+
+  // - ***apiUrl**: String - change the default API host*
+  // - ***async**: Boolean - set to false to make synchronous requests (blocks UI)*
+  // - ***fullResponse**: Boolean - by default the response of every call if the JSON
+  // body. However if you need to access the 'status' or 'responseHeaders' in responses
+  // set this to 'true'. The full response has the structure:*
+
+  // ```
+  //  {
+  //    data: <JSON data>,
+  //    headers: <response headers map>
+  //    status: <HTTP status code>
+  //  }
+  // ```
+
+  // - ***geolocation**: Boolean - set to true to ask for Geolocation when needed*
+  // - ***fetchCascade**: Boolean - set to true to automagically fetch nested entities
+  // (e.g. thng.product is an EVT.Product instead of string id)*
+  // - ***onStartRequest**: Function - run before each HTTP call (e.g. start Spinner)*
+  // - ***onFinishRequest**: Function - run after each HTTP call*
   var defaultSettings = {
     apiUrl: 'https://api.evrythng.com',
     async: true,
-    fullResponse: false
+    fullResponse: false,
+    geolocation: true
     /*fetchCascade: false,
     onStartRequest: null,
-    onFinishRequest: null,
-    geolocation: true*/
+    onFinishRequest: null*/
   };
 
 
-  // Module definition and public API
+  // Module definition and raw API.
   var EVT = {
     version: version,
 
     settings: defaultSettings,
 
-    setup: function (options) {
-      if(Utils.isObject(options)){
-        this.settings = Utils.extend(defaultSettings, options);
+    // Setup method allows the developer to change overall settings for every
+    // subsequent request. However, these can be overriden for each request as well.
+    // Setup merges current settings with the new custom ones.
+    setup: function (customSettings) {
+
+      if(Utils.isObject(customSettings)){
+        this.settings = Utils.extend(this.settings, customSettings);
       }else{
         throw new TypeError('Setup should be called with an options object.');
       }
@@ -473,20 +517,33 @@ define('core',[
   };
 
   return EVT;
+
 });
+
+// ## SCOPE.JS
+
+// **Scope defines the context in which API calls are made.
+// Thus, it stores its defining API Key. Scopes send their
+// respective `API Key` in their request's `Authorization` header.**
+
+// *For example, reads on products using ApplicationScope or
+// EVT.App only return the products created for that specific
+// application/scope.*
 
 define('scope/scope',[
   'utils'
 ], function (Utils) {
   
 
-  // Scope constructor
-  // see https://gist.github.com/jonnyreeves/2474026 for example
+  // Scope super class constructor:
+
+  // - ***new Scope(apiKey)** - API Key string*
   var Scope = function(apiKey){
 
+    // Default parent scope does not have parent.
     this.parentScope = null;
 
-    // Setup apiKey of the current Scope
+    // Setup apiKey of the current Scope if it is a String.
     if(Utils.isString(apiKey)){
       this.apiKey = apiKey;
     }else{
@@ -494,32 +551,33 @@ define('scope/scope',[
     }
   };
 
+  // Return Scope factory function
   return Scope;
+
 });
+
+// ## LOGGER.JS
+
+// **The Logger module is simple wrapper for console log
+// that prefixes EvrythngJS's logs with a custom header.**
 
 define('logger',[],function () {
   
 
-  function _console(type, data){
-    if(!console) { return; }
-
-    if (type === 'error') {
-      console.error('EvrythngJS Error: ', data);
-    } else {
-      console.info('EvrythngJS Info: ', data);
-    }
-  }
-
+  var header = 'EvrythngJS';
 
   return {
+
     error: function(data){
-      return _console('error', data);
+      console.error(header + ' Error: ', data);
     },
 
     info: function(data){
-      return _console('info', data);
+      console.info(header + ' Info: ', data);
     }
+
   };
+
 });
 /**
   @class RSVP
@@ -2496,6 +2554,18 @@ define('rsvp', [
     __exports__.map = map;
     __exports__.filter = filter;
 });
+// ## CORS.JS
+
+// **The Cors module implements a simple CORS request using *XmlHttpRequest*.
+// For browsers that don't properly support CORS (XHR2) we use JSON-P
+// instead.**
+
+// **In Node.js the *XmlHttpRequest* is proxied using the `w3c-xmlhttprequest`
+// dependency, which is installed when installing EvrythngJS NPM package.**
+
+// *This implementation is based on Nicholas Zakas' in
+// [html5rocks](http://www.html5rocks.com/en/tutorials/cors/).*
+
 define('ajax/cors',[
   'core',
   'rsvp',
@@ -2504,11 +2574,16 @@ define('ajax/cors',[
 ], function (EVT, RSVP, Utils, Logger) {
   
 
-  function _buildResponse(xhr, withFullResponse){
+  // Helper method used to build the returned response. It parses the JSON
+  // 'data' response and wraps the 'status' and 'headers' in an object in
+  // case the flag `fullResponse` is enabled as a global in `EVT.settings`
+  // or in this particular request. *200 OK* responses without data,
+  // return *null*.
+  function _buildResponse(xhr, fullResponse){
+
     var response = xhr.responseText? JSON.parse(xhr.responseText) : null;
 
-    // Wrap response in object with headers
-    if(withFullResponse){
+    if(fullResponse){
       response = {
         data: response,
         headers: xhr.responseHeaders,
@@ -2519,6 +2594,8 @@ define('ajax/cors',[
     return response;
   }
 
+  // Helper method that builds a custom Error object providing some extra
+  // information on a request error.
   function _buildError(xhr, url, method, response){
     var errorData = {
       status: xhr.status,
@@ -2528,39 +2605,46 @@ define('ajax/cors',[
       method: method
     };
 
+    // Evrythng's API return an array of errors in the response. Add them
+    // if available.
     if(response) { errorData.errors = response.errors; }
 
     return errorData;
   }
 
-  // Nicholas Zakas in http://www.html5rocks.com/en/tutorials/cors/
+
+  // Create an XHR2 object, if possible. The request will be synchronous or
+  // asynchronous based on the global `async` flag in `EVT.settings` or in
+  // this particular request.
   function _createXhr(method, url, async) {
+
     var xhr = new XMLHttpRequest();
+
+    // Check if the XMLHttpRequest object has a *withCredentials* property.
+    // *withCredentials* only exists on XmlHttpRequest2 objects.
     if ("withCredentials" in xhr) {
 
-      // Check if the XMLHttpRequest object has a "withCredentials" property.
-      // "withCredentials" only exists on XMLHTTPRequest2 objects.
       xhr.open(method, url, async);
 
     } else {
 
-      // Otherwise, CORS is not supported by the browser.
-      // IEs XDR does not support custom headers, including Authentication
-      // which means its useless for us. Use Jsonp instead.
+      // Otherwise, 'CORS is not supported by the browser'. IEs pseudo-XDR
+      // does not support custom headers, including *Authorization*, which
+      // means it is useless for us. Use JSON-P instead.
       xhr = null;
+
     }
+
     return xhr;
   }
 
-  // Make the actual CORS request. Options:
-  // - method: String
-  // - url: String
-  // - authorization: String
-  // - accept: String
-  // - fullResponse: Boolean
-  // - success: Function
-  // - error: Function
+
+  // Make the actual CORS request. Options available are defined in the [`ajax`
+  // module doc](../ajax.html). Default method is `GET`, URL is relative to
+  // `EVT.settings.apiUrl`, it is asynchronous by default and returns the
+  // JSON data response.
   function cors(options, successCallback, errorCallback){
+
     options = options || {};
 
     var method = options.method || 'get',
@@ -2570,87 +2654,93 @@ define('ajax/cors',[
 
     if (xhr) {
 
-      // Data to send in request
-      var data = options.data ? JSON.stringify(options.data) : null,
-        successCb, errorCb;
+      // Send serialized JSON data.
+      var data = options.data ? JSON.stringify(options.data) : null;
 
-      // TODO: pass this verification to EVT.api()
-      // Setup Success Callback (priority to second parameter)
-      if(Utils.isFunction(successCallback)){
-        successCb = successCallback;
-      }else if(Utils.isFunction(options.success)){
-        successCb = options.success;
-      }
-
-      // Setup Error Callback (priority to third parameter)
-      if(Utils.isFunction(errorCallback)){
-        errorCb = errorCallback;
-      }else if(Utils.isFunction(options.error)){
-        errorCb = options.error;
-      }
-
-
-      // Setup headers
+      // Setup headers, including the *Authorization* that holds the Api Key.
       xhr.setRequestHeader('Content-Type', 'application/json');
-      if(options.accept) { xhr.setRequestHeader('Accept', options.accept); }
       if(options.authorization) { xhr.setRequestHeader('Authorization', options.authorization); }
 
 
-      // If request is made synchronously, return direct response or error
+      // If request is made synchronously, return direct response or error.
+      // Synchronous requests don't use callbacks.
+
+      // **Note: Synchronous requests block the UI until result is received!**
       if(!async){
 
-        // Request blocks the UI until it's finished
         xhr.send(data);
 
+        // At this point, response was already received.
         var response = _buildResponse(xhr, options.fullResponse);
 
+        // HTTP status of 2xx is considered a success.
         if(xhr.status >= 200 && xhr.status < 300) {
           return response;
         } else {
           Logger.error(_buildError(xhr, url, method, response));
-          throw new Error('CORS Request failed. View log for more info.');
+          throw new Error('Synchronous CORS Request failed.');
         }
 
       }else{
+
         // Do a normal asynchronous request and return a promise. If there
-        // are callbacks execute then as well, before resolving the promise.
+        // are callbacks execute them as well before resolving the promise.
         return new RSVP.Promise(function(resolve, reject) {
 
-          // Response handler
+          // Define the response handler.
           function handler() {
             if (this.readyState === this.DONE) {
+
               var response = _buildResponse(this, options.fullResponse);
 
-              // Resolve or reject promise given the response status
+              // Resolve or reject promise given the response status.
+              // HTTP status of 2xx is considered a success.
               if (this.status >= 200 && this.status < 300) {
-                if(successCb) { successCb(response); }
+
+                if(successCallback) { successCallback(response); }
                 resolve(response);
 
               } else {
+
                 var errorData = _buildError(this, url, method, response);
                 Logger.error(errorData);
 
-                if(errorCb) { errorCb(errorData); }
+                if(errorCallback) { errorCallback(errorData); }
                 reject(errorData);
+
               }
+
             }
           }
 
-          // Send request
+          // Send the request and wait for the response in the handler.
           xhr.onreadystatechange = handler;
           xhr.send(data);
+
         });
       }
 
     } else {
+
+      // Unable to create XHR2 object. Throw recognizable 'CorsError' exception
       var ex = new Error('CORS not supported.');
       ex.name = 'CorsError';
       throw ex;
+
     }
   }
 
   return cors;
+
 });
+
+// ## CORS.JS
+
+// **The Jsonp module implements a simple JSON-P fetcher. JSON-P is
+// deprecated until IE<10 cease to exist and only works in browsers.**
+
+// *This implementation is based on
+// [Lightweight-JSONP](https://github.com/IntoMethod/Lightweight-JSONP).*
 
 define('ajax/jsonp',[
   'core',
@@ -2660,9 +2750,11 @@ define('ajax/jsonp',[
 ], function (EVT, RSVP, Utils, Logger) {
   
 
-  // Lightweight JSONP fetcher
+  // Counter defines uniquely identified callbacks.
   var counter = 0, head;
 
+  // Helper method that builds a custom Error object providing some extra
+  // information on a request error.
   function _buildError(url, status, method, response){
     var errorData = {
       status: status,
@@ -2677,13 +2769,18 @@ define('ajax/jsonp',[
     return errorData;
   }
 
+  // Making the request is as simple as appending a new script tag
+  // to the document. The URL has the *callback* parameter with the
+  // function that will be called with the repsonse data and *async* flag
+  // tells if the request should be synchronous and block the UI or not.
   function _load(url, async) {
+
     var script = document.createElement('script'),
       done = false;
     script.src = url;
     script.async = async;
 
-    // On load, remove script from document
+    // Once the script has been loaded remove the tag from the document.
     script.onload = script.onreadystatechange = function() {
       if ( !done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete") ) {
         done = true;
@@ -2698,23 +2795,30 @@ define('ajax/jsonp',[
       head = document.getElementsByTagName('head')[0];
     }
 
-    // Actually load script
+    // Actually load script.
     head.appendChild( script );
   }
 
 
+  // Jsonp method sets prepares the script url with all the information
+  // provided and defines the callback handler.
   function jsonp(options, successCallback, errorCallback) {
     /*jshint camelcase:false */
 
     options = options || {};
 
+    // Evrythng REST API default endpoint does not provide JSON-P
+    // support, which '//js-api.evrythng.com' does.
     if(options.url) {
       options.url = options.url.replace('//api', '//js-api');
     }
 
+    // Define unique callback name.
     var uniqueName = 'callback_json' + (++counter);
 
-    // Send all data via GET request params
+
+    // Send all data (including method, api key and data) via GET
+    // request params.
     var params = options.params || {};
     params.callback = uniqueName;
     params.access_token = options.authorization;
@@ -2725,11 +2829,14 @@ define('ajax/jsonp',[
     var async = options.async !== undefined ? options.async : true,
       url = Utils.buildUrl(options);
 
-    // Return a promise
+
+    // Return a promise and resolve/reject it in the callback function.
     return new RSVP.Promise(function(resolve, reject) {
 
-      // Response handler
-      window[ uniqueName ] = function(response){
+      // Attach callback as a global method. Evrythng's REST API error
+      // responses always have a status and array of errors.
+      window[uniqueName] = function(response){
+
         if (response.errors && response.status) {
 
           var errorData = _buildError(url, response.status, params.method, response);
@@ -2745,19 +2852,27 @@ define('ajax/jsonp',[
 
         }
 
-        // Cleanup callback from window
+        // Remove callback from window.
         try {
-          delete window[ uniqueName ];
+          delete window[uniqueName];
         } catch (e) {}
-        window[ uniqueName ] = null;
+        window[uniqueName] = null;
       };
 
       _load(url, async, reject);
+
     });
   }
 
   return jsonp;
+
 });
+
+// ## AJAX.JS
+
+// **The Ajax module attaches the api() method to the EVT module.
+// It controls the raw request to the API, first by trying a CORS
+// request and if it fails, continuing with JSON-P.**
 
 define('ajax',[
   'core',
@@ -2765,14 +2880,30 @@ define('ajax',[
   'ajax/jsonp',
   'utils',
   'logger'
-], function (EVT, corsRequest, jsonpRequest, Utils, Logger) {
+], function (EVT, cors, jsonp, Utils, Logger) {
   
 
-  // EVT.api interface:
-  // - EVT.api(obj)
-  // - EVT.api(obj, successCb, errorCb)
-  function ajaxRequest(options, successCallback, errorCallback) {
-    // Merge options with defaults
+  // The ajax() method or EVT.api() returns a **Promise**. Nevertheless,
+  // it still allows the old-styled callback API as follows:
+
+  // - ***EVT.api(options)** - options object can contain `success` or `error`
+  // properties to define success and error callbacks*
+  // - ***EVT.api(options, successCb, errorCb)***
+
+  // Options available are:
+
+  // ```
+  // fullResponse - override fullResponse global setting (see module `core`)
+  // async - override async global setting (see module `core`)
+  // url - URL of the request, relative to `EVT.settings.apiUrl`
+  // method - HTTP method, default: `GET`
+  // authorization - Authorization header content, should contain API Key
+  // success - success handler function
+  // error - error handler function
+  // ```
+  function ajax(options, successCallback, errorCallback) {
+
+    // Merge options with defaults setup in `EVT.settings`.
     var requestOptions = Utils.extend({
       async: EVT.settings.async,
       fullResponse: EVT.settings.fullResponse
@@ -2780,22 +2911,59 @@ define('ajax',[
 
     requestOptions.url = EVT.settings.apiUrl + requestOptions.url;
 
-    // Returns the Promise or imediate response if async = false.
-    // Fallback to Jsonp.
+
+    // Setup callbacks giving priority to parameters.
+    var successCb, errorCb;
+
+    if(Utils.isFunction(successCallback)){
+      successCb = successCallback;
+    }else if(Utils.isFunction(options.success)){
+      successCb = options.success;
+    }
+
+    if(Utils.isFunction(errorCallback)){
+      errorCb = errorCallback;
+    }else if(Utils.isFunction(options.error)){
+      errorCb = options.error;
+    }
+
+
+    // Returns a promise or imediate response if async = false.
+    // Try to use XmlHttpRequest with CORS and fallback to JSON-P.
     try {
-      return corsRequest(requestOptions, successCallback, errorCallback);
+
+      return cors(requestOptions, successCb, errorCb);
+
     }catch(ex){
-      if(ex.name != 'CorsError') { throw ex; }
+
+      // Re-throw error, if it is not a CORS problem.
+      if(ex.name !== 'CorsError') { throw ex; }
 
       Logger.info('CORS not supported. Continuing with JSONP...');
-      return jsonpRequest(requestOptions, successCallback, errorCallback);
+      return jsonp(requestOptions, successCb, errorCb);
     }
   }
 
-  EVT.api = ajaxRequest;
+  // Attach ajax method to the EVT module.
+  EVT.api = ajax;
 
   return EVT;
+
 });
+
+// ## RESOURCE.JS
+
+// **The private Resource module setups up the base resource CRUD methods.
+// All requests made on a resource are scoped, meaning they will send the
+// resouce's owner scope's API Key.**
+
+// **Another important feature is that if the resource has a class/entity, which
+// it allows to serialize and deserialize requests and responses. Also, with the
+// `fetchCascade` option enabled, an entity knows how to automatically fetch nested
+// entities.**
+
+// *For example, the result of a .read() can be a Thng entity, that has specific
+// methods to update itself, get the corresponding product or manage properties.*
 
 define('resource',[
   'core',
@@ -2806,31 +2974,45 @@ define('resource',[
 ], function (EVT, Scope, Utils, Logger) {
   
 
-  // Resource constructor
+  // Resource constructor. As this is a private module, all resource constructors
+  // are called within scopes. It accepts:
+
+  // - ***scope**: scope that owns this resource (`EVT.App`, `EVT.User`)*
+  // - ***path**: relative path to `EVT.settings.apiUrl` of this resource.
+  // It can represent a list or a single object (e.g. '/thngs', '/thngs/1')*
+  // - ***classFn**: class of the current resource, used to serialize/deserialize
+  // requests/responses. If the response does not need special treatment and the
+  // JSON representation is enough, the classFn can be omitted.*
   var Resource = function(scope, path, classFn) {
 
-    // Setup scope for each of the subsequent calls
+    // Setup scope for each of the subsequent calls.
     if(scope && scope instanceof Scope){
       this.scope = scope;
     } else {
-      throw new TypeError('Scope must be instance of Scope (e.g. EVT.App).');
+      throw new TypeError('Scope should inherit from Scope (e.g. EVT.App).');
     }
 
-    // Setup path
+    // Setup path and allow to omit leading '/'.
     if(Utils.isString(path)){
+
       if (path[0] != '/') { path = '/' + path; }
       this.path = path;
+
     } else {
       throw new TypeError('Resource must have a String path.');
     }
 
-    // Setup class for serializing and deserializing results
+    // Setup class for serializing and deserializing results. It must implement
+    // a *toJSON()* method. This method is in the Entity prototype. Since all of our
+    // entities inherit from Entity, by default all of them will have this.
     if(Utils.isFunction(classFn)){
+
       if (Utils.isFunction(classFn.prototype.toJSON)) {
         this['class'] = classFn;
       }else{
         Logger.error('Class for resource "' + path + '" does not implement toJSON().');
       }
+
     } else {
       Logger.info('Class for resource "' + path + '" undefined. It will not return ' +
         'proper Entities nor cascaded Entities.');
@@ -2839,80 +3021,132 @@ define('resource',[
   };
 
 
+  // Helper method to prepare and handle a request giving the parameters passed to
+  // any of the resource methods. Allow to have callbacks as separate parameters or
+  // included in the options object, providing exactly the same interface as `EVT.api()`.
   function _request(requestOptions, userOptions, successCallback, errorCallback) {
     var successCb = successCallback,
       errorCb = errorCallback,
       request;
 
+    // This verification allows not to pass any options, and have callbacks in
+    // its place. It also allows passing *null* if there is no success callback.
     if(Utils.isFunction(userOptions) || userOptions === null){
+
       successCb = userOptions;
       errorCb = successCallback;
+
     }else if (Utils.isObject(userOptions)) {
+
+      // If options is an object, merge it with the request options. Callbacks
+      // can be included in this object or as separate parameters (same as
+      // `EVT.api()`).
       requestOptions = Utils.extend(userOptions, requestOptions);
+
     }
 
+    // Actually make the request and handle its response, by forwarding to
+    // the raw `EVT.api()` method.
     request = EVT.api(requestOptions, successCb, errorCb);
-    return _handleResponse.call(this, request, userOptions, this.parse);
+
+    return _handleResponse.call(this, request, userOptions);
   }
 
-
-  function _handleResponse(req, userOptions, success) {
-    var async = (userOptions && userOptions.async !== undefined) ? userOptions.async : EVT.settings.async;
+  // Handle synchronous or asynchronous requests based on the custom or
+  // default options.
+  function _handleResponse(request, userOptions) {
+    var async = (userOptions && userOptions.async !== undefined) ?
+      userOptions.async : EVT.settings.async;
 
     if(async){
+
       var $this = this;
 
-      // The success callback below is called from RSVP in a completely different
-      // context. So we should explicitly pass this Resource context to the success call.
-      return req.then(function (response) {
-        return success.call($this, response);
+      // If request is async, and before returning the response, parse it.
+      // This success handler is called inside RSVP, so we need to keep the
+      // current context.
+
+      // Also, By not providing an error interceptor, we will let the error
+      // propagate from `EVT.api()` to the `resource.read()` promise error
+      // handler
+      return request.then(function (response) {
+        return $this.parse(response);
       });
 
-      // By not providing a error interceptor, we will let the error propagate
-      // from EVT.api to the .read() error handler
-
     } else {
-      return req;
+      return request;
     }
   }
 
 
-  /**
-   * Define the Resource API
-   */
-    // Create class instance from provided json object data, if possible
+  // ### Resource API
+
+  // Any resource create in a scope will inherit these methods. However, it
+  // is possible to add custom methods to a resource in a custom Entity
+  // *resourceConstructor* (e.g. refer to the [`entity/appUser` doc](entity/appUser.html),
+  // where a *.validate()* method is added to every AppUser resource).
+
+  // **Remember that all CRUD methods forward to `EVT.api()` which returns a Promise.**
+
+  // #### Parse
+
+  // Parse a given JSON data or object into an instance of this resource's
+  // class/entity, if possible. An entity always keeps a reference to its
+  // mother resource, in order to alias methods (e.g. the *entity.update()*
+  // method calls the mother *resource.update(entity.toJSON())* ).
   Resource.prototype.parse = function (jsonData) {
+
     if(this['class'] && jsonData){
+
       if(Utils.isArray(jsonData)) {
+
+        // If response is an array, also create array of entities.
         var ret = [];
         for(var i in jsonData){
           ret.push(new this['class'](jsonData[i], this));
         }
         return ret;
+
       } else {
         return new this['class'](jsonData, this);
       }
+
     } else {
       return jsonData;
     }
+
   };
 
-  // Return the json object part of the class
+
+  // #### Jsonify
+
+  // The opposite of parse. It takes an entity and returns only the JSON
+  // part of it, used to make the calls to the REST API. If the passed object
+  // is a plain object, do nothing.
   Resource.prototype.jsonify = function (classObject) {
+
     if(this['class'] && (classObject instanceof this['class'])){
       return classObject.toJSON();
     } else {
       return classObject;
     }
+
   };
 
-  // Send POST request to the api for the given path
-  // .create() interface:
-  // - .create(data) <- no options, no callbacks
-  // - .create(data, options) <- no callbacks or included in options
-  // - .create(data, options, successCb, errorCb) <- all explicit
-  // - .create(data, successCb, errorCb) <- no options
+
+  // #### Create
+
+  // Create sends a `POST` request to the REST API with the provided object data.
+  // It always returns an entity or JSON object on success. It accepts the
+  // following parameters:
+
+  // - ***create(data)**: just send data (entity or plain JSON), no options,
+  // no callbacks*
+  // - ***create(data, options)**: no callbacks or they are included in options*
+  // - ***create(data, options, successCb, errorCb)**: all explicit params*
+  // - ***create(data, successCb, errorCb)**: no options, just callbacks*
   Resource.prototype.create = function (data, options, successCallback, errorCallback) {
+
     if(!data || Utils.isFunction(data)){
       throw new TypeError('Create method should have payload.');
     }
@@ -2925,30 +3159,43 @@ define('resource',[
     };
 
     return _request.call(this, requestOptions, options, successCallback, errorCallback);
+
   };
 
-  // Send GET request to the api for the given path
-  // .read() interface:
-  // - .read()
-  // - .read(options)
-  // - .read(options, successCb, errorCb)
-  // - .read(successCb, errorCb)
+
+  // #### Read
+
+  // Read sends a `GET` request to the REST API. It always returns an entity
+  // or JSON object on success. It accepts the following parameters:
+
+  // - ***read()**: no options, no callbacks*
+  // - ***read(options)**: no callbacks or they are included in options*
+  // - ***read(options, successCb, errorCb)**: all explicit params*
+  // - ***read(successCb, errorCb)**: no options, just callbacks*
   Resource.prototype.read = function (options, successCallback, errorCallback) {
+
     var requestOptions = {
       url: this.path,
       authorization: this.scope.apiKey
     };
 
     return _request.call(this, requestOptions, options, successCallback, errorCallback);
+
   };
 
-  // Send PUT request to the api for the given path
-  // .update() interface:
-  // - .update(data) <- no options, no callbacks
-  // - .update(data, options) <- no callbacks or included in options
-  // - .update(data, options, successCb, errorCb) <- all explicit
-  // - .update(data, successCb, errorCb) <- no options
+
+  // #### Update
+
+  // Update sends a `PUT` request to the REST API. It always returns an entity
+  // or JSON object on success.
+
+  // **The interface is the same as *.create()***
   Resource.prototype.update = function (data, options, successCallback, errorCallback) {
+
+    if(!data || Utils.isFunction(data)){
+      throw new TypeError('Update method should have payload.');
+    }
+
     var requestOptions = {
       url: this.path,
       method: 'put',
@@ -2957,10 +3204,18 @@ define('resource',[
     };
 
     return _request.call(this, requestOptions, options, successCallback, errorCallback);
+
   };
 
-  // Send DELETE request to the api for the given path
+
+  // #### Delete
+
+  // Delete sends a `DELETE` request to the REST API. It always returns an *null*
+  // response on success.
+
+  // **The interface is the same as *.read()***
   Resource.prototype['delete'] = function (options, successCallback, errorCallback) {
+
     var requestOptions = {
       url: this.path,
       method: 'delete',
@@ -2968,92 +3223,16 @@ define('resource',[
     };
 
     return _request.call(this, requestOptions, options, successCallback, errorCallback);
-  };
-
-  return Resource;
-});
-define('entity/entity',[
-  'resource',
-  'utils'
-], function (Resource, Utils) {
-  
-
-  // Entity Constructor. Accepts:
-  // - Entity()
-  // - Entity(obj)
-  // - Entity(resource)
-  // - Entity(obj, resource)
-  var Entity = function (objData, resource) {
-
-    // Allow resource on first parameter without object
-    if(Utils.isObject(objData) && objData instanceof Resource){
-
-      this.resource = objData;
-
-    }else{
-      // normal constructor
-      this.resource = resource;
-
-      if(Utils.isObject(objData)){
-        Utils.extend(this, objData, true);
-
-        if(this.resource && objData.id){
-          // Add or replace path with ID
-          var pathSplit = this.resource.path.split('/');
-          if(pathSplit[pathSplit.length-1] !== objData.id) {
-            this.resource.path += '/' + objData.id;
-          }
-        }
-      }
-
-    }
 
   };
 
-  // Return updated JSON object that is stored in engine
-  Entity.prototype.toJSON = function () {
-    var json = {};
 
-    for(var prop in this){
-      if(this[prop] && !Utils.isFunction(this[prop]) && prop != 'resource'){
-        json[prop] = this[prop];
-      }
-    }
+  // Given we don't have subclasses of Resource, this static factory method
+  // allows to generate a resource constructor given a path and class.
 
-    return json;
-  };
-
-  Entity.prototype.update = function (obj) {
-    if(this.resource){
-      var args = arguments,
-        $this = this;
-
-      if(obj === null || !obj || Utils.isFunction(obj)) {
-        // Make real array from arguments
-        args = Array.prototype.slice.call(arguments, 0);
-        args.unshift(this.toJSON());
-      }
-
-      return this.resource.update.apply(this.resource, args)
-        .then(function (updated) {
-          Utils.extend($this, updated, true);
-          return updated;
-        });
-
-    } else {
-      throw new Error('This entity has no resource');
-    }
-  };
-
-  Entity.prototype['delete'] = function () {
-    if(this.resource) {
-      return this.resource['delete'].apply(this.resource, arguments);
-    } else {
-      throw new Error('This entity has no resource');
-    }
-  };
-
-  Entity.resourceConstructor = function (path, classFn) {
+  // By default all resource constructors receive a string ID for single
+  // entity resources.
+  Resource.constructorFactory = function (path, classFn) {
     return function (id) {
       var fullPath = path || "";
 
@@ -3069,6 +3248,133 @@ define('entity/entity',[
     };
   };
 
+
+  return Resource;
+
+});
+// ## ENTITY.JS
+
+// **Entity is a private super class that implements base common methods for
+// all Evrythng objects. It establishes the way objects are converted
+// to JSON, and provide an *update()* and *delete()* method for all entities.**
+
+define('entity/entity',[
+  'resource',
+  'utils'
+], function (Resource, Utils) {
+  
+
+  // The entity constructor, and therefore all the standard inheritances,
+  // accepts:
+
+  // - ***new Entity()**: create an empty entity*
+  // - ***new Entity(obj)**: entity with merged obj properties*
+  // - ***new Entity(resource)**: empty entity bound to a Resource*
+  // - ***new Entity(obj, resource)**: fully build entity bound to a Resource*
+
+  // *Nevertheless, an Entity without Resource cannot request any
+  // update or delete. It can however be passed to resources as
+  // 'payload' instead of JSON.*
+
+  // ```js
+  //  var prod = new EVT.Product({ foo: 'bar' };
+  //  // prod.update() // throws error
+  //  app.product().create(prod); // create product
+  // ```
+
+  var Entity = function (objData, resource) {
+
+    if(Utils.isObject(objData)){
+
+      if(objData instanceof Resource){
+        this.resource = objData;
+      } else {
+
+        this.resource = resource;
+
+        Utils.extend(this, objData, true);
+
+        // If entity was created by a list resource (e.g. '/thngs')
+        // then update its resource path to be = parent resource path +
+        // objData ID. This allows a newly created object to be *updated*
+        // and *deleted* straight away.
+        if(this.resource && objData.id){
+
+          var pathSplit = this.resource.path.split('/');
+          if(pathSplit[pathSplit.length-1] !== objData.id) {
+            this.resource.path += '/' + objData.id;
+          }
+
+        }
+      }
+
+    }
+  };
+
+  // Return the JSON object that is stored in engine. All non-function properties
+  // except *resource* are properties of the object.
+  Entity.prototype.toJSON = function () {
+    var json = {};
+
+    for(var prop in this){
+      if(this[prop] && !Utils.isFunction(this[prop]) && prop != 'resource'){
+        json[prop] = this[prop];
+      }
+    }
+
+    return json;
+  };
+
+  // Every entity can update itself via its resource reference. It does so by
+  // passing its JSON representation to the *resouce.update()*.
+
+  // An entity update, as every request, returns a Promise. Although it also
+  // allows callbacks as:
+
+  // - ***update()**: simple update itself with modified properties*
+  // - ***update(obj)**: update itself with new properties*
+  // - ***update(obj, successCb, errorCb)**: previous, with callbacks*
+  // - ***update(successCb, errorCb)**: update itself and use callbacks*
+  Entity.prototype.update = function (obj) {
+    if(this.resource){
+
+      var args = arguments, $this = this;
+
+      // No object is passed, shift arguments. Add its JSON representation
+      // as the first argument.
+      if(obj === null || !obj || Utils.isFunction(obj)) {
+        args = Array.prototype.slice.call(arguments, 0);
+        args.unshift(this.toJSON());
+      }
+
+      return this.resource.update.apply(this.resource, args)
+        .then(function (updated) {
+
+          // Update itself with the result and return raw response from API.
+          Utils.extend($this, updated, true);
+          return updated;
+
+        });
+
+    } else {
+      throw new Error('This entity has no resource');
+    }
+  };
+
+
+  // Delete method also accepts callbacks as:
+
+  // - ***delete()**: handle with promise*
+  // - ***delete(successCb, errorCb)**: handle with callbacks*
+  Entity.prototype['delete'] = function () {
+    if(this.resource) {
+      return this.resource['delete'].apply(this.resource, arguments);
+    } else {
+      throw new Error('This entity has no resource');
+    }
+  };
+
+
   return Entity;
 
 });
@@ -3080,30 +3386,56 @@ define('entity/property',[
 ], function (EVT, Entity, Resource, Utils) {
   
 
+  // Setup Property inheritance from Entity.
   var Property = function () {
-
-    // Setup base Scope
     Entity.apply(this, arguments);
   };
 
-  // Setup inheritance
   Property.prototype = Object.create(Entity.prototype);
   Property.prototype.constructor = Property;
 
+
+  // The property update normalization of arguments allows to
+  // make easier and more intuitive calls, such as:
+
+  // - Single property update:
+
+  // ```
+  //  thng.property('status').update('off');
+  //  thng.property('status').update({
+  //    value: 'off'
+  //  });
+  // ```
+
+  // - Multi property update:
+
+  // ```
+  //  thng.property().update({
+  //    status: 'off',
+  //    level: '80'
+  //  });
+  // ```
   function _normalizeArguments(args) {
     var data = args[0];
 
     if(Utils.isString(data)){
+
+      // Update single property using string.
       args[0] = [{
         value: data
       }];
+
     }else if(Utils.isObject(data)) {
-      // update single property using obj notation
+
       if (data.value) {
+
+        // Update single property using object notation.
         args[0] = [data];
 
-        // update multiple properties
       } else {
+
+        // Update multiple properties, creating an object for
+        // each key-value pair.
         args[0] = [];
         for (var key in data) {
           args[0].push({
@@ -3118,40 +3450,47 @@ define('entity/property',[
   }
 
 
-  // Return resource constructor
-  function resourceConstructor(property) {
-    if(!this.resource) {
-      throw new Error('This Entity does not have a Resource.');
-    }
-
-    var path = this.resource.path + '/properties',
-      resource;
-
-    if(property){
-      if(Utils.isString(property)){
-        path += '/' + property;
-      }else{
-        throw new TypeError('Property must be a key/name string');
-      }
-    }
-
-    resource = new Resource(this.resource.scope, path, EVT.Property);
-
-    // Override property resource update to allow a single string value
-    resource.update = function () {
-      return Resource.prototype.update.apply(this, _normalizeArguments(arguments));
-    };
-
-    return resource;
-  }
-
-// Attach class
+  // Attach class to EVT module.
   EVT.Property = Property;
 
+
   return {
-    resourceConstructor: resourceConstructor
+
+    resourceConstructor: function (property) {
+
+      if(!this.resource) {
+        throw new Error('This Entity does not have a Resource.');
+      }
+
+      var path = this.resource.path + '/properties',
+        resource;
+
+      if(property){
+        if(Utils.isString(property)){
+          path += '/' + property;
+        }else{
+          throw new TypeError('Property must be a key/name string');
+        }
+      }
+
+      resource = new Resource(this.resource.scope, path, EVT.Property);
+
+      // Override property resource update to allow custom values params.
+      // See *_normalizeArguments()*.
+      resource.update = function () {
+        return Resource.prototype.update.apply(this, _normalizeArguments(arguments));
+      };
+
+      return resource;
+    }
+
   };
 });
+// ## PRODUCT.JS
+
+// **The Product is a simple Entity subclass that provides a nested
+// Property Resource.**
+
 define('entity/product',[
   'core',
   './entity',
@@ -3161,37 +3500,36 @@ define('entity/product',[
 ], function (EVT, Entity, Resource, Property, Utils) {
   
 
-  // Evrythngs Product definition
+  // Setup Product inheritance from Entity.
   var Product = function () {
-
-    // Setup base Scope
     Entity.apply(this, arguments);
-
   };
 
-  // Setup inheritance
   Product.prototype = Object.create(Entity.prototype);
   Product.prototype.constructor = Product;
 
 
-  /**
-   * Extend Entity API for Product
-   */
+  // Extend Product API by exposing a Property Resource, allowing to
+  // manage the properties of this product with a resource pattern.
   Utils.extend(Product.prototype, {
-
-    // Create a Property resource for this product
     property: Property.resourceConstructor
-
   }, true);
 
 
-  // Attach class
+  // Attach class to EVT module.
   EVT.Product = Product;
 
+
   return {
-    resourceConstructor: Entity.resourceConstructor('/products', EVT.Product)
+    resourceConstructor: Resource.constructorFactory('/products', EVT.Product)
   };
 });
+// ## ACTION.JS
+
+// **The Action Entity represents an action in the Engine. It inherits
+// from Entity and overload the resource's *create()* method to allow
+// empty parameters (no payload).**
+
 define('entity/action',[
   'core',
   './entity',
@@ -3200,38 +3538,46 @@ define('entity/action',[
 ], function (EVT, Entity, Resource, Utils) {
   
 
+  // Setup Action inheritance from Entity.
   var Action = function () {
-
-    // Setup base Scope
     Entity.apply(this, arguments);
   };
 
-  // Setup inheritance
   Action.prototype = Object.create(Entity.prototype);
   Action.prototype.constructor = Action;
 
-  // Generate object if first argument is empty
+
+  // If the action object is empty (or a callback), generate the
+  // simplest action object that just needs the type of the action,
+  // which can be obtained from the resource's path.
   function _normalizeArguments(obj) {
     var args = arguments;
 
     if(!obj || Utils.isFunction(obj)) {
-      var pathSplit = this.path.split('/');
 
-      // Make real array from arguments
+      var pathSplit = this.path.split('/'),
+        actionType = pathSplit[pathSplit.length-1];
+
       args = Array.prototype.slice.call(arguments, 0);
-      args.unshift({
-        type: pathSplit[pathSplit.length-1]
-      });
+      args.unshift({ type: actionType });
+
     }
 
     return args;
   }
 
 
-  // Attach class
+  // Attach class to EVT module.
   EVT.Action = Action;
 
+
+  // Return the resource factory function. Actions have a custom *resource
+  // constructor* that needs an action type and allows an optional ID.
+
+  // - ***user.action('scans')**: creates path '/actions/scans'*
+  // - ***user.action('scans', '1')**: creates path '/actions/scans/1'*
   return {
+
     resourceConstructor: function (actionType, id) {
       var path, resource;
 
@@ -3245,9 +3591,11 @@ define('entity/action',[
         throw new TypeError('Action type cannot be empty.');
       }
 
-      resource = Entity.resourceConstructor(path, EVT.Action).call(this, id);
+      // Create a resource constructor dynamically and call it with this
+      // action's ID.
+      resource = Resource.constructorFactory(path, EVT.Action).call(this, id);
 
-      // Override action resource create to allow empty method
+      // Overload Action resource *create()* method to allow empty object.
       resource.create = function () {
         var args = _normalizeArguments.apply(this, arguments);
         return Resource.prototype.create.apply(this, args);
@@ -3255,8 +3603,15 @@ define('entity/action',[
 
       return resource;
     }
+
   };
 });
+// ## APPUSER.JS
+
+// **The App User entity represents the app users stored in the Engine.
+// It inherits from Entity and adds a new resource's *validate()* method,
+// as well as a *self.validate()* to allow to validate users.**
+
 define('entity/appUser',[
   'core',
   './entity',
@@ -3266,29 +3621,32 @@ define('entity/appUser',[
 ], function (EVT, Entity, Resource, Utils) {
   
 
-  // Evrythngs User definition
+  // Setup AppUser inheritance from Entity.
   var AppUser = function (objData) {
 
-    // Rename evrythngUser key to id
+    // Rename user object argument's *evrythngUser* property to
+    // entity-standard-*id*.
     if(objData.evrythngUser){
       objData.id = objData.evrythngUser;
       delete objData.evrythngUser;
     }
 
-    // Setup base Scope
     Entity.apply(this, arguments);
-
   };
 
-  // Setup inheritance
   AppUser.prototype = Object.create(Entity.prototype);
   AppUser.prototype.constructor = AppUser;
 
+  // The validate method sends a `POST` request to the validate
+  // endpoint of a new user. This is only valid when the AppUser
+  // resource path is *'/auth/evrythng/users/1'*.
   function validate(activationCode) {
+
     if(!activationCode || !Utils.isString(activationCode)) {
       throw new Error('Activation code must be a string.');
     }
 
+    // Activate newly created user.
     return EVT.api({
       url: this.path + '/validate',
       method: 'post',
@@ -3299,12 +3657,10 @@ define('entity/appUser',[
     });
   }
 
-  /**
-   * Extend Entity API for Product
-   */
+
+  // Extend AppUser API to allow to validate itself.
   Utils.extend(AppUser.prototype, {
 
-    // Allow user activation as well
     validate: function () {
       return validate.call(this.resource, this.activationCode);
     }
@@ -3312,17 +3668,27 @@ define('entity/appUser',[
   }, true);
 
 
-  // Attach class
+  // Attach class to EVT module.
   EVT.AppUser = AppUser;
 
+
+  // The AppUser resource constructor is a custom constructor that
+  // returns the constructor. This allows the path to be variable.
+
+  // *In practice '/users' and '/auth/evrythng/users' return the same
+  // entity structure.*
   return {
+
     resourceConstructor: function (customPath) {
+
       var path = customPath || '/users';
 
+      // Return the factory function.
       return function (id) {
-        var resource = Entity.resourceConstructor(path, EVT.AppUser).call(this, id);
 
-        // Override property resource update to allow a single string value
+        var resource = Resource.constructorFactory(path, EVT.AppUser).call(this, id);
+
+        // Add *validate()* method to the resource as well
         resource.validate = function () {
           return validate.apply(this, arguments);
         };
@@ -3330,40 +3696,59 @@ define('entity/appUser',[
         return resource;
       };
     }
+
   };
 });
+// ## FACEBOOK.JS
+
+// **The Facebook module exports wrapped *login*, *logout* and *init* methods
+// from the Facebook SDK, always returning Promises.**
+
 define('social/facebook',[
   'rsvp',
   'utils'
 ], function (RSVP, Utils) {
-  /* global FB */
   
+  /*global FB*/
 
-  // Load FB SDK asynchronously (using RequireJS) and get status
-  // of logged in user, if any
+  // Load Facebook SDK asynchronously. This means that by default
+  // it is not bundled with EvrythngJS, and is only loaded if an application
+  // needs Facebook authentication.
+
+  // The *init()* method also gets the current user information in one
+  // is already logged in.
   function init(appId) {
 
-    // Return promise and resolve once user status is retrieved
+    // Return promise and resolve once user status is retrieved.
     return new RSVP.Promise(function(resolve){
+
+      // Notice that the FB SDK only works in the browser. Thus, an Evrtyhng
+      // application cannot use Facebook authentication if it is not intended
+      // to run in the browser, as well.
       window.fbAsyncInit = function () {
-        // Initialize FB using Evryhtngs Facebook App ID
+
         FB.init({
           appId: appId,
           version: 'v2.0'
         });
 
-        // Get Login status and user info if connected
+        // Get Login status and user info if connected. Build response as we
+        // fetch more information.
         FB.getLoginStatus(function (response) {
 
-          // response = authResponse + status
+          /*response = authResponse + status*/
           _getUser(response).then(function(userResponse){
 
-            // userResponse = authResponse + status + user
+            /*userResponse = authResponse + status + user*/
             resolve(userResponse);
+
           });
+
         });
       };
 
+      // Inject Facebook SDK script in document (see
+      // [Facebook Developer Docs](https://developers.facebook.com/docs/javascript/quickstart/v2.0)).
       (function(d, s, id){
         var js, fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id)) {return;}
@@ -3371,67 +3756,77 @@ define('social/facebook',[
         js.src = "//connect.facebook.net/en_US/sdk.js";
         fjs.parentNode.insertBefore(js, fjs);
       }(document, 'script', 'facebook-jssdk'));
+
     });
   }
 
-  // Invoke FB login popup, using specified options
+  // Invoke standard Facebook login popup, using specified options.
   function login(options) {
 
-    // Return promise and resolve once user info is received
+    // Return promise and resolve once user info is retrieved.
     return new RSVP.Promise(function (resolve, reject) {
 
-      // Call Facebooks login method
       FB.login(function (response) {
 
-        // response = authResponse + status
+        /*response = authResponse + status*/
         _getUser(response).then(function (userResponse) {
 
-          // userResponse = authResponse + status + user
           if(userResponse.user) {
+
+            /*userResponse = authResponse + status + user*/
             resolve(userResponse);
+
           } else {
+
+            // Reject login promise if the user canceled the FB login.
             reject(userResponse);
+
           }
 
         });
+
       }, options);
 
     });
   }
 
-  // Invoke FB logout and return promise
+  // Invoke Facebook's logout and return promise.
   function logout() {
 
-    // Return promise and resolve once user info is received
     return new RSVP.Promise(function (resolve) {
-
-      // Call Facebooks logout method
-      FB.logout(function (response) {
-        resolve(response);
-      });
-
+      FB.logout(resolve);
     });
   }
 
-  // Get user info if successfully connected
+  // Fetch user info from Facebook if user is successfully connected.
   function _getUser(response) {
+
     if(response.status == 'connected') {
 
-      // Get user details
+      // Return a Promise for the response with user details.
       return new RSVP.Promise(function (resolve) {
+
+        // Until here, `response` was FB's auth response. Here
+        // we start to build bigger response by appending the Facebook's
+        // user info in the `user` property.
         FB.api('/me', function (userInfo) {
           resolve(Utils.extend(response, { user: userInfo }));
         });
+
       });
 
     }else{
+
+      // Return an already resolved promise.
       return new RSVP.Promise(function (resolve) {
         resolve(response);
       });
+
     }
+
   }
 
-  // Export only init and login methods
+  // Expose only the higher level methods.
   return {
     init: init,
     login: login,
@@ -3439,6 +3834,15 @@ define('social/facebook',[
   };
 
 });
+// ## AUTHENTICATION.JS
+
+// **Authentication provides a complete abstraction layer on top of
+// the provided *'/auth/...'* endpoints in the REST API. Logging in with
+// Evrythng or Facebook uses the same method and provide a similar response.**
+
+// **Authentication with Facebook needs an app that has been created using the
+// `facebook: true` option, which will load and init the Facebook SDK.**
+
 define('authentication',[
   'core',
   'rsvp',
@@ -3448,10 +3852,32 @@ define('authentication',[
 ], function (EVT, RSVP, Facebook, Utils) {
   
 
-  // Login into Evryhtng. Accepts:
-  // - login('facebook')
-  // - login('facebook', 'email,user_birthday')
-  // - login({email/id: "", password: ""})
+  // Login into Evryhtng. This method is attached to the `EVT.App` API methods.
+  // Currently allowed authentication methods are **evrythng** and **facebook**.
+  // The login  accepts:
+
+  // - ***login('facebook')**: the normal third-party Facebook login pop-up*
+  // - ***login('facebook', fbOptions)**: use fbOptions to pass facebook scope
+  // permissions (see the
+  // [Facebook login API reference](https://developers.facebook.com/docs/reference/javascript/FB.login/v2.0)).*
+  // - ***login('facebook', fbOptions, successCb, errorCb)**: same as previous,
+  // with callbacks*
+  // - ***login('facebook', successCb, errorCb**: no custom Facebook options*
+  // - ***login('evrythng', evtCredentials)**: evtCredentials is an object with
+  // `email` or `id` and `password` properties*
+  // - ***login('evrythng', evtCredentials, successCb, errorCb)**: same as previous,
+  // with callbacks*
+
+  // The *evrythng* login methods allow to omit the first parameter. Thus, the
+  // following authenticates with Evrythng:
+
+  // ```
+  //  app.login({
+  //    email/id: "userEmailOrId",
+  //    password: "pass"
+  //  });
+  // ```
+
   function login(type, customOptions, successCallback, errorCallback) {
     var successCb = successCallback,
       errorCb = errorCallback;
@@ -3460,10 +3886,9 @@ define('authentication',[
       throw new TypeError('Credentials (for Evrythng) or type (for Third party) are missing.');
     }
 
-    // Authenticate using third parties
+    // Authenticate using third parties' OAuth.
     if(Utils.isString(type)){
 
-      // login with facebook
       if(type === 'facebook'){
         return _loginFacebook.call(this, customOptions, successCb, errorCb);
 
@@ -3471,50 +3896,63 @@ define('authentication',[
         return _loginEvrythng.call(this, customOptions, successCb, errorCb);
       }
 
+      /*TODO: add more authentication methods here.*/
+
     }else{
 
-      // Evrythng login does not need first param - default method.
-      // Call AuthEvrythng with shifted arguments.
+      // Evrythng login does not need first param. Simply call *_loginEvrythng()*
+      // with shifted arguments.
       return _loginEvrythng.call(this, type, customOptions, successCb);
 
     }
   }
 
+
   // Login with Facebook. Custom Options are optional.
+
+  // **Default Facebook scope permission is simply *'email'*. If your application
+  // needs more than that, please read about Facebook login options and permissions
+  // on their
+  // [Developer Docs](https://developers.facebook.com/docs/reference/javascript/FB.login/v2.0)**.
   function _loginFacebook(customOptions, successCallback, errorCallback) {
     var options = {scope: 'email'},
       $this = this;
 
+    // If there are no facebook custom options, callbacks can start in first param.
     if(Utils.isFunction(customOptions) || customOptions === null){
 
-      // If there are no customOptions, first param can be callback
-      var temp = successCallback;
+      var tmp = successCallback;
       successCallback = customOptions;
-      errorCallback = temp;
+      errorCallback = tmp;
 
     }else if(Utils.isObject(customOptions)){
 
-      // If customOptions is object, use this instead of the defaults
+      // If there are custom FB options, use this instead of the defaults.
       options = customOptions;
 
     }
 
-    // Return promise and resolve only once authenticated with EVRYTHNG
+    // Return promise and resolve only once authenticated with EVRYTHNG.
     return new RSVP.Promise(function(resolve, reject) {
 
-      // Login using Facebook with options above
+      // Login using Facebook with options above.
       Facebook.login(options).then(function (userResponse) {
 
-        // If successful, authenticate with Evrythng
-        // and apply successCb and resolve promise
+        // If successful, authenticate with Evrythng, apply *successCb* and resolve
+        // promise. Our own *Facebook.login()* method (defined in the [`social/facebook`
+        // module](social/facebook.html)) already resolves with the user information.
+        // In this case, we add Evrythng access data to this already wrapped response.
         authFacebook.call($this, userResponse).then(function (fullResponse) {
+
           if (successCallback) { successCallback(fullResponse);}
           resolve(fullResponse);
+
         });
 
       }, function (response) {
 
-        // Login was not successful, apply errorCb and reject promise
+        // Login was not successful, apply *errorCb* and reject promise. Response
+        // has Facebook's *authResponse* and *status* objects.
         if (errorCallback) { errorCallback(response); }
         reject(response);
 
@@ -3523,29 +3961,37 @@ define('authentication',[
     });
   }
 
-  // Login with Evrythng
+
+  // Login with Evrythng using either the *email* or *id* properties.
   function _loginEvrythng(credentials, successCallback, errorCallback) {
+
     if(!credentials || Utils.isFunction(credentials)) {
       throw new TypeError('Credentials are missing.');
     }
 
+    // Send the authentication request to the REST API, which is a Promise.
+    // Note that the context is passed from the above *app.login()* method
+    // until the raw call in order to pass the correct scope's Api Key.
     return _authEvrythng.call(this, credentials).then(function (userResponse) {
 
-      // Login was successful, apply callback and return promise value
+      // Login was successful, apply callback and propagate response to the
+      // next promise handler.
       if(successCallback) { successCallback(userResponse); }
       return userResponse;
 
     }, function (response) {
 
-      // Login was not successful, call error callback and pass error
+      // Login was not successful, call error callback and re-throw error.
       if(errorCallback) { errorCallback(response); }
       throw response;
 
     });
   }
 
-  // Send authenticaiton request with FB token
-  function authFb(response) {
+  // Send authentication request with the Facebook auth token. This method is
+  // used on explicit login and when Facebook is initialized in the `EVT.App`
+  // constructor.
+  function authFacebook(response) {
     var $this = this;
 
     return EVT.api({
@@ -3559,26 +4005,27 @@ define('authentication',[
       authorization: this.apiKey
     }).then(function (access) {
 
-      // Create User Scope
+      // Create User Scope with the user information and Api Key returned
+      // from the REST API.
       var user = new EVT.User({
         id: access.evrythngUser,
         apiKey: access.evrythngApiKey
       }, $this);
 
-      // Prepare resolve object. Move facebook user data
-      // to 'user.facebook' object
+      // Prepare resolve object. Move Facebook user data to
+      // 'user.facebook' object
       Utils.extend(user, { facebook: response.user }, true);
       response.user = user;
 
       return response;
+
     });
   }
 
-  // Send authentication request using evrythng
+  // Send authentication request using Evrythng credentials.
   function _authEvrythng(credentials) {
     var $this = this;
 
-    // Login with Evrythng, credentials contain user (id or email) and password
     return EVT.api({
       url: '/auth/evrythng',
       method: 'post',
@@ -3586,10 +4033,14 @@ define('authentication',[
       authorization: this.apiKey
     }).then(function (access) {
 
+      // Once it is authenticated, get this user information as well.
       return EVT.api({
         url: '/users/' + access.evrythngUser,
-        authorization: $this.apiKey
+        authorization: access.evrythngApiKey
       }).then(function (userInfo) {
+
+        // Keep nested success handler because we also need the *access*
+        // object returned form the previous call to create the User Scope.
         var userObj = Utils.extend(userInfo, {
           id: access.evrythngUser,
           apiKey: access.evrythngApiKey
@@ -3599,11 +4050,22 @@ define('authentication',[
         var user = new EVT.User(userObj, $this);
 
         return { user: user };
+
       });
+
     });
   }
 
-  // Logout from Evrythng
+
+  // The *logout()* method behaves similarly to *login()*. The user should
+  // specify the type of logout they want (***evrythng* is default**).
+
+  // If an application logs in with Facebook, and simply logs out of
+  // Evrythng, then the Facebook user will continue connected until its FB
+  // token expires (which is most of the times not what you want).
+
+  // **As a good practice, if you log into an app with Facebook, also log
+  // out with Facebook. This allows app users to switch Facebook accounts.**
   function logout(type, successCallback, errorCallback) {
 
     if(type && Utils.isString(type)){
@@ -3621,17 +4083,19 @@ define('authentication',[
 
   }
 
+  // Logging out with Facebook, logs out out from Facebook and also from
+  // Evrythng.
   function _logoutFacebook(successCallback, errorCallback) {
     var $this = this;
 
-    // Login using Facebook with options above
     return Facebook.logout().then(function () {
 
-      // If successful, logout of Evrythng and resolve/reject promise
+      // If successful (always), also logout from Evrythng.
       return _logoutEvrythng.call($this, successCallback, errorCallback);
 
     });
   }
+
 
   function _logoutEvrythng(successCallback, errorCallback) {
 
@@ -3647,18 +4111,35 @@ define('authentication',[
 
     }, function (err) {
 
+      // If the logout from Evrythng fails, by some reason, throw error
+      // which would go to the promise error handler of the caller.
       if(errorCallback) { errorCallback(err); }
       throw err;
+
     });
   }
 
-
+  // Expose only the higher level methods.
   return {
     login: login,
     logout: logout,
-    authFb: authFb
+    authFacebook: authFacebook
   };
+
 });
+// ## APPLICATION.JS
+
+// **Here it is defined the ApplicationScope or `EVT.App`. EVT.App
+// is a sub-class of scope and it defines the public API that an App Api Key
+// can access to.**
+
+// An Application scope currently has access to:
+
+// - Product resource (`R`)
+// - Action resource (`C`)
+// - App User resource (`C`)
+// - Login
+
 define('scope/application',[
   'core',
   './scope',
@@ -3671,32 +4152,40 @@ define('scope/application',[
   'utils',
   'logger',
   'ajax'
-], function (EVT, Scope, Resource, Product, Action, AppUser, Authentication,
-             Facebook, Utils, Logger) {
+], function (EVT, Scope, Resource, Product, Action, AppUser,
+             Authentication, Facebook, Utils, Logger) {
   
 
-  // Application Scope constructor
-  // Expect apiKey string
-  // Optional options object with { facebook: true } to bind FB App with this app
+  // Application Scope constructor. It can be called with the parameters:
+
+  // - ***new EVT.App(apiKey)** - API Key string*
+  // - ***new EVT.App(options)** - Options object should contain `apiKey`,
+  // and optionally `facebook` boolean. Passing `facebook: true` automatically
+  // initializes Facebook SDK with this application's FB App Id - setup in
+  // EVRYTHNG's Dashboard Project Preferences.*
   var ApplicationScope = function(obj){
+
     var $this = this;
 
-    // Setup base Scope
+    // Setup base Scope with the provided API Key.
     if(Utils.isObject(obj)){
       Scope.call(this, obj.apiKey);
     }else{
       Scope.call(this, obj);
     }
 
-    // Get app information from Engine, using already defined scope.
-    // Use new EVT.App('a').$init.then(success) if need to wait
-    // for app information.
+    // Get app information asynchronously from the Engine using already
+    // defined scope. Use **new EVT.App('apiKey').$init.then(success)** if need
+    // to wait for app information.
     this.$init = EVT.api({
       url: '/applications',
       authorization: this.apiKey
     }).then(function (apps) {
 
-      // Store app information in scope
+      // Apps return array of a single application that matches this
+      // API Key. The response's API Key is defined in property `appApiKey`
+      // instead of `apiKey`, so remove it to prevent redundant apiKey
+      // properties in the scope. Also, attach app details into the scope.
       delete apps[0].appApiKey;
       return Utils.extend($this, apps[0], true);
 
@@ -3705,40 +4194,75 @@ define('scope/application',[
 
     }).then(function (app) {
 
-      // If using Facebook, return new promise after FB is initialized
-      // and user login status is retrieved
+      // If using Facebook, the $init promise is only resolved after FB
+      // is initialized and user login status is retrieved. In this situation,
+      // the resolved object of `$init` is a wrapped object:
+
+      // ```
+      //  {
+      //    status: <Facebook's connected status>,
+      //    authResponse: <Facebook's auth response>,
+      //    user: {
+      //      facebook: { <Facebook's user info>}
+      //      <Evrythng's user information>
+      //    },
+      //    app: {
+      //      <Evrythng's app information>
+      //    }
+      //  }
+      // ```
       if(obj.facebook){
+
+        // Get Facebook App ID from the Evrythng App social networks list.
         return Facebook.init(app.socialNetworks.facebook.appId)
           .then(function (response) {
 
             if(response.status === 'connected') {
-              return Authentication.authFb.call($this, response);
+
+              // If user is connected with Faceobok, return a promise with his details.
+              return Authentication.authFacebook.call($this, response);
+
             } else {
               return response;
             }
 
           }).then(function (response) {
+
+            // Add app information to the already wrapped object.
             return Utils.extend(response, { app: app });
+
           });
+
       }else{
+
+        // If not using Facebook, simply return app details after they are received.
         return app;
       }
 
     });
   };
 
-  // Setup inheritance
+  // Setup Scope inheritance.
   ApplicationScope.prototype = Object.create(Scope.prototype);
   ApplicationScope.prototype.constructor = ApplicationScope;
 
 
-  // Implement Public API
+  // Implement Public API by extending the prototype.
+
+  // By default all resource constructors are themselves factory functions
+  // that are called by the scopes, can receive an ID and return a Resource.
+  // However, in some situations in our API, the output of different endpoints can
+  // return be the same. Thus we need to setup the resource constructor to use a certain
+  // path, and return the correct factory function. This is what happens here with the
+  // **appUser()** resource constructor.
   Utils.extend(ApplicationScope.prototype, {
 
     product: Product.resourceConstructor,
 
     action: Action.resourceConstructor,
 
+    // Setup AppUser resource to use *'/auth/evrythng/users'* instead
+    // of the default *'/users'*. Both endpoints return a list of User entities.
     appUser: AppUser.resourceConstructor('/auth/evrythng/users'),
 
     login: Authentication.login
@@ -3746,11 +4270,17 @@ define('scope/application',[
   }, true);
 
 
-  // Attach class
+  // Attach ApplicationScope class to the EVT module.
   EVT.App = ApplicationScope;
 
   return EVT;
+
 });
+
+// ## THNG.JS
+
+// **The Thng is a simple Entity subclass that provides a nested
+// Property Resource and a direct method to read the Thng's Product.**
 
 define('entity/thng',[
   'core',
@@ -3762,20 +4292,20 @@ define('entity/thng',[
 ], function (EVT, Entity, Resource, Property, Utils) {
   
 
-  // Evrythngs Thng definition
+  // Setup Thng inheritance from Entity.
   var Thng = function () {
-
-    // Setup base Scope
     Entity.apply(this, arguments);
-
   };
 
-  // Setup inheritance
   Thng.prototype = Object.create(Entity.prototype);
   Thng.prototype.constructor = Thng;
 
 
+  // When not using `fetchCascade`, this method allows to easily
+  // fetch the Product entity of this Thng. It fowards the call
+  // to this thng's scope's product resource.
   function readProduct() {
+
     if(!this.product) {
       throw new Error('Thng does not have a product.');
     }
@@ -3787,12 +4317,12 @@ define('entity/thng',[
     return this.resource.scope.product(this.product).read();
   }
 
-  /**
-   * Extend Entity API for Product
-   */
+
+  // Extend Thng API by exposing a Property Resource, allowing to
+  // manage the properties of this product with a resource pattern.
+  // Also attach the *readProduct()* method to every Thng.
   Utils.extend(Thng.prototype, {
 
-    // Create a Property resource for this product
     property: Property.resourceConstructor,
 
     readProduct: readProduct
@@ -3800,37 +4330,39 @@ define('entity/thng',[
   }, true);
 
 
-  // Attach class
+  // Attach class to EVT module.
   EVT.Thng = Thng;
 
+
   return {
-    resourceConstructor: function (customPath) {
-      var path = customPath || '/thngs';
-      return Entity.resourceConstructor(path, EVT.Thng);
-    }
+    resourceConstructor: Resource.constructorFactory('/thngs', EVT.Thng)
   };
 });
+// ## COLLECTION.JS
+
+// **The Collection is a simple Entity subclass that provides a nested
+// Thng Resource.**
+
 define('entity/collection',[
   'core',
   './entity',
   'resource',
-  './property',
   'utils'
-], function (EVT, Entity, Resource, Property, Utils) {
+], function (EVT, Entity, Resource, Utils) {
   
 
-  // Evrythngs Collection definition
+  // Setup Collection inheritance from Entity.
   var Collection = function () {
-
-    // Setup base Scope
     Entity.apply(this, arguments);
-
   };
 
-  // Setup inheritance
   Collection.prototype = Object.create(Entity.prototype);
   Collection.prototype.constructor = Collection;
 
+
+  // Custom nested resource constructor for Thngs of a Collection.
+  // To create this nested resource, the collection itself needs
+  // a resource.
   function collectionThng(id) {
     if(!this.resource) {
       throw new Error('This Entity does not have a Resource.');
@@ -3838,36 +4370,44 @@ define('entity/collection',[
 
     var path = this.resource.path + '/thngs';
 
-    if(id){
-      if(Utils.isString(id)) {
-        path += '/' + id;
-      } else {
-        throw new TypeError('ID must be a string');
-      }
-    }
-
-    return new Resource(this.resource.scope, path, EVT.Thngs);
+    return Resource.constructorFactory(path, EVT.Thng)
+      .call(this.resource.scope, id);
   }
 
-  /**
-   * Extend Entity API for Product
-   */
+
+  // Extend Collection API by exposing a Thng Resource, allowing to
+  // manage Thngs directly from a Collection.
   Utils.extend(Collection.prototype, {
-
-    // Create a Thng resource for this collection
     thng: collectionThng
-
   }, true);
 
-  // Attach class
+
+  // Attach class to EVT module.
   EVT.Collection = Collection;
 
+
   return {
-    resourceConstructor: Entity.resourceConstructor('/collections', EVT.Collection)
+    resourceConstructor: Resource.constructorFactory('/collections', EVT.Collection)
   };
 });
+// ## USER.JS
+
+// **Here it is defined the UserScope or `EVT.User`. EVT.User
+// is a sub-class of scope and it defines the public API that the
+// user and its API Keys can access to.**
+
+// A User scope currently has access to:
+
+// - Product resource (`C`, `R`, `U`)
+// - Action resource (`C`, `R`, `U`)
+// - Thng resource (`C`, `R`, `U`)
+// - Collection resource (`C`, `R`, `U`)
+// - Logout
+// - Search
+// - Update itself (the user information)
+
 define('scope/user',[
-  '../core',
+  'core',
   './scope',
   'entity/product',
   'entity/thng',
@@ -3876,35 +4416,77 @@ define('scope/user',[
   'entity/collection',
   'authentication',
   'utils'
-], function (EVT, Scope, Product, Thng, Action, AppUser, Collection, Authentication, Utils) {
+], function (EVT, Scope, Product, Thng, Action, AppUser, Collection,
+             Authentication, Utils) {
   
 
-  // User Scope constructor
-  // - obj contains user information
+  // User Scope constructor. It can be called with the parameters:
+
+  // - ***new EVT.User(apiKey, parentScope)** - API Key string.
+  // Optional parent scope.*
+  // - ***new EVT.User(options, parentScope)** - Options object should
+  // contain `apiKey` and optionally user information (user entity retrieved
+  // from the engine). Optional parent scope.*
   var UserScope = function(obj, parentScope){
 
-    // Setup base Scope
+    // Setup base Scope with the provided API Key.
     if(Utils.isObject(obj)){
       Scope.call(this, obj.apiKey);
+
+      // Merge user information into the scope, as we do with the ApplicationScope.
       Utils.extend(this, obj, true);
+
     }else{
       Scope.call(this, obj);
     }
 
+    // Store parent scope. *Currently not used.*
     if(parentScope instanceof Scope) {
       this.parentScope = parentScope;
     }
 
   };
 
-  // setup inheritance
+  // Setup Scope inheritance.
   UserScope.prototype = Object.create(Scope.prototype);
   UserScope.prototype.constructor = UserScope;
 
 
+  // Wrap the search API call in the search() method. Check the
+  // [search API in Evrythng Documentation](https://dev.evrythng.com/documentation/api#search).
+  // .search() allows the following parameters:
+
+  // - ***search(queryString, options)** - ?q=queryString. Options object represent
+  // the additional search parameters. Such as:*
+
+  // ```
+  //  {
+  //    types: 'thng,product'
+  //  }
+  // ```
+
+  // - ***search(queryObj, options)** - Apply field or geographic search. Such as:*
+
+  // ```
+  //  {
+  //    name: 'tv',
+  //    description: 'plasma'
+  //  }
+  // ```
+
+  // ```
+  //  {
+  //    lat: 72,000
+  //    long: -0,190
+  //    maxDistance: 5
+  //  }
+  // ```
+
+  // - ***search(queryOptions)** - Merge all search parameters in a single object*
   function search(query, options) {
     var params = {};
 
+    // Use Free-text search using query string and additional parameters.
     if(Utils.isString(query)) {
       params.q = query;
       params = Utils.extend(params, options);
@@ -3912,6 +4494,7 @@ define('scope/user',[
     } else {
       params = query;
 
+      // Merge query and additional options in a single object for the request.
       if(options) {
         Utils.extend(params, options, true);
       }
@@ -3924,6 +4507,9 @@ define('scope/user',[
     });
   }
 
+  // Allow to update the current user without an explicit API call. Simply update
+  // the user scope object and call update will make the request to update the user
+  // in the *'/users'* endpoint.
   function update() {
     var $this = this,
       self = AppUser.resourceConstructor().call(this, this.id);
@@ -3935,14 +4521,18 @@ define('scope/user',[
   }
 
 
-  // Implement Public API
+  // Implement Public API by extending the prototype.
+
+  // See explanation of resource constructors in ApplicationScope. The
+  // **thng()** resource builds a custom resource constructor by using
+  // the default *'/thngs'* endpoint.
   Utils.extend(UserScope.prototype, {
 
     product: Product.resourceConstructor,
 
     action: Action.resourceConstructor,
 
-    thng: Thng.resourceConstructor(),
+    thng: Thng.resourceConstructor,
 
     collection: Collection.resourceConstructor,
 
@@ -3955,13 +4545,14 @@ define('scope/user',[
   }, true);
 
 
-  // Attach class
+  // Attach UserScope class to the EVT module.
   EVT.User = UserScope;
 
   return EVT;
+
 });
 
-// # [EVRYTHNG](https://www.evrythng.com)'s JavaScript SDK
+// # **[EVRYTHNG](https://www.evrythng.com)'s JavaScript SDK**
 
 // ## EVRYTHNG.JS
 
@@ -3972,7 +4563,17 @@ define('scope/user',[
 // and `EVT.User` classes representing the Application and User scopes respectively.
 // All other modules are loaded as dependencies of these two.
 
-// Navigate through the Annotated Source using the TOC on the right.
+// ### UMD
+
+// EvrythngJS is wrapped in a [UMD](https://github.com/umdjs/umd) definition which makes it
+// available as an **AMD** (RequireJS) module, **CommonJS** (Node.js) or **browser globals**.
+
+// EvrythngJS bundle also includes:
+
+// - [Almond](https://github.com/jrburke/almond): a minimal AMD script loader
+// - [RSVP](https://github.com/tildeio/rsvp.js): a lightweight Promises/A+ (1.1) library
+
+// See the full [uncompressed library](https://github.com/evrythng/evrythng-js-sdk/tree/master/dist/evrythng.js) @ Github.
 
 define('evrythng',[
   "scope/application",
@@ -3980,21 +4581,11 @@ define('evrythng',[
 ], function(EVT) {
   
 
+  // Return fully built EVT module.
   return EVT;
+
 });
 
-// ### UMD
-
-// EvrythngJS embraces the [UMD](https://github.com/umdjs/umd) which makes it
-// available as an AMD (RequireJS) module, CommonJS (Node.js) or browser globals.
-
-// The EvrythngJS bundle also includes:
-
-// - [Almond](https://github.com/jrburke/almond): a minimal AMD script loader
-// - [RSVP](https://github.com/tildeio/rsvp.js): a lightweight Promises/A+ (1.1) library
-
-// See the final [uncompressed library](https://github.com/evrythng/evrythng-js-sdk/tree/master/dist/evrythng.js) @ Github.
-;
     //Use almond's special top-level, synchronous require to trigger factory
     //functions, get the final module value, and export it as the public
     //value.

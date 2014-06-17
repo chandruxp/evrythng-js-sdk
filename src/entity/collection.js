@@ -1,24 +1,28 @@
+// ## COLLECTION.JS
+
+// **The Collection is a simple Entity subclass that provides a nested
+// Thng Resource.**
+
 define([
   'core',
   './entity',
   'resource',
-  './property',
   'utils'
-], function (EVT, Entity, Resource, Property, Utils) {
+], function (EVT, Entity, Resource, Utils) {
   'use strict';
 
-  // Evrythngs Collection definition
+  // Setup Collection inheritance from Entity.
   var Collection = function () {
-
-    // Setup base Scope
     Entity.apply(this, arguments);
-
   };
 
-  // Setup inheritance
   Collection.prototype = Object.create(Entity.prototype);
   Collection.prototype.constructor = Collection;
 
+
+  // Custom nested resource constructor for Thngs of a Collection.
+  // To create this nested resource, the collection itself needs
+  // a resource.
   function collectionThng(id) {
     if(!this.resource) {
       throw new Error('This Entity does not have a Resource.');
@@ -26,31 +30,23 @@ define([
 
     var path = this.resource.path + '/thngs';
 
-    if(id){
-      if(Utils.isString(id)) {
-        path += '/' + id;
-      } else {
-        throw new TypeError('ID must be a string');
-      }
-    }
-
-    return new Resource(this.resource.scope, path, EVT.Thng);
+    return Resource.constructorFactory(path, EVT.Thng)
+      .call(this.resource.scope, id);
   }
 
-  /**
-   * Extend Entity API for Product
-   */
+
+  // Extend Collection API by exposing a Thng Resource, allowing to
+  // manage Thngs directly from a Collection.
   Utils.extend(Collection.prototype, {
-
-    // Create a Thng resource for this collection
     thng: collectionThng
-
   }, true);
 
-  // Attach class
+
+  // Attach class to EVT module.
   EVT.Collection = Collection;
 
+
   return {
-    resourceConstructor: Entity.resourceConstructor('/collections', EVT.Collection)
+    resourceConstructor: Resource.constructorFactory('/collections', EVT.Collection)
   };
 });

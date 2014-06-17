@@ -443,7 +443,7 @@ define([
           });
         };
 
-        expect(badRequest).toThrow(new Error('CORS Request failed. View log for more info.'));
+        expect(badRequest).toThrow(new Error('Synchronous CORS Request failed.'));
       });
     });
   });

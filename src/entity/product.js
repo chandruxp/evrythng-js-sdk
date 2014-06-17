@@ -1,3 +1,8 @@
+// ## PRODUCT.JS
+
+// **The Product is a simple Entity subclass that provides a nested
+// Property Resource.**
+
 define([
   'core',
   './entity',
@@ -7,34 +12,27 @@ define([
 ], function (EVT, Entity, Resource, Property, Utils) {
   'use strict';
 
-  // Evrythngs Product definition
+  // Setup Product inheritance from Entity.
   var Product = function () {
-
-    // Setup base Scope
     Entity.apply(this, arguments);
-
   };
 
-  // Setup inheritance
   Product.prototype = Object.create(Entity.prototype);
   Product.prototype.constructor = Product;
 
 
-  /**
-   * Extend Entity API for Product
-   */
+  // Extend Product API by exposing a Property Resource, allowing to
+  // manage the properties of this product with a resource pattern.
   Utils.extend(Product.prototype, {
-
-    // Create a Property resource for this product
     property: Property.resourceConstructor
-
   }, true);
 
 
-  // Attach class
+  // Attach class to EVT module.
   EVT.Product = Product;
 
+
   return {
-    resourceConstructor: Entity.resourceConstructor('/products', EVT.Product)
+    resourceConstructor: Resource.constructorFactory('/products', EVT.Product)
   };
 });

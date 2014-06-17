@@ -130,8 +130,8 @@ define([
 
   // Any resource create in a scope will inherit these methods. However, it
   // is possible to add custom methods to a resource in a custom Entity
-  // *resourceConstructor* (e.g. refer to the `entity/appUser` doc, where a
-  // *.validate()* method is added to every AppUser resource).
+  // *resourceConstructor* (e.g. refer to the [`entity/appUser` doc](entity/appUser.html),
+  // where a *.validate()* method is added to every AppUser resource).
 
   // **Remember that all CRUD methods forward to `EVT.api()` which returns a Promise.**
 
@@ -271,6 +271,28 @@ define([
 
     return _request.call(this, requestOptions, options, successCallback, errorCallback);
 
+  };
+
+
+  // Given we don't have subclasses of Resource, this static factory method
+  // allows to generate a resource constructor given a path and class.
+
+  // By default all resource constructors receive a string ID for single
+  // entity resources.
+  Resource.constructorFactory = function (path, classFn) {
+    return function (id) {
+      var fullPath = path || "";
+
+      if(id){
+        if(Utils.isString(id)) {
+          fullPath += '/' + id;
+        } else {
+          throw new TypeError('ID must be a string');
+        }
+      }
+
+      return new Resource(this, fullPath, classFn);
+    };
   };
 
 

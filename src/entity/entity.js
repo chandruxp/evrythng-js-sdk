@@ -1,42 +1,64 @@
+// ## ENTITY.JS
+
+// **Entity is a private super class that implements base common methods for
+// all Evrythng objects. It establishes the way objects are converted
+// to JSON, and provide an *update()* and *delete()* method for all entities.**
+
 define([
   'resource',
   'utils'
 ], function (Resource, Utils) {
   'use strict';
 
-  // Entity Constructor. Accepts:
-  // - Entity()
-  // - Entity(obj)
-  // - Entity(resource)
-  // - Entity(obj, resource)
+  // The entity constructor, and therefore all the standard inheritances,
+  // accepts:
+
+  // - ***new Entity()**: create an empty entity*
+  // - ***new Entity(obj)**: entity with merged obj properties*
+  // - ***new Entity(resource)**: empty entity bound to a Resource*
+  // - ***new Entity(obj, resource)**: fully build entity bound to a Resource*
+
+  // *Nevertheless, an Entity without Resource cannot request any
+  // update or delete. It can however be passed to resources as
+  // 'payload' instead of JSON.*
+
+  // ```js
+  //  var prod = new EVT.Product({ foo: 'bar' };
+  //  // prod.update() // throws error
+  //  app.product().create(prod); // create product
+  // ```
+
   var Entity = function (objData, resource) {
 
-    // Allow resource on first parameter without object
-    if(Utils.isObject(objData) && objData instanceof Resource){
+    if(Utils.isObject(objData)){
 
-      this.resource = objData;
+      if(objData instanceof Resource){
+        this.resource = objData;
+      } else {
 
-    }else{
-      // normal constructor
-      this.resource = resource;
+        this.resource = resource;
 
-      if(Utils.isObject(objData)){
         Utils.extend(this, objData, true);
 
+        // If entity was created by a list resource (e.g. '/thngs')
+        // then update its resource path to be = parent resource path +
+        // objData ID. This allows a newly created object to be *updated*
+        // and *deleted* straight away.
         if(this.resource && objData.id){
-          // Add or replace path with ID
+
           var pathSplit = this.resource.path.split('/');
           if(pathSplit[pathSplit.length-1] !== objData.id) {
             this.resource.path += '/' + objData.id;
           }
+
         }
       }
 
     }
-
   };
 
-  // Return updated JSON object that is stored in engine
+  // Return the JSON object that is stored in engine. All non-function properties
+  // except *resource* are properties of the object.
   Entity.prototype.toJSON = function () {
     var json = {};
 
@@ -49,21 +71,35 @@ define([
     return json;
   };
 
+  // Every entity can update itself via its resource reference. It does so by
+  // passing its JSON representation to the *resouce.update()*.
+
+  // An entity update, as every request, returns a Promise. Although it also
+  // allows callbacks as:
+
+  // - ***update()**: simple update itself with modified properties*
+  // - ***update(obj)**: update itself with new properties*
+  // - ***update(obj, successCb, errorCb)**: previous, with callbacks*
+  // - ***update(successCb, errorCb)**: update itself and use callbacks*
   Entity.prototype.update = function (obj) {
     if(this.resource){
-      var args = arguments,
-        $this = this;
 
+      var args = arguments, $this = this;
+
+      // No object is passed, shift arguments. Add its JSON representation
+      // as the first argument.
       if(obj === null || !obj || Utils.isFunction(obj)) {
-        // Make real array from arguments
         args = Array.prototype.slice.call(arguments, 0);
         args.unshift(this.toJSON());
       }
 
       return this.resource.update.apply(this.resource, args)
         .then(function (updated) {
+
+          // Update itself with the result and return raw response from API.
           Utils.extend($this, updated, true);
           return updated;
+
         });
 
     } else {
@@ -71,6 +107,11 @@ define([
     }
   };
 
+
+  // Delete method also accepts callbacks as:
+
+  // - ***delete()**: handle with promise*
+  // - ***delete(successCb, errorCb)**: handle with callbacks*
   Entity.prototype['delete'] = function () {
     if(this.resource) {
       return this.resource['delete'].apply(this.resource, arguments);
@@ -79,21 +120,6 @@ define([
     }
   };
 
-  Entity.resourceConstructor = function (path, classFn) {
-    return function (id) {
-      var fullPath = path || "";
-
-      if(id){
-        if(Utils.isString(id)) {
-          fullPath += '/' + id;
-        } else {
-          throw new TypeError('ID must be a string');
-        }
-      }
-
-      return new Resource(this, fullPath, classFn);
-    };
-  };
 
   return Entity;
 

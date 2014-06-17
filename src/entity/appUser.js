@@ -1,3 +1,9 @@
+// ## APPUSER.JS
+
+// **The App User entity represents the app users stored in the Engine.
+// It inherits from Entity and adds a new resource's *validate()* method,
+// as well as a *self.validate()* to allow to validate users.**
+
 define([
   'core',
   './entity',
@@ -7,29 +13,32 @@ define([
 ], function (EVT, Entity, Resource, Utils) {
   'use strict';
 
-  // Evrythngs User definition
+  // Setup AppUser inheritance from Entity.
   var AppUser = function (objData) {
 
-    // Rename evrythngUser key to id
+    // Rename user object argument's *evrythngUser* property to
+    // entity-standard-*id*.
     if(objData.evrythngUser){
       objData.id = objData.evrythngUser;
       delete objData.evrythngUser;
     }
 
-    // Setup base Scope
     Entity.apply(this, arguments);
-
   };
 
-  // Setup inheritance
   AppUser.prototype = Object.create(Entity.prototype);
   AppUser.prototype.constructor = AppUser;
 
+  // The validate method sends a `POST` request to the validate
+  // endpoint of a new user. This is only valid when the AppUser
+  // resource path is *'/auth/evrythng/users/1'*.
   function validate(activationCode) {
+
     if(!activationCode || !Utils.isString(activationCode)) {
       throw new Error('Activation code must be a string.');
     }
 
+    // Activate newly created user.
     return EVT.api({
       url: this.path + '/validate',
       method: 'post',
@@ -40,12 +49,10 @@ define([
     });
   }
 
-  /**
-   * Extend Entity API for Product
-   */
+
+  // Extend AppUser API to allow to validate itself.
   Utils.extend(AppUser.prototype, {
 
-    // Allow user activation as well
     validate: function () {
       return validate.call(this.resource, this.activationCode);
     }
@@ -53,17 +60,27 @@ define([
   }, true);
 
 
-  // Attach class
+  // Attach class to EVT module.
   EVT.AppUser = AppUser;
 
+
+  // The AppUser resource constructor is a custom constructor that
+  // returns the constructor. This allows the path to be variable.
+
+  // *In practice '/users' and '/auth/evrythng/users' return the same
+  // entity structure.*
   return {
+
     resourceConstructor: function (customPath) {
+
       var path = customPath || '/users';
 
+      // Return the factory function.
       return function (id) {
-        var resource = Entity.resourceConstructor(path, EVT.AppUser).call(this, id);
 
-        // Override property resource update to allow a single string value
+        var resource = Resource.constructorFactory(path, EVT.AppUser).call(this, id);
+
+        // Add *validate()* method to the resource as well
         resource.validate = function () {
           return validate.apply(this, arguments);
         };
@@ -71,5 +88,6 @@ define([
         return resource;
       };
     }
+
   };
 });

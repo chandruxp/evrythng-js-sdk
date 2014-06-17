@@ -103,9 +103,9 @@ define([
       Facebook.login(options).then(function (userResponse) {
 
         // If successful, authenticate with Evrythng, apply *successCb* and resolve
-        // promise. Our own *Facebook.login()* method (defined in the `social/facebook`
-        // module) already resolves with the user information. In this case, we
-        // add Evrythng access data to this already wrapped response.
+        // promise. Our own *Facebook.login()* method (defined in the [`social/facebook`
+        // module](social/facebook.html)) already resolves with the user information.
+        // In this case, we add Evrythng access data to this already wrapped response.
         authFacebook.call($this, userResponse).then(function (fullResponse) {
 
           if (successCallback) { successCallback(fullResponse);}

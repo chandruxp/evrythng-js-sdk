@@ -33,7 +33,7 @@ define([
   // ```
   function ajax(options, successCallback, errorCallback) {
 
-    // Merge options with defaults setup in EVT.settings.
+    // Merge options with defaults setup in `EVT.settings`.
     var requestOptions = Utils.extend({
       async: EVT.settings.async,
       fullResponse: EVT.settings.fullResponse
