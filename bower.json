@@ -10,8 +10,12 @@
     "tools",
     "lib",
     "src",
-    "*.js",
-    "*.html"
+    "./*.js",
+    "./*.html",
+    "./*.txt",
+    "./*.md",
+    "./package.json",
+    "!./README.md"
   ],
   "license": "Apache-2.0"
 }

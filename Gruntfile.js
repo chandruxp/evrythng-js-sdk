@@ -287,8 +287,8 @@ module.exports = function(grunt) {
         'clean:build',
         'replace',
         'gitcommit',
-        'gitpush',
-        'doc'
+        'gitpush'
+        //'doc'
       ]);
     }
 
