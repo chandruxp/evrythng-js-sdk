@@ -164,6 +164,18 @@ module.exports = function(grunt) {
       }
     },
 
+    // Commit updated README after deploy to AWS
+    gitcommit: {
+      task: {
+        options: {
+          message: 'Updating documentation to version number to <%= pkg.version %>'
+        },
+        files: {
+          src: ['README.md']
+        }
+      }
+    },
+
     // Creates the gitpush task and ensures that the --tags flag is included
     // so that any tag is also pushed to the remote
     gitpush: {
@@ -274,6 +286,7 @@ module.exports = function(grunt) {
         'aws_s3:release',
         'clean:build',
         'replace',
+        'gitcommit',
         'gitpush',
         'doc'
       ]);

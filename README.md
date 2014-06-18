@@ -16,7 +16,7 @@ Use `Bower`:
 
 Or include the script from our CDN in your HTML file using:
 
-    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-2.0.0-beta.min.js"></script>
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-2.0.0.min.js"></script>
  
 Or always get the last stable release:
 
