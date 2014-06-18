@@ -1,7 +1,7 @@
 # [EVRYTHNG](https://www.evrythng.com) Client JavaScript SDK
 
 EvrythngJS is a [UMD](https://github.com/umdjs/umd)-compatible JavaScript library for Client-side applications
-interacting with the Evrythng API.
+interacting with the EVRYTHNG API.
 
 **We are updgrading EvrythngJS to the new 2.0 version. In the meantime, please refer to 
 the [`v.1.x` branch](https://github.com/evrythng/evrythng-js-sdk/tree/v1.x) for the previous documentation.**
@@ -25,11 +25,11 @@ Or always get the last stable release:
     
 For HTTPs you'll have to use:
 
-    <script src="https://d10ka0m22z5ju5.cloudfront.net/toolkit//evrythng-js-sdk/evrythng-2.0.0.min.js"></script>
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-2.0.0.min.js"></script>
 
 respectively
 
-    <script src="https://d10ka0m22z5ju5.cloudfront.net/toolkit//evrythng-js-sdk/evrythng.min.js"></script>
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng.min.js"></script>
     
 ### Node.js
 
