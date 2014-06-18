@@ -22,10 +22,22 @@ module.exports = function(grunt) {
       build: ['dist/build.txt', 'dist/versioned']
     },
 
-    // Update version in Core
+    // Update variables and json
     version: {
       defaults: {
         src: ['src/core.js', 'bower.json']
+      }
+    },
+
+    // Update text in readme
+    replace: {
+      readme: {
+        src: 'README.md',
+        overwrite: true,
+        replacements: [{
+          from: /evrythng-\d+\.\d+\.\d+(-\w+(\.\d+)?)?/,
+          to: 'evrythng-<%= pkg.version %>'
+        }]
       }
     },
 
@@ -158,6 +170,13 @@ module.exports = function(grunt) {
       task: {
         options: {
           tags: true
+        },
+        // Pushes the master branch
+        master: {
+          branch: 'master'
+        },
+        'gh-pages': {
+          branch: 'gh-pages'
         }
       }
     },
@@ -247,6 +266,11 @@ module.exports = function(grunt) {
     'clean:build'
   ]);
 
+  grunt.registerTask('doc', [
+    'groc',
+    'gitpush:gh-pages'
+  ]);
+
   grunt.registerTask('deploy', function (target) {
     if (target === 'release') {
       return grunt.task.run([
@@ -257,8 +281,9 @@ module.exports = function(grunt) {
         'copy:dist',
         'aws_s3:release',
         'clean:build',
-        'gitpush',
-        'groc'
+        'replace',
+        'gitpush:master',
+        'doc'
       ]);
     }
 

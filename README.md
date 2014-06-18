@@ -1,6 +1,6 @@
 # [Evrythng](https://www.evrythng.com) Client JavaScript SDK
 
-evrythng.js is a [UMD](link here)-compatible JavaScript library for Client-side applications
+EvrythngJS is a [UMD](https://github.com/umdjs/umd)-compatible JavaScript library for Client-side applications
 interacting with the Evrythng API.
 
 **We are updgrading EvrythngJS to the new 2.0 version. In the meantime, please refer to 
@@ -8,24 +8,39 @@ the [`v.1.x` branch](https://github.com/evrythng/evrythng-js-sdk/tree/v1.x) for 
 
 ## Installation
 
-### Bower
+### Browser
 
-Use:
+Use `Bower`:
 
-    bower install evrythng-js-sdk
+    bower install evrythng
 
 Or include the script from our CDN in your HTML file using:
 
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng-2.0.0-beta.min.js"></script>
+ 
+Or always get the last stable release:
+
     <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng.js"></script>
+    <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng.min.js"></script>
+    
+### Node.js
 
-### AMD (RequireJS) & CommonJS
+EvrythngJS is also available as an NPM package. Install it using:
 
-This module can also be loaded as an AMD or CommonJS module.
+    npm install evrythng
 
 
 ## Usage
 
-Example using RequireJS:
+EvrythngJS uses UMD, which makes it available everywhere that runs Javascript.
+
+For advanced usage and options, see the API documentation on [Evrythng's Developer
+Portal](https://dev.evrythng.com/documentation), and the Documentation section below. 
+
+**Note:** Be sure to only include your Evrythng App API key and **not** your Operator or User
+App key in any public application code (read more [here](https://dev.evrythng.com/documentation/api#users)).
+
+### AMD (RequireJS)
 
     require(['evrythng'], function (EVT) {
     
@@ -58,12 +73,14 @@ Example using RequireJS:
         ...
     });
 
-Using Node.js:
+### Node.js
 
     var EVT = require('evrythng');
     
     var app = new EVT.App('apiKey');
     ...
+
+### Browser Globals
 
 If you aren't using any of the above script loading mechanisms, the EVT module is available
 as a browser global:
@@ -71,38 +88,36 @@ as a browser global:
     var app = new EVT.App('apiKey');
     ...
 
-
-**Note:** Be sure to only include your Evrythng App API key and **not** your Operator or User
-App key in any public application code (read more [here](https://dev.evrythng.com/documentation/api#users)).
-
-
-For advanced usage and options, see the documentation on [Evrythng's Developer
-Portal](https://dev.evrythng.com/documentation). If you would like to know more about the
-library's features and implementation you can also look at
-the Developer Notes in `DEVELOPMENT.md`.
-
 ## Documentation
 
 For in-depth documentation beyond the one provided here, please revert to the 
-[Anotated Source Code](https://evrythng.github.io/evrythng-js-sdk/docs/evrythng.html).
+[Annotated Source Code](https://evrythng.github.io/evrythng-js-sdk).
 
-## Configuration
-
-<add configuration parameters here>
-
-## Modules
-
-<list and explain all the library modules here>
-
-## Misc
+## Source Maps
 
 Source Maps are available, which means that when using the minified version, if a developer opens the 
-Developer Tools, .map files will be downloaded and help the developer debug code using the original version
+Developer Tools, .map files will be downloaded to help the developer debug code using the original version
 of the code.
 
 ### Size
 
 28.21 kB (min) → 5.55 kB (gzip)
+
+## Development
+
+Check the Development Notes in `DEVELOPMENT.md`.
+
+### Testing
+
+Currently the library has a Code Coverage of: **~98%**
+
+Run tests by:
+
+    grunt test // unit testing with Karma + PhantomJS
+    
+    grunt test:dist // test UMD in Chrome (AMD + browser globals) and Node
+    
+    grunt test:sauce // browser globals test in multiple browsers in SauceLabs
 
 ## License
 
