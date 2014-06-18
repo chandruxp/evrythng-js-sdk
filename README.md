@@ -1,4 +1,4 @@
-# [Evrythng](https://www.evrythng.com) Client JavaScript SDK
+# [EVRYTHNG](https://www.evrythng.com) Client JavaScript SDK
 
 EvrythngJS is a [UMD](https://github.com/umdjs/umd)-compatible JavaScript library for Client-side applications
 interacting with the Evrythng API.
@@ -23,6 +23,14 @@ Or always get the last stable release:
     <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng.js"></script>
     <script src="//cdn.evrythng.net/toolkit/evrythng-js-sdk/evrythng.min.js"></script>
     
+For HTTPs you'll have to use:
+
+    <script src="https://d10ka0m22z5ju5.cloudfront.net/toolkit//evrythng-js-sdk/evrythng-2.0.0.min.js"></script>
+
+respectively
+
+    <script src="https://d10ka0m22z5ju5.cloudfront.net/toolkit//evrythng-js-sdk/evrythng.min.js"></script>
+    
 ### Node.js
 
 EvrythngJS is also available as an NPM package. Install it using:
@@ -37,7 +45,7 @@ EvrythngJS uses UMD, which makes it available everywhere that runs Javascript.
 For advanced usage and options, see the API documentation on [Evrythng's Developer
 Portal](https://dev.evrythng.com/documentation), and the Documentation section below. 
 
-**Note:** Be sure to only include your Evrythng App API key and **not** your Operator or User
+**Note:** Be sure to only include your EVRYTHNG App API key and **not** your Operator or User
 App key in any public application code (read more [here](https://dev.evrythng.com/documentation/api#users)).
 
 ### AMD (RequireJS)
@@ -90,8 +98,10 @@ as a browser global:
 
 ## Documentation
 
-For in-depth documentation beyond the one provided here, please revert to the 
+For in-depth documentation beyond the one provided here, please have a look at the 
 [Annotated Source Code](https://evrythng.github.io/evrythng-js-sdk).
+
+The [EVRYTHNG API is documented here](https://dev.evrythng.com/documentation/api).
 
 ## Source Maps
 
@@ -109,8 +119,6 @@ Check the Development Notes in `DEVELOPMENT.md`.
 
 ### Testing
 
-Currently the library has a Code Coverage of: **~98%**
-
 Run tests by:
 
     grunt test // unit testing with Karma + PhantomJS
@@ -121,6 +129,6 @@ Run tests by:
 
 ## License
 
-The MIT License in `LICENSE.txt`
+Apache 2.0 License, check `LICENSE.txt`
 
-Copyright (c) 2012-2014 EVRYTHNG Ltd.
+Copyright (c) EVRYTHNG Ltd.
