@@ -57,5 +57,8 @@
     "grunt-groc": "^0.4.5",
     "karma-phantomjs-launcher": "^0.1.4",
     "grunt-text-replace": "^0.3.12"
+  },
+  "scripts": {
+    "test": "grunt test; grunt test:dist;"
   }
 }

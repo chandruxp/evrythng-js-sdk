@@ -123,4 +123,4 @@ Run tests by:
 
 The MIT License in `LICENSE.txt`
 
-Copyright (c) 2010-2013 yuanyan yuanyan.cao@gmail.com
+Copyright (c) 2012-2014 EVRYTHNG Ltd.

@@ -167,17 +167,12 @@ module.exports = function(grunt) {
     // Creates the gitpush task and ensures that the --tags flag is included
     // so that any tag is also pushed to the remote
     gitpush: {
-      task: {
-        options: {
-          tags: true
-        },
-        // Pushes the master branch
-        master: {
-          branch: 'master'
-        },
-        'gh-pages': {
-          branch: 'gh-pages'
-        }
+      options: {
+        tags: true
+      },
+      // Pushes the master branch
+      master: {
+        branch: 'master'
       }
     },
 
@@ -266,10 +261,7 @@ module.exports = function(grunt) {
     'clean:build'
   ]);
 
-  grunt.registerTask('doc', [
-    'groc',
-    'gitpush:gh-pages'
-  ]);
+  grunt.registerTask('doc', ['groc']);
 
   grunt.registerTask('deploy', function (target) {
     if (target === 'release') {
@@ -282,7 +274,7 @@ module.exports = function(grunt) {
         'aws_s3:release',
         'clean:build',
         'replace',
-        'gitpush:master',
+        'gitpush',
         'doc'
       ]);
     }
