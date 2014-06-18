@@ -3378,6 +3378,12 @@ define('entity/entity',[
   return Entity;
 
 });
+// ## PROPERTY.JS
+
+// **Property is a common Entity for Thngs and Products. It is always a
+// nested resource and allows some simplified parameters, easing the
+// update of properties and making it more fluent/literal.**
+
 define('entity/property',[
   'core',
   './entity',
