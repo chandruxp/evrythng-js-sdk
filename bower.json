@@ -10,12 +10,13 @@
     "tools",
     "lib",
     "src",
-    "./*.js",
-    "./*.html",
-    "./*.txt",
-    "./*.md",
-    "./package.json",
-    "!./README.md"
+    "*.html",
+    "*.txt",
+    "DEVELOPMENT.md",
+    "karma*.js",
+    "Gruntfile.js",
+    "package.json"
   ],
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "dependencies": {}
 }
