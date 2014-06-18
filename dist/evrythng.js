@@ -1,4 +1,4 @@
-// EVRYTHNG JS SDK v2.0.0-beta
+// EVRYTHNG JS SDK v2.0.0
 
 // (c) 2012-2014 EVRYTHNG Ltd. London / New York / Zurich.
 // Released under the Apache Software License, Version 2.0.
@@ -460,7 +460,7 @@ define('core',[
   
 
   // Version is udpated from package.json using `grunt-version` on build.
-  var version = '2.0.0-beta';
+  var version = '2.0.0';
 
 
   // Setup default settings:
