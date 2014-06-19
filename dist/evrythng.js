@@ -3289,23 +3289,8 @@ define('entity/entity',[
       if(objData instanceof Resource){
         this.resource = objData;
       } else {
-
         this.resource = resource;
-
         Utils.extend(this, objData, true);
-
-        // If entity was created by a list resource (e.g. '/thngs')
-        // then update its resource path to be = parent resource path +
-        // objData ID. This allows a newly created object to be *updated*
-        // and *deleted* straight away.
-        if(this.resource && objData.id){
-
-          var pathSplit = this.resource.path.split('/');
-          if(pathSplit[pathSplit.length-1] !== objData.id) {
-            this.resource.path += '/' + objData.id;
-          }
-
-        }
       }
 
     }
@@ -3652,11 +3637,20 @@ define('entity/appUser',[
       throw new Error('Activation code must be a string.');
     }
 
+    var scope = this.scope, path = this.path;
+
+    // If validate is called from the entity, the scope is the
+    // resource's scope
+    if(this.id){
+      scope = this.resource.scope;
+      path = this.resource.path + '/' + this.id;
+    }
+
     // Activate newly created user.
     return EVT.api({
-      url: this.path + '/validate',
+      url: path + '/validate',
       method: 'post',
-      authorization: this.scope.apiKey,
+      authorization: scope.apiKey,
       data: {
         activationCode: activationCode
       }
@@ -3668,7 +3662,7 @@ define('entity/appUser',[
   Utils.extend(AppUser.prototype, {
 
     validate: function () {
-      return validate.call(this.resource, this.activationCode);
+      return validate.call(this, this.activationCode);
     }
 
   }, true);
