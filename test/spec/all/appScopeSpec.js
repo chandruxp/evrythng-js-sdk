@@ -237,6 +237,26 @@ define([
         jasmine.Ajax.requests.mostRecent().response(TestResponses.products.one);
       });
 
+      it('should allow to update a product in a list', function (done) {
+        var prod1;
+        app.product('1').read()
+          .then(function (products) {
+            prod1 = products[0];
+
+            jasmine.Ajax.stubRequest(EVT.settings.apiUrl + '/products/1')
+              .andReturn(TestResponses.products.updated);
+
+            prod1.description = 'desc';
+            return prod1.update();
+          }).then(function (updated) {
+            expect(updated.description).toBe('desc');
+            expect(prod1.description).toBe('desc');
+            done();
+          });
+
+        jasmine.Ajax.requests.mostRecent().response(TestResponses.products.all);
+      });
+
     });
 
     describe('.action()', function () {

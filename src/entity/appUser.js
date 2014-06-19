@@ -38,11 +38,20 @@ define([
       throw new Error('Activation code must be a string.');
     }
 
+    var scope = this.scope, path = this.path;
+
+    // If validate is called from the entity, the scope is the
+    // resource's scope
+    if(this.id){
+      scope = this.resource.scope;
+      path = this.resource.path + '/' + this.id;
+    }
+
     // Activate newly created user.
     return EVT.api({
-      url: this.path + '/validate',
+      url: path + '/validate',
       method: 'post',
-      authorization: this.scope.apiKey,
+      authorization: scope.apiKey,
       data: {
         activationCode: activationCode
       }
@@ -54,7 +63,7 @@ define([
   Utils.extend(AppUser.prototype, {
 
     validate: function () {
-      return validate.call(this.resource, this.activationCode);
+      return validate.call(this, this.activationCode);
     }
 
   }, true);

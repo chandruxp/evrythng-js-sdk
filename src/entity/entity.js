@@ -35,23 +35,8 @@ define([
       if(objData instanceof Resource){
         this.resource = objData;
       } else {
-
         this.resource = resource;
-
         Utils.extend(this, objData, true);
-
-        // If entity was created by a list resource (e.g. '/thngs')
-        // then update its resource path to be = parent resource path +
-        // objData ID. This allows a newly created object to be *updated*
-        // and *deleted* straight away.
-        if(this.resource && objData.id){
-
-          var pathSplit = this.resource.path.split('/');
-          if(pathSplit[pathSplit.length-1] !== objData.id) {
-            this.resource.path += '/' + objData.id;
-          }
-
-        }
       }
 
     }

@@ -218,7 +218,8 @@ module.exports = function(grunt) {
           expand: true,
           cwd: 'dist',
           src: '*',
-          dest: 'libs/evrythngjs',
+          //dest: 'libs/evrythngjs',
+          dest: 'toolkit/evrythng-js-sdk',
           filter: 'isFile'
         }]
       },
@@ -235,13 +236,15 @@ module.exports = function(grunt) {
           expand: true,
           cwd: 'dist',
           src: '*',
-          dest: 'libs/evrythngjs',
+          //dest: 'libs/evrythngjs',
+          dest: 'toolkit/evrythng-js-sdk',
           filter: 'isFile'
         },{
           expand: true,
           cwd: 'dist/versioned',
           src: ['*'],
-          dest: 'libs/evrythngjs',
+          //dest: 'libs/evrythngjs',
+          dest: 'toolkit/evrythng-js-sdk',
           filter: 'isFile'
         }]
       }
