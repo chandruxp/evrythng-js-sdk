@@ -15,7 +15,7 @@ define([
     beforeEach(function () {
       jasmine.Ajax.install();
 
-      jasmine.Ajax.stubRequest(EVT.settings.apiUrl + '/aplications/me')
+      jasmine.Ajax.stubRequest(EVT.settings.apiUrl + '/applications')
         .andReturn(TestResponses.application.simple);
 
       app = new EVT.App('xxx');
@@ -135,6 +135,219 @@ define([
           jasmine.Ajax.requests.mostRecent().response(TestResponses.properties.one);
 
           expect(successCb).toHaveBeenCalled();
+        });
+
+      });
+
+    });
+
+
+    describe('.action()', function () {
+      var actionResource;
+
+      beforeEach(function () {
+        EVT.setup({ geolocation: false });
+      });
+
+      afterEach(function () {
+        EVT.setup({ geolocation: true });
+      });
+
+      it('should throw error if Product has no Resource', function () {
+        product = new EVT.Product();
+
+        var badConstructor = function () {
+          product.action();
+        };
+
+        expect(badConstructor).toThrow();
+      });
+
+      it('should need string actionType of type string', function () {
+        var badConstructor = function () {
+          product.action({});
+        };
+
+        expect(badConstructor).toThrow();
+
+        badConstructor = function () {
+          product.action(function () {});
+        };
+
+        expect(badConstructor).toThrow();
+      });
+
+      it('should create Resource for action using EVT.Action class', function () {
+        actionResource = product.action('scans');
+
+        expect(actionResource instanceof Resource).toBeTruthy();
+        expect(actionResource.path).toBe('/actions/scans');
+        expect(actionResource.class).toEqual(EVT.Action);
+
+        expect(actionResource.read).toBeDefined();
+      });
+
+      it('should throw error if ID is not string', function () {
+        var badConstructor = function () {
+          product.action('scans', function () {});
+        };
+
+        expect(badConstructor).toThrow();
+      });
+
+      describe('.read()', function () {
+
+        it('without ID should handle list of actions', function (done) {
+          product.action('scans').read().then(function (scans) {
+            expect(scans.length).toBe(2);
+            expect(scans[0].customFields.foo).toBe("bar");
+            expect(scans[1].user).toBe("000");
+            done();
+          }, function () {
+            expect(false).toBeTruthy();
+            done();
+          });
+
+          jasmine.Ajax.requests.mostRecent().response(TestResponses.actions.scans.all);
+        });
+
+        it('with ID should handle single object', function (done) {
+          product.action('scans', '2134').read()
+            .then(function (action) {
+              expect(action instanceof EVT.Action).toBeTruthy();
+              done();
+            }, function () {
+              expect(false).toBeTruthy();
+              done();
+            });
+
+          jasmine.Ajax.requests.mostRecent().response(TestResponses.actions.scans.one);
+        });
+
+      });
+
+      describe('.create()', function () {
+
+        it('should throw Error if product does not have and ID', function () {
+          var badCall = function () {
+            product.action('scans').create();
+          };
+
+          expect(badCall).toThrow();
+        });
+
+        it('should wrap empty call', function () {
+          product = new EVT.Product({
+            id: '1'
+          }, productResource);
+
+          product.action('scans').create();
+
+          expect(jasmine.Ajax.requests.mostRecent().data().type).toBe('scans');
+        });
+
+        it('should send current product ID', function () {
+          product = new EVT.Product({
+            id: '1'
+          }, productResource);
+
+          product.action('scans').create();
+
+          expect(jasmine.Ajax.requests.mostRecent().data().product).toBe('1');
+        });
+
+        it('should merge options', function () {
+          product = new EVT.Product({
+            id: '1'
+          }, productResource);
+
+          product.action('scans').create({
+            customFields: {
+              foo: 'bar'
+            }
+          });
+
+          expect(jasmine.Ajax.requests.mostRecent().data().customFields).toEqual({ foo: 'bar' });
+        });
+
+        describe('with Geolocation', function () {
+          var geolocation = window.navigator.geolocation;
+
+          beforeEach(function () {
+            EVT.setup({
+              geolocation: true
+            });
+
+            product = new EVT.Product({
+              id: '1'
+            }, productResource);
+
+            window.navigator.geolocation = function () {};
+          });
+
+          afterEach(function () {
+            window.navigator.geolocation = geolocation;
+          });
+
+          it('should get geolocation from browser', function () {
+            window.navigator.geolocation.getCurrentPosition = jasmine.createSpy('getPosition');
+
+            product.action('scans').create();
+
+            expect(window.navigator.geolocation.getCurrentPosition).toHaveBeenCalled();
+          });
+
+          it('on success should send current location in action', function (done) {
+            var position = {
+              latitude: 12.2,
+              longitude: -0.2
+            };
+
+            window.navigator.geolocation.getCurrentPosition = jasmine.createSpy('getPosition')
+              .and.callFake(function (successCb) {
+                successCb({
+                  coords: position
+                });
+              });
+
+            product.action('scans').create();
+
+            setTimeout(function () {
+              expect(jasmine.Ajax.requests.mostRecent().data().location).toEqual(position);
+              expect(jasmine.Ajax.requests.mostRecent().data().locationSource).toEqual('sensor');
+              done();
+            });
+          });
+
+          it('on failure should send action without location', function (done) {
+            console.info = jasmine.createSpy('info');
+
+            window.navigator.geolocation.getCurrentPosition = jasmine.createSpy('getPosition')
+              .and.callFake(function (successCb, errorCb) {
+                errorCb({
+                  code: 1
+                });
+              });
+
+            product.action('scans').create();
+
+            setTimeout(function () {
+              expect(jasmine.Ajax.requests.mostRecent().data().location).not.toBeDefined();
+              expect(jasmine.Ajax.requests.mostRecent().data().locationSource).not.toBeDefined();
+              expect(console.info).toHaveBeenCalled();
+              done();
+            });
+          });
+
+          it('if geolocation unavailable send action without location', function () {
+            window.navigator.geolocation = geolocation;
+
+            product.action('scans').create();
+
+            expect(jasmine.Ajax.requests.mostRecent().data().location).not.toBeDefined();
+            expect(jasmine.Ajax.requests.mostRecent().data().locationSource).not.toBeDefined();
+          });
+
         });
 
       });

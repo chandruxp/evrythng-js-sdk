@@ -7,23 +7,22 @@
 // An Application scope currently has access to:
 
 // - Product resource (`R`)
-// - Action resource (`C`)
 // - App User resource (`C`)
 // - Login
+// - (`C` actions via products)
 
 define([
   'core',
   './scope',
   'resource',
   'entity/product',
-  'entity/action',
   'entity/appUser',
   'authentication',
   'social/facebook',
   'utils',
   'logger',
   'ajax'
-], function (EVT, Scope, Resource, Product, Action, AppUser,
+], function (EVT, Scope, Resource, Product, AppUser,
              Authentication, Facebook, Utils, Logger) {
   'use strict';
 
@@ -129,8 +128,6 @@ define([
   Utils.extend(ApplicationScope.prototype, {
 
     product: Product.resourceConstructor,
-
-    action: Action.resourceConstructor,
 
     // Setup AppUser resource to use *'/auth/evrythng/users'* instead
     // of the default *'/users'*. Both endpoints return a list of User entities.

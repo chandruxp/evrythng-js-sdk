@@ -8,8 +8,9 @@ define([
   './entity',
   'resource',
   './property',
+  './action',
   'utils'
-], function (EVT, Entity, Resource, Property, Utils) {
+], function (EVT, Entity, Resource, Property, Action, Utils) {
   'use strict';
 
   // Setup Product inheritance from Entity.
@@ -23,8 +24,13 @@ define([
 
   // Extend Product API by exposing a Property Resource, allowing to
   // manage the properties of this product with a resource pattern.
+  // Expose an Action resource as well, for managing Products actions.
   Utils.extend(Product.prototype, {
-    property: Property.resourceConstructor
+
+    property: Property.resourceConstructor,
+
+    action: Action.resourceConstructor
+  
   }, true);
 
 

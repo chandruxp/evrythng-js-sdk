@@ -50,7 +50,7 @@ App key in any public application code (read more [here](https://dev.evrythng.co
 
 ### AMD (RequireJS)
 
-    ```js
+    ```javascript
     require(['evrythng'], function (EVT) {
     
       EVT.setup({
@@ -117,29 +117,48 @@ App key in any public application code (read more [here](https://dev.evrythng.co
         
         
         // Actions
-        user.action('scans').create();
-        user.action('_customAction').create();
+        
+        user.thng('1').read().then(function(thng1){
+          
+          thng1.action('scans').create();
+          
+          thng1.action('_customAction').create({
+            customFields: {
+              foo: 'bar'
+            }
+          });
+        
+        });
         
         ...
       });
       
       
       // Callback API
-      prod.product().read(function(products){
+      app.product().read(function(products){
       
         console.log(products);
         
       });
       
-      prod.action('checkins').create({
-        customFields: {
-          foo: 'bar'
+      // Raw API Calls and multiple API designs example
+      var options = {
+        url: '/products',
+        method: 'post',
+        authorization: 'userApiKey',
+        success: function(product){
+          console.log(product);
+        },
+        error: function(err){
+          console.log(err);                            
         }
-      }, function(newAction){
+      }
       
-        console.log(newAction);
-        
-      });
+      EVT.api(options).then(successHandler, errorHandler);
+      
+      EVT.api(options);
+      
+      EVT.api(options, successCb, errorCb);
       
       ...
     });
@@ -147,7 +166,7 @@ App key in any public application code (read more [here](https://dev.evrythng.co
 
 ### Node.js
 
-    ```js
+    ```javascript
     var EVT = require('evrythng');
     
     var app = new EVT.App('apiKey');
@@ -159,7 +178,7 @@ App key in any public application code (read more [here](https://dev.evrythng.co
 If you aren't using any of the above script loading mechanisms, the EVT module is available
 as a browser global:
 
-    ```js
+    ```javascript
     var app = new EVT.App('apiKey');
     ...
     ```

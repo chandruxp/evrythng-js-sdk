@@ -8,8 +8,9 @@ define([
   'core',
   './entity',
   'resource',
-  'utils'
-], function (EVT, Entity, Resource, Utils) {
+  'utils',
+  'logger'
+], function (EVT, Entity, Resource, Utils, Logger) {
   'use strict';
 
   // Setup Action inheritance from Entity.
@@ -28,16 +29,31 @@ define([
     var args = arguments;
 
     if(!obj || Utils.isFunction(obj)) {
-
-      var pathSplit = this.path.split('/'),
-        actionType = pathSplit[pathSplit.length-1];
-
       args = Array.prototype.slice.call(arguments, 0);
-      args.unshift({ type: actionType });
-
+      args.unshift({});
     }
 
     return args;
+  }
+
+  // Set the Entity ID of the entity receiving the action as well
+  // as the specified action type in the action data.
+  function _fillAction(actionObj, actionType, entityId) {
+
+    if(!entityId){
+      throw new Error('This entity does not have an ID.');
+    }
+
+    var ret = actionObj;
+    ret.type = actionType;
+
+    if(this.class.constructor == EVT.Product.constructor){
+      ret.product = entityId;
+    }else if(this.class.constructor == EVT.Thng.constructor){
+      ret.thng = entityId;
+    }
+
+    return ret;
   }
 
 
@@ -48,12 +64,12 @@ define([
   // Return the resource factory function. Actions have a custom *resource
   // constructor* that needs an action type and allows an optional ID.
 
-  // - ***user.action('scans')**: creates path '/actions/scans'*
-  // - ***user.action('scans', '1')**: creates path '/actions/scans/1'*
+  // - ***product.action('scans')**: creates path '/actions/scans'*
+  // - ***product.action('scans', '1')**: creates path '/actions/scans/1'*
   return {
 
     resourceConstructor: function (actionType, id) {
-      var path, resource;
+      var path, resource, entityId = this.id;
 
       if(actionType){
         if(Utils.isString(actionType)){
@@ -67,12 +83,41 @@ define([
 
       // Create a resource constructor dynamically and call it with this
       // action's ID.
-      resource = Resource.constructorFactory(path, EVT.Action).call(this, id);
+      resource = Resource.constructorFactory(path, EVT.Action)
+        .call(this.resource.scope, id);
 
       // Overload Action resource *create()* method to allow empty object.
       resource.create = function () {
-        var args = _normalizeArguments.apply(this, arguments);
-        return Resource.prototype.create.apply(this, args);
+
+        var $this = this,
+          args = _normalizeArguments.apply(this, arguments);
+
+        args[0] = _fillAction.call(this, args[0], actionType, entityId);
+
+        // If geolocation setting is turned on, get current position before
+        // registering the action in the Engine.
+        if(EVT.settings.geolocation){
+
+          return Utils.getCurrentPosition().then(function (position) {
+
+            args[0].location = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            };
+            args[0].locationSource = 'sensor';
+
+          }, function (err) {
+
+            // Unable to get position, just inform the reason in the console.
+            Logger.info(err);
+
+          }).finally(function () {
+            return Resource.prototype.create.apply($this, args);
+          });
+
+        }else{
+          return Resource.prototype.create.apply($this, args);
+        }
       };
 
       return resource;

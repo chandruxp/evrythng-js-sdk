@@ -7,24 +7,23 @@
 // A User scope currently has access to:
 
 // - Product resource (`C`, `R`, `U`)
-// - Action resource (`C`, `R`, `U`)
 // - Thng resource (`C`, `R`, `U`)
 // - Collection resource (`C`, `R`, `U`)
 // - Logout
 // - Search
 // - Update itself (the user information)
+// - (`C`, `R`, `U` actions via products/thngs)
 
 define([
   'core',
   './scope',
   'entity/product',
   'entity/thng',
-  'entity/action',
   'entity/appUser',
   'entity/collection',
   'authentication',
   'utils'
-], function (EVT, Scope, Product, Thng, Action, AppUser, Collection,
+], function (EVT, Scope, Product, Thng, AppUser, Collection,
              Authentication, Utils) {
   'use strict';
 
@@ -137,8 +136,6 @@ define([
   Utils.extend(UserScope.prototype, {
 
     product: Product.resourceConstructor,
-
-    action: Action.resourceConstructor,
 
     thng: Thng.resourceConstructor,
 

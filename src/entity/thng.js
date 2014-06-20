@@ -8,9 +8,10 @@ define([
   './entity',
   'resource',
   './property',
+  './action',
   'utils',
   'ajax'
-], function (EVT, Entity, Resource, Property, Utils) {
+], function (EVT, Entity, Resource, Property, Action, Utils) {
   'use strict';
 
   // Setup Thng inheritance from Entity.
@@ -41,10 +42,13 @@ define([
 
   // Extend Thng API by exposing a Property Resource, allowing to
   // manage the properties of this product with a resource pattern.
+  // Expose an Action resource as well, for managing Thngs actions.
   // Also attach the *readProduct()* method to every Thng.
   Utils.extend(Thng.prototype, {
 
     property: Property.resourceConstructor,
+
+    action: Action.resourceConstructor,
 
     readProduct: readProduct
 

@@ -19,7 +19,7 @@ define([
 
     beforeEach(function () {
       jasmine.Ajax.install();
-      jasmine.Ajax.stubRequest(EVT.settings.apiUrl + '/aplications/me')
+      jasmine.Ajax.stubRequest(EVT.settings.apiUrl + '/applications')
         .andReturn(TestResponses.application.simple);
 
       app = new EVT.App('xxx');

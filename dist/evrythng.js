@@ -359,226 +359,6 @@ var requirejs, require, define;
 
 define("almond", function(){});
 
-// ## UTILS.JS
-
-// **The Utils module provide a set of utility methods used
-// across the whole library. For that, it doesn't have any
-// dependency.**
-
-define('utils',[],function () {
-  
-
-  return {
-
-    // Check if a variable is a function.
-    isFunction: function(fn){
-      return Object.prototype.toString.call(fn) == "[object Function]";
-    },
-
-    // Check if a variable is a string.
-    isString: function(str){
-      return Object.prototype.toString.call(str) == "[object String]";
-    },
-
-    // Check if a variable is an array.
-    isArray: function(arr){
-      return Object.prototype.toString.call(arr) == "[object Array]";
-    },
-
-    // Check if a variable is an Object (includes Object functions and
-    // plain objects)
-    isObject: function(obj) {
-      return obj === Object(obj) && !this.isArray(obj);
-    },
-
-    // Simple and shallow extend method, used to extend an object's properties
-    // with another object's. The `override` parameter defines if the
-    // source object should be overriden or if this method should return a new
-    // object (it is *false by default*).
-    extend: function(source, obj, override) {
-      var out;
-
-      // Create extensible object.
-      if(override) {
-        out = source;
-      } else {
-        // Create shallow copy of source.
-        out = {};
-        for(var i in source){
-          out[i] = source[i];
-        }
-      }
-
-      // Copy properties.
-      for(var j in obj) {
-        if(obj.hasOwnProperty(j)) {
-          out[j] = obj[j];
-        }
-      }
-
-      return out;
-    },
-
-    // Build URL query string params out of a javascript object.
-    // Encode key and value components as they are appended to query string.
-    buildParams: function (params) {
-      var paramsStr = [];
-
-      for (var key in params) {
-        if (params.hasOwnProperty(key) && params[key] !== undefined) {
-          paramsStr.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
-        }
-      }
-
-      // Build string from the array.
-      return paramsStr.join('&');
-    },
-
-    // Build full URL from a base url and params, if there are any.
-    buildUrl: function(options){
-      var url = options.url || '';
-
-      if(options.params) {
-        url += (url.indexOf('?') === -1 ? '?' : '&') + this.buildParams(options.params);
-      }
-
-      return url;
-    }
-
-  };
-
-});
-// ## CORE.JS
-
-// **The Core module specifies the core EVT module and the client
-// default settings. The library is built by adding functionality or
-// sub-modules to EVT.**
-
-define('core',[
-  'utils'
-], function (Utils) {
-  
-
-  // Version is udpated from package.json using `grunt-version` on build.
-  var version = '2.0.0';
-
-
-  // Setup default settings:
-
-  // - ***apiUrl**: String - change the default API host*
-  // - ***async**: Boolean - set to false to make synchronous requests (blocks UI)*
-  // - ***fullResponse**: Boolean - by default the response of every call if the JSON
-  // body. However if you need to access the 'status' or 'responseHeaders' in responses
-  // set this to 'true'. The full response has the structure:*
-
-  // ```
-  //  {
-  //    data: <JSON data>,
-  //    headers: <response headers map>
-  //    status: <HTTP status code>
-  //  }
-  // ```
-
-  // - ***geolocation**: Boolean - set to true to ask for Geolocation when needed*
-  // - ***fetchCascade**: Boolean - set to true to automagically fetch nested entities
-  // (e.g. thng.product is an EVT.Product instead of string id)*
-  // - ***onStartRequest**: Function - run before each HTTP call (e.g. start Spinner)*
-  // - ***onFinishRequest**: Function - run after each HTTP call*
-  var defaultSettings = {
-    apiUrl: 'https://api.evrythng.com',
-    async: true,
-    fullResponse: false,
-    geolocation: true
-    /*fetchCascade: false,
-    onStartRequest: null,
-    onFinishRequest: null*/
-  };
-
-
-  // Module definition and raw API.
-  var EVT = {
-    version: version,
-
-    settings: defaultSettings,
-
-    // Setup method allows the developer to change overall settings for every
-    // subsequent request. However, these can be overriden for each request as well.
-    // Setup merges current settings with the new custom ones.
-    setup: function (customSettings) {
-
-      if(Utils.isObject(customSettings)){
-        this.settings = Utils.extend(this.settings, customSettings);
-      }else{
-        throw new TypeError('Setup should be called with an options object.');
-      }
-
-      return this.settings;
-    }
-  };
-
-  return EVT;
-
-});
-
-// ## SCOPE.JS
-
-// **Scope defines the context in which API calls are made.
-// Thus, it stores its defining API Key. Scopes send their
-// respective `API Key` in their request's `Authorization` header.**
-
-// *For example, reads on products using ApplicationScope or
-// EVT.App only return the products created for that specific
-// application/scope.*
-
-define('scope/scope',[
-  'utils'
-], function (Utils) {
-  
-
-  // Scope super class constructor:
-
-  // - ***new Scope(apiKey)** - API Key string*
-  var Scope = function(apiKey){
-
-    // Default parent scope does not have parent.
-    this.parentScope = null;
-
-    // Setup apiKey of the current Scope if it is a String.
-    if(Utils.isString(apiKey)){
-      this.apiKey = apiKey;
-    }else{
-      throw new TypeError('Scope constructor should be called with API Key.');
-    }
-  };
-
-  // Return Scope factory function
-  return Scope;
-
-});
-
-// ## LOGGER.JS
-
-// **The Logger module is simple wrapper for console log
-// that prefixes EvrythngJS's logs with a custom header.**
-
-define('logger',[],function () {
-  
-
-  var header = 'EvrythngJS';
-
-  return {
-
-    error: function(data){
-      console.error(header + ' Error: ', data);
-    },
-
-    info: function(data){
-      console.info(header + ' Info: ', data);
-    }
-
-  };
-
-});
 /**
   @class RSVP
   @module RSVP
@@ -2554,6 +2334,267 @@ define('rsvp', [
     __exports__.map = map;
     __exports__.filter = filter;
 });
+// ## UTILS.JS
+
+// **The Utils module provide a set of utility methods used
+// across the whole library. For that, it doesn't have any
+// dependency.**
+
+define('utils',['rsvp'], function (RSVP) {
+  
+
+  return {
+
+    // Check if a variable is a function.
+    isFunction: function(fn){
+      return Object.prototype.toString.call(fn) == "[object Function]";
+    },
+
+    // Check if a variable is a string.
+    isString: function(str){
+      return Object.prototype.toString.call(str) == "[object String]";
+    },
+
+    // Check if a variable is an array.
+    isArray: function(arr){
+      return Object.prototype.toString.call(arr) == "[object Array]";
+    },
+
+    // Check if a variable is an Object (includes Object functions and
+    // plain objects)
+    isObject: function(obj) {
+      return obj === Object(obj) && !this.isArray(obj);
+    },
+
+    // Simple and shallow extend method, used to extend an object's properties
+    // with another object's. The `override` parameter defines if the
+    // source object should be overriden or if this method should return a new
+    // object (it is *false by default*).
+    extend: function(source, obj, override) {
+      var out;
+
+      // Create extensible object.
+      if(override) {
+        out = source;
+      } else {
+        // Create shallow copy of source.
+        out = {};
+        for(var i in source){
+          out[i] = source[i];
+        }
+      }
+
+      // Copy properties.
+      for(var j in obj) {
+        if(obj.hasOwnProperty(j)) {
+          out[j] = obj[j];
+        }
+      }
+
+      return out;
+    },
+
+    // Build URL query string params out of a javascript object.
+    // Encode key and value components as they are appended to query string.
+    buildParams: function (params) {
+      var paramsStr = [];
+
+      for (var key in params) {
+        if (params.hasOwnProperty(key) && params[key] !== undefined) {
+          paramsStr.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
+        }
+      }
+
+      // Build string from the array.
+      return paramsStr.join('&');
+    },
+
+    // Build full URL from a base url and params, if there are any.
+    buildUrl: function(options){
+      var url = options.url || '';
+
+      if(options.params) {
+        url += (url.indexOf('?') === -1 ? '?' : '&') + this.buildParams(options.params);
+      }
+
+      return url;
+    },
+
+    // Get current position using HTML5 Geolocation and resolve promise
+    // once it has returned.
+    getCurrentPosition: function(options){
+      if (window.navigator.geolocation) {
+
+        // Have default options, but allow to extend with custom.
+        var geolocationOptions = this.extend({
+          maximumAge: 0,
+          timeout: 10000,
+          enableHighAccuracy: true
+        }, options);
+
+        return new RSVP.Promise(function (resolve, reject) {
+
+          window.navigator.geolocation.getCurrentPosition(function (position) {
+
+            resolve(position);
+
+          }, function (err) {
+
+            var errorMessage = 'Geolocation: ';
+            if(err.code === 1) {
+              errorMessage = 'You didn\'t share your location.';
+            } else if(err.code === 2) {
+              errorMessage = 'Couldn\'t detect your current location.';
+            } else if(err.code === 3) {
+              errorMessage = 'Retrieving position timed out.';
+            } else {
+              errorMessage = 'Unknown error.';
+            }
+            reject(errorMessage);
+
+          }, geolocationOptions);
+
+        });
+
+      }else{
+        return RSVP.reject('Your browser doesn\'t support geolocation.');
+      }
+    }
+
+  };
+
+});
+// ## CORE.JS
+
+// **The Core module specifies the core EVT module and the client
+// default settings. The library is built by adding functionality or
+// sub-modules to EVT.**
+
+define('core',[
+  'utils'
+], function (Utils) {
+  
+
+  // Version is udpated from package.json using `grunt-version` on build.
+  var version = '2.0.0';
+
+
+  // Setup default settings:
+
+  // - ***apiUrl**: String - change the default API host*
+  // - ***async**: Boolean - set to false to make synchronous requests (blocks UI)*
+  // - ***fullResponse**: Boolean - by default the response of every call if the JSON
+  // body. However if you need to access the 'status' or 'responseHeaders' in responses
+  // set this to 'true'. The full response has the structure:*
+
+  // ```
+  //  {
+  //    data: <JSON data>,
+  //    headers: <response headers map>
+  //    status: <HTTP status code>
+  //  }
+  // ```
+
+  // - ***geolocation**: Boolean - set to true to ask for Geolocation when needed*
+  // - ***fetchCascade**: Boolean - set to true to automagically fetch nested entities
+  // (e.g. thng.product is an EVT.Product instead of string id)*
+  // - ***onStartRequest**: Function - run before each HTTP call (e.g. start Spinner)*
+  // - ***onFinishRequest**: Function - run after each HTTP call*
+  var defaultSettings = {
+    apiUrl: 'https://api.evrythng.com',
+    async: true,
+    fullResponse: false,
+    geolocation: true
+    /*fetchCascade: false,
+    onStartRequest: null,
+    onFinishRequest: null*/
+  };
+
+
+  // Module definition and raw API.
+  var EVT = {
+    version: version,
+
+    settings: defaultSettings,
+
+    // Setup method allows the developer to change overall settings for every
+    // subsequent request. However, these can be overriden for each request as well.
+    // Setup merges current settings with the new custom ones.
+    setup: function (customSettings) {
+
+      if(Utils.isObject(customSettings)){
+        this.settings = Utils.extend(this.settings, customSettings);
+      }else{
+        throw new TypeError('Setup should be called with an options object.');
+      }
+
+      return this.settings;
+    }
+  };
+
+  return EVT;
+
+});
+
+// ## SCOPE.JS
+
+// **Scope defines the context in which API calls are made.
+// Thus, it stores its defining API Key. Scopes send their
+// respective `API Key` in their request's `Authorization` header.**
+
+// *For example, reads on products using ApplicationScope or
+// EVT.App only return the products created for that specific
+// application/scope.*
+
+define('scope/scope',[
+  'utils'
+], function (Utils) {
+  
+
+  // Scope super class constructor:
+
+  // - ***new Scope(apiKey)** - API Key string*
+  var Scope = function(apiKey){
+
+    // Default parent scope does not have parent.
+    this.parentScope = null;
+
+    // Setup apiKey of the current Scope if it is a String.
+    if(Utils.isString(apiKey)){
+      this.apiKey = apiKey;
+    }else{
+      throw new TypeError('Scope constructor should be called with API Key.');
+    }
+  };
+
+  // Return Scope factory function
+  return Scope;
+
+});
+
+// ## LOGGER.JS
+
+// **The Logger module is simple wrapper for console log
+// that prefixes EvrythngJS's logs with a custom header.**
+
+define('logger',[],function () {
+  
+
+  var header = 'EvrythngJS';
+
+  return {
+
+    error: function(data){
+      console.error(header + ' Error: ', data);
+    },
+
+    info: function(data){
+      console.info(header + ' Info: ', data);
+    }
+
+  };
+
+});
 // ## CORS.JS
 
 // **The Cors module implements a simple CORS request using *XmlHttpRequest*.
@@ -3477,44 +3518,6 @@ define('entity/property',[
 
   };
 });
-// ## PRODUCT.JS
-
-// **The Product is a simple Entity subclass that provides a nested
-// Property Resource.**
-
-define('entity/product',[
-  'core',
-  './entity',
-  'resource',
-  './property',
-  'utils'
-], function (EVT, Entity, Resource, Property, Utils) {
-  
-
-  // Setup Product inheritance from Entity.
-  var Product = function () {
-    Entity.apply(this, arguments);
-  };
-
-  Product.prototype = Object.create(Entity.prototype);
-  Product.prototype.constructor = Product;
-
-
-  // Extend Product API by exposing a Property Resource, allowing to
-  // manage the properties of this product with a resource pattern.
-  Utils.extend(Product.prototype, {
-    property: Property.resourceConstructor
-  }, true);
-
-
-  // Attach class to EVT module.
-  EVT.Product = Product;
-
-
-  return {
-    resourceConstructor: Resource.constructorFactory('/products', EVT.Product)
-  };
-});
 // ## ACTION.JS
 
 // **The Action Entity represents an action in the Engine. It inherits
@@ -3525,8 +3528,9 @@ define('entity/action',[
   'core',
   './entity',
   'resource',
-  'utils'
-], function (EVT, Entity, Resource, Utils) {
+  'utils',
+  'logger'
+], function (EVT, Entity, Resource, Utils, Logger) {
   
 
   // Setup Action inheritance from Entity.
@@ -3545,16 +3549,31 @@ define('entity/action',[
     var args = arguments;
 
     if(!obj || Utils.isFunction(obj)) {
-
-      var pathSplit = this.path.split('/'),
-        actionType = pathSplit[pathSplit.length-1];
-
       args = Array.prototype.slice.call(arguments, 0);
-      args.unshift({ type: actionType });
-
+      args.unshift({});
     }
 
     return args;
+  }
+
+  // Set the Entity ID of the entity receiving the action as well
+  // as the specified action type in the action data.
+  function _fillAction(actionObj, actionType, entityId) {
+
+    if(!entityId){
+      throw new Error('This entity does not have an ID.');
+    }
+
+    var ret = actionObj;
+    ret.type = actionType;
+
+    if(this.class.constructor == EVT.Product.constructor){
+      ret.product = entityId;
+    }else if(this.class.constructor == EVT.Thng.constructor){
+      ret.thng = entityId;
+    }
+
+    return ret;
   }
 
 
@@ -3565,12 +3584,12 @@ define('entity/action',[
   // Return the resource factory function. Actions have a custom *resource
   // constructor* that needs an action type and allows an optional ID.
 
-  // - ***user.action('scans')**: creates path '/actions/scans'*
-  // - ***user.action('scans', '1')**: creates path '/actions/scans/1'*
+  // - ***product.action('scans')**: creates path '/actions/scans'*
+  // - ***product.action('scans', '1')**: creates path '/actions/scans/1'*
   return {
 
     resourceConstructor: function (actionType, id) {
-      var path, resource;
+      var path, resource, entityId = this.id;
 
       if(actionType){
         if(Utils.isString(actionType)){
@@ -3584,17 +3603,90 @@ define('entity/action',[
 
       // Create a resource constructor dynamically and call it with this
       // action's ID.
-      resource = Resource.constructorFactory(path, EVT.Action).call(this, id);
+      resource = Resource.constructorFactory(path, EVT.Action)
+        .call(this.resource.scope, id);
 
       // Overload Action resource *create()* method to allow empty object.
       resource.create = function () {
-        var args = _normalizeArguments.apply(this, arguments);
-        return Resource.prototype.create.apply(this, args);
+
+        var $this = this,
+          args = _normalizeArguments.apply(this, arguments);
+
+        args[0] = _fillAction.call(this, args[0], actionType, entityId);
+
+        // If geolocation setting is turned on, get current position before
+        // registering the action in the Engine.
+        if(EVT.settings.geolocation){
+
+          return Utils.getCurrentPosition().then(function (position) {
+
+            args[0].location = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            };
+            args[0].locationSource = 'sensor';
+
+          }, function (err) {
+
+            // Unable to get position, just inform the reason in the console.
+            Logger.info(err);
+
+          }).finally(function () {
+            return Resource.prototype.create.apply($this, args);
+          });
+
+        }else{
+          return Resource.prototype.create.apply($this, args);
+        }
       };
 
       return resource;
     }
 
+  };
+});
+// ## PRODUCT.JS
+
+// **The Product is a simple Entity subclass that provides a nested
+// Property Resource.**
+
+define('entity/product',[
+  'core',
+  './entity',
+  'resource',
+  './property',
+  './action',
+  'utils'
+], function (EVT, Entity, Resource, Property, Action, Utils) {
+  
+
+  // Setup Product inheritance from Entity.
+  var Product = function () {
+    Entity.apply(this, arguments);
+  };
+
+  Product.prototype = Object.create(Entity.prototype);
+  Product.prototype.constructor = Product;
+
+
+  // Extend Product API by exposing a Property Resource, allowing to
+  // manage the properties of this product with a resource pattern.
+  // Expose an Action resource as well, for managing Products actions.
+  Utils.extend(Product.prototype, {
+
+    property: Property.resourceConstructor,
+
+    action: Action.resourceConstructor
+  
+  }, true);
+
+
+  // Attach class to EVT module.
+  EVT.Product = Product;
+
+
+  return {
+    resourceConstructor: Resource.constructorFactory('/products', EVT.Product)
   };
 });
 // ## APPUSER.JS
@@ -4136,23 +4228,22 @@ define('authentication',[
 // An Application scope currently has access to:
 
 // - Product resource (`R`)
-// - Action resource (`C`)
 // - App User resource (`C`)
 // - Login
+// - (`C` actions via products)
 
 define('scope/application',[
   'core',
   './scope',
   'resource',
   'entity/product',
-  'entity/action',
   'entity/appUser',
   'authentication',
   'social/facebook',
   'utils',
   'logger',
   'ajax'
-], function (EVT, Scope, Resource, Product, Action, AppUser,
+], function (EVT, Scope, Resource, Product, AppUser,
              Authentication, Facebook, Utils, Logger) {
   
 
@@ -4259,8 +4350,6 @@ define('scope/application',[
 
     product: Product.resourceConstructor,
 
-    action: Action.resourceConstructor,
-
     // Setup AppUser resource to use *'/auth/evrythng/users'* instead
     // of the default *'/users'*. Both endpoints return a list of User entities.
     appUser: AppUser.resourceConstructor('/auth/evrythng/users'),
@@ -4287,9 +4376,10 @@ define('entity/thng',[
   './entity',
   'resource',
   './property',
+  './action',
   'utils',
   'ajax'
-], function (EVT, Entity, Resource, Property, Utils) {
+], function (EVT, Entity, Resource, Property, Action, Utils) {
   
 
   // Setup Thng inheritance from Entity.
@@ -4320,10 +4410,13 @@ define('entity/thng',[
 
   // Extend Thng API by exposing a Property Resource, allowing to
   // manage the properties of this product with a resource pattern.
+  // Expose an Action resource as well, for managing Thngs actions.
   // Also attach the *readProduct()* method to every Thng.
   Utils.extend(Thng.prototype, {
 
     property: Property.resourceConstructor,
+
+    action: Action.resourceConstructor,
 
     readProduct: readProduct
 
@@ -4399,24 +4492,23 @@ define('entity/collection',[
 // A User scope currently has access to:
 
 // - Product resource (`C`, `R`, `U`)
-// - Action resource (`C`, `R`, `U`)
 // - Thng resource (`C`, `R`, `U`)
 // - Collection resource (`C`, `R`, `U`)
 // - Logout
 // - Search
 // - Update itself (the user information)
+// - (`C`, `R`, `U` actions via products/thngs)
 
 define('scope/user',[
   'core',
   './scope',
   'entity/product',
   'entity/thng',
-  'entity/action',
   'entity/appUser',
   'entity/collection',
   'authentication',
   'utils'
-], function (EVT, Scope, Product, Thng, Action, AppUser, Collection,
+], function (EVT, Scope, Product, Thng, AppUser, Collection,
              Authentication, Utils) {
   
 
@@ -4529,8 +4621,6 @@ define('scope/user',[
   Utils.extend(UserScope.prototype, {
 
     product: Product.resourceConstructor,
-
-    action: Action.resourceConstructor,
 
     thng: Thng.resourceConstructor,
 

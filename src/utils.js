@@ -4,7 +4,7 @@
 // across the whole library. For that, it doesn't have any
 // dependency.**
 
-define(function () {
+define(['rsvp'], function (RSVP) {
   'use strict';
 
   return {
@@ -82,6 +82,47 @@ define(function () {
       }
 
       return url;
+    },
+
+    // Get current position using HTML5 Geolocation and resolve promise
+    // once it has returned.
+    getCurrentPosition: function(options){
+      if (window.navigator.geolocation) {
+
+        // Have default options, but allow to extend with custom.
+        var geolocationOptions = this.extend({
+          maximumAge: 0,
+          timeout: 10000,
+          enableHighAccuracy: true
+        }, options);
+
+        return new RSVP.Promise(function (resolve, reject) {
+
+          window.navigator.geolocation.getCurrentPosition(function (position) {
+
+            resolve(position);
+
+          }, function (err) {
+
+            var errorMessage = 'Geolocation: ';
+            if(err.code === 1) {
+              errorMessage = 'You didn\'t share your location.';
+            } else if(err.code === 2) {
+              errorMessage = 'Couldn\'t detect your current location.';
+            } else if(err.code === 3) {
+              errorMessage = 'Retrieving position timed out.';
+            } else {
+              errorMessage = 'Unknown error.';
+            }
+            reject(errorMessage);
+
+          }, geolocationOptions);
+
+        });
+
+      }else{
+        return RSVP.reject('Your browser doesn\'t support geolocation.');
+      }
     }
 
   };
