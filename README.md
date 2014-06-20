@@ -50,138 +50,138 @@ App key in any public application code (read more [here](https://dev.evrythng.co
 
 ### AMD (RequireJS)
 
-    ```javascript
-    require(['evrythng'], function (EVT) {
-    
-      EVT.setup({
-        apiUrl: 'xxx'
-      });
-        
-      var app = new EVT.App('appApiKey');
+```javascript
+require(['evrythng'], function (EVT) {
 
-      // Promise API
-      app.product('123').read().then(function(prod){
-      
-        // Properties
+  EVT.setup({
+    apiUrl: 'xxx'
+  });
+    
+  var app = new EVT.App('appApiKey');
+
+  // Promise API
+  app.product('123').read().then(function(prod){
+  
+    // Properties
+    
+    // update single property
+    prod.property('status').update('off');
         
-        // update single property
-        prod.property('status').update('off');
-            
-        // update multiple properties
-        prod.property().update({
-          status: 'off',
-          level: '80'
-        });
-        
-        // read current property
-        console.log(prod.properties['status']);
-        
-        // read property history
-        prod.property('status').read().then(function(statusHistory){
-        
-          console.log(statusHistory);
-          
-        });
-        
-        ...
-      });
-        
-      // Login user and create user scope  
-      app.login('facebook').then(function(response){
-        
-        // every call using user will use its User Api Key
-        var user = response.user;
-        
-       
-        // Manage thngs
-        user.thng().read().then(function(thngs){
-            
-          thngs[0].description = 'newDesc';              
-          return thngs[0].update();
-                
-        }).then(function(thng){
-            
-          console.log('thng updated');
-                
-        });
-        
-        user.thng('123').update({
-          description: 'new desc'
-        });
-        
-        var newThng = new EVT.Thng();
-        newThng.name = 'name';
-        newThng.description = 'desc';
-        
-        user.thng().create(newThng);
-        
-        
-        // Actions
-        
-        user.thng('1').read().then(function(thng1){
-          
-          thng1.action('scans').create();
-          
-          thng1.action('_customAction').create({
-            customFields: {
-              foo: 'bar'
-            }
-          });
-        
-        });
-        
-        ...
-      });
-      
-      
-      // Callback API
-      app.product().read(function(products){
-      
-        console.log(products);
-        
-      });
-      
-      // Raw API Calls and multiple API designs example
-      var options = {
-        url: '/products',
-        method: 'post',
-        authorization: 'userApiKey',
-        success: function(product){
-          console.log(product);
-        },
-        error: function(err){
-          console.log(err);                            
-        }
-      }
-      
-      EVT.api(options).then(successHandler, errorHandler);
-      
-      EVT.api(options);
-      
-      EVT.api(options, successCb, errorCb);
-      
-      ...
+    // update multiple properties
+    prod.property().update({
+      status: 'off',
+      level: '80'
     });
-    ```
+    
+    // read current property
+    console.log(prod.properties['status']);
+    
+    // read property history
+    prod.property('status').read().then(function(statusHistory){
+    
+      console.log(statusHistory);
+      
+    });
+    
+    ...
+  });
+    
+  // Login user and create user scope  
+  app.login('facebook').then(function(response){
+    
+    // every call using user will use its User Api Key
+    var user = response.user;
+    
+   
+    // Manage thngs
+    user.thng().read().then(function(thngs){
+        
+      thngs[0].description = 'newDesc';              
+      return thngs[0].update();
+            
+    }).then(function(thng){
+        
+      console.log('thng updated');
+            
+    });
+    
+    user.thng('123').update({
+      description: 'new desc'
+    });
+    
+    var newThng = new EVT.Thng();
+    newThng.name = 'name';
+    newThng.description = 'desc';
+    
+    user.thng().create(newThng);
+    
+    
+    // Actions
+    
+    user.thng('1').read().then(function(thng1){
+      
+      thng1.action('scans').create();
+      
+      thng1.action('_customAction').create({
+        customFields: {
+          foo: 'bar'
+        }
+      });
+    
+    });
+    
+    ...
+  });
+  
+  
+  // Callback API
+  app.product().read(function(products){
+  
+    console.log(products);
+    
+  });
+  
+  // Raw API Calls and multiple API designs example
+  var options = {
+    url: '/products',
+    method: 'post',
+    authorization: 'userApiKey',
+    success: function(product){
+      console.log(product);
+    },
+    error: function(err){
+      console.log(err);                            
+    }
+  }
+  
+  EVT.api(options).then(successHandler, errorHandler);
+  
+  EVT.api(options);
+  
+  EVT.api(options, successCb, errorCb);
+  
+  ...
+});
+```
 
 ### Node.js
 
-    ```javascript
-    var EVT = require('evrythng');
-    
-    var app = new EVT.App('apiKey');
-    ...
-    ```
+```javascript
+var EVT = require('evrythng');
+
+var app = new EVT.App('apiKey');
+...
+```
 
 ### Browser Globals
 
 If you aren't using any of the above script loading mechanisms, the EVT module is available
 as a browser global:
 
-    ```javascript
-    var app = new EVT.App('apiKey');
-    ...
-    ```
+```javascript
+var app = new EVT.App('apiKey');
+...
+```
 
 ## Documentation
 
