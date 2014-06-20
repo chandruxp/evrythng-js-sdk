@@ -86,8 +86,11 @@ require(['evrythng'], function (EVT) {
     ...
   });
     
-  // Login user and create user scope  
-  app.login('facebook').then(function(response){
+  // Login user (with Evrythng Auth) and create user scope  
+  app.login({
+    email: 'myemail',
+    password: 'mypass'
+  }).then(function(response){
     
     // every call using user will use its User Api Key
     var user = response.user;
@@ -130,6 +133,8 @@ require(['evrythng'], function (EVT) {
     
     });
     
+    user.logout();
+    
     ...
   });
   
@@ -160,6 +165,22 @@ require(['evrythng'], function (EVT) {
   
   EVT.api(options, successCb, errorCb);
   
+  
+  // Facebook - in order to use FB login, the application needs to
+  // be initialized with facebook: true
+  app = new EVT.App({
+    apiKey: 'appApiKey',
+    facebook: true
+  });
+  
+  app.login('facebook').then(function(response){
+  
+    var user = response.user;
+    
+    console.log(app.socialNetworks.facebook.appId);
+    
+    user.logout('facebook');
+  });
   ...
 });
 ```
