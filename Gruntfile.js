@@ -212,7 +212,7 @@ module.exports = function(grunt) {
       dev: {
         options: {
           bucket: process.env.AWS_EVTJS_DEV_BUCKET,
-          debug: true
+          //debug: true
         },
         files: [{
           expand: true,
@@ -227,7 +227,7 @@ module.exports = function(grunt) {
         options: {
           bucket: process.env.AWS_EVTJS_RELEASE_BUCKET,
           // Debug option is for testing purposes
-          debug: true,
+          //debug: true,
           params: {
             ContentEncoding: 'gzip' // applies to all the files!
           }

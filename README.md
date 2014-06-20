@@ -50,51 +50,119 @@ App key in any public application code (read more [here](https://dev.evrythng.co
 
 ### AMD (RequireJS)
 
+    ```js
     require(['evrythng'], function (EVT) {
     
-        EVT.setup({
-            apiUrl: 'xxx',
-            fullResponse: true
-        });
+      EVT.setup({
+        apiUrl: 'xxx'
+      });
         
-        var app = new EVT.App('appApiKey');
+      var app = new EVT.App('appApiKey');
 
-        app.product('123').read().then(function(prod){
-            ...
+      // Promise API
+      app.product('123').read().then(function(prod){
+      
+        // Properties
+        
+        // update single property
+        prod.property('status').update('off');
+            
+        // update multiple properties
+        prod.property().update({
+          status: 'off',
+          level: '80'
         });
         
-        app.login('facebook').then(function(response){
-            var user = response.user;
-            
-            user.thng().read().then(function(thngs){
-            
-                thngs[0].description = 'newDesc';              
-                return thngs[0].update();
-                
-            }).then(function(thng){
-            
-                console.log('thng updated');
-                
-            });
+        // read current property
+        console.log(prod.properties['status']);
+        
+        // read property history
+        prod.property('status').read().then(function(statusHistory){
+        
+          console.log(statusHistory);
+          
         });
         
         ...
+      });
+        
+      // Login user and create user scope  
+      app.login('facebook').then(function(response){
+        
+        // every call using user will use its User Api Key
+        var user = response.user;
+        
+       
+        // Manage thngs
+        user.thng().read().then(function(thngs){
+            
+          thngs[0].description = 'newDesc';              
+          return thngs[0].update();
+                
+        }).then(function(thng){
+            
+          console.log('thng updated');
+                
+        });
+        
+        user.thng('123').update({
+          description: 'new desc'
+        });
+        
+        var newThng = new EVT.Thng();
+        newThng.name = 'name';
+        newThng.description = 'desc';
+        
+        user.thng().create(newThng);
+        
+        
+        // Actions
+        user.action('scans').create();
+        user.action('_customAction').create();
+        
+        ...
+      });
+      
+      
+      // Callback API
+      prod.product().read(function(products){
+      
+        console.log(products);
+        
+      });
+      
+      prod.action('checkins').create({
+        customFields: {
+          foo: 'bar'
+        }
+      }, function(newAction){
+      
+        console.log(newAction);
+        
+      });
+      
+      ...
     });
+    ```
 
 ### Node.js
 
+    ```js
     var EVT = require('evrythng');
     
     var app = new EVT.App('apiKey');
     ...
+    ```
 
 ### Browser Globals
 
 If you aren't using any of the above script loading mechanisms, the EVT module is available
 as a browser global:
 
+    ```js
     var app = new EVT.App('apiKey');
     ...
+    ```
 
 ## Documentation
 

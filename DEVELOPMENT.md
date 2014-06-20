@@ -6,54 +6,60 @@ It is compatible with the UMD pattern, meaning it can easily be used everywhere 
 AMD and CommonJS-like (Node.js) script loaders, falling back to browser globals.
 
 
-The library also depends on two other libraries:
+When the EvrythngJS library is built, it includes:
 
-* jQuery, which registers as an AMD library.
-* underscore, which does not register as an AMD library. So the
-[requirejs shim config](http://requirejs.org/docs/api.html#config-shim) is used
-when loading underscore in an AMD setting.
+- [Almond](https://github.com/jrburke/almond): The built library also does not include 
+require.js in the file, but instead uses *Almond*, a small AMD API implementation, that 
+allows the built file's internal modules to work. These internal modules and this version 
+of almond are not visible outside the built file, just used internally by the built file 
+for code organization and referencing.
 
-When the library is built, it **excludes** jQuery and underscore from the
-built library. Consumers of the built library will  provide a jQuery and
-underscore for the library. If the consumer uses an AMD loader, then the built
-file will ask for 'jquery' and 'underscore' as AMD dependencies. If the consumer
-just uses browser globals and script tags, the library will grab the `$` and
-`_` global variables and use them for the jQuery and underscore dependencies.
-
-The built library also does not include require.js in the file, but instead
-uses [almond](https://github.com/jrburke/almond), a small AMD API
-implementation, that allows the built file's internal modules to work. These
-internal modules and this version of almond are not visible outside the built
-file, just used internally by the built file for code organization and
-referencing.
-
-When building the r.js optimiser is used in grunt to compiler all the requirejs
-file into a single distributable file with almond.
+- [RSVP](https://github.com/tildeio/rsvp.js): a lightweight Promises/A+ (1.1)-compliant
+library used while native Promises don't get implemented in all browsers. This library 
+has the same ES6 Promise interface for easy future update. However, this might change in 
+the future for an even lighter ES6-Promise shim.
 
 
 ## File structure
 
-* **dist/evrythng.js**: the built library suitable for distribution.
-* **lib**: contains lib scripts used during dev and testing.
-* **tests**: the QUnit-based tests.
+- **dist/evrythng.*.js**: the built library suitable for distribution 
+(uncompress and minified versions).
+- **dist/evrythng.min.map**: source maps for the minified version. This allows the 
+developer to open the Developer Tools in the browser and debug the minified code as if
+was the development version.
+* **lib**: contains dependencies or bundled scripts. RSVP.js for now.
+* **test**: the Jasmine-based Unit tests. All tests in 'test/spec/all' refer to unit
+testing using Karma and RequireJS. The file 'test/spec/evrythngDistSpec.js' defines
+a small test suite used to test UMD (Karma + RequireJS, Karma + browser globals and 
+Node Jasmine) and cross-browser compatibility in Sauce Labs.
 * **tools**: the helper tools/scripts used to build the output file.
-* **evrythng**: holds the sub-modules used by the main `evrythng.js` module
-to help implement the library's functionality.
-* **evrythng.js**: the main module entry point for the source-form of the
-library.
+* **src**: holds the source code in the form of sub-modules used by the main 
+`src/evrythng.js`.
+* **karma.conf*.js**: Karma test configurations.
 
 ## How to develop
 
-* Modify `evrythng.js` and its submodules in the `evrythng` directory.
-* Create tests for the functionality in the `tests` directory. It is currently
-using QUnit for unit testing.
-* Load `tests/index.html` to run the tests or run:
-    grunt test
+- Modify `evrythng.js` and its submodules in the `src` directory.
+- Add new unit tests for the added functionality
+- Build, which will take care of the build process, versioning and testing process:
 
-** **tests/index-dist-amd.html**: For testing the dist version of the library
-with an AMD loader.
-** **tests/index-dist-global.html**: For testing the dist version of the library
-in a "browser globals and script tags" environment.
+```
+grunt build
+```
+  
+- You can also run tests using any of the Grunt test tasks:
+
+```
+grunt test // unit testing with Karma + PhantomJS    
+```
+
+```
+grunt test:dist // test UMD in Chrome (AMD + browser globals) and Node
+```
+
+```
+grunt test:sauce // browser globals test in multiple browsers in SauceLabs
+```
 
 ## How to build
 
@@ -61,11 +67,52 @@ Simply run:
 
     grunt build
 
-To generate the built file in `dist/evrythng.js`.
+To generate the built files in `dist/evrythng.*`.
 
 ## Documentation
 
-Documentation uses Groc, which depends on Node.js and Pygments. Install Pygments by:
+Documentation uses Groc, which depends on Node.js and Pygments. Install 
+Pygments by:
 
     sudo easy_install pip
     sudo pip install Pygments
+    
+After you have this, run:
+
+    grunt doc
+    
+By default Groc will try to update the Documentation in the `gh-pages` branch.
+This needs a clean repo (no uncommited changes) and a following push to the 
+remote (Github).
+
+If you want to view the generated documentation before deploying, uncomment the
+following lines in the **grunt groc task options**:
+
+    out: "docs/",
+    //github: true,
+
+## Deploy
+
+Deploy requires a clean repo and verify everything is running as expected. You
+can deploy EvrythngJS for Development purposes to the AWS S3 development bucket
+using:
+
+    grunt deploy
+  
+### Release
+
+**Please look at the release task steps before using it.**
+
+Releasing EvrythngJS is done by using:
+
+    grunt deploy:release
+  
+This builds, tests, update package (NPM and Bower) versions, update references,
+tags commit, upload to S3, push to Github, and update documentation.
+
+All S3 required information should be present in your environment variables as:
+
+    AWS_ACCESS_KEY_ID
+    AWS_SECRET_KEY
+    AWS_EVTJS_DEV_BUCKET
+    AWS_EVTJS_RELEASE_BUCKET
