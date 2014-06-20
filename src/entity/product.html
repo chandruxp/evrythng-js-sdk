@@ -4,16 +4,22 @@ Property Resource.</strong></p></div></div><div class="code"><div class="wrapper
   <span class="s1">&#39;./entity&#39;</span><span class="p">,</span>
   <span class="s1">&#39;resource&#39;</span><span class="p">,</span>
   <span class="s1">&#39;./property&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;./action&#39;</span><span class="p">,</span>
   <span class="s1">&#39;utils&#39;</span>
-<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Entity</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">,</span> <span class="nx">Property</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Entity</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">,</span> <span class="nx">Property</span><span class="p">,</span> <span class="nx">Action</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup Product inheritance from Entity.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">Product</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="nx">Entity</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
   <span class="p">};</span>
 
   <span class="nx">Product</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Entity</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
   <span class="nx">Product</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">Product</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Extend Product API by exposing a Property Resource, allowing to
-manage the properties of this product with a resource pattern.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Product</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
-    <span class="nx">property</span><span class="o">:</span> <span class="nx">Property</span><span class="p">.</span><span class="nx">resourceConstructor</span>
+manage the properties of this product with a resource pattern.
+Expose an Action resource as well, for managing Products actions.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Product</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+
+    <span class="nx">property</span><span class="o">:</span> <span class="nx">Property</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
+
+    <span class="nx">action</span><span class="o">:</span> <span class="nx">Action</span><span class="p">.</span><span class="nx">resourceConstructor</span>
+  
   <span class="p">},</span> <span class="kc">true</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Attach class to EVT module.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">EVT</span><span class="p">.</span><span class="nx">Product</span> <span class="o">=</span> <span class="nx">Product</span><span class="p">;</span>
 
 

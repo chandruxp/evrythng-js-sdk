@@ -4,9 +4,10 @@ Property Resource and a direct method to read the Thng's Product.</strong></p></
   <span class="s1">&#39;./entity&#39;</span><span class="p">,</span>
   <span class="s1">&#39;resource&#39;</span><span class="p">,</span>
   <span class="s1">&#39;./property&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;./action&#39;</span><span class="p">,</span>
   <span class="s1">&#39;utils&#39;</span><span class="p">,</span>
   <span class="s1">&#39;ajax&#39;</span>
-<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Entity</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">,</span> <span class="nx">Property</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Entity</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">,</span> <span class="nx">Property</span><span class="p">,</span> <span class="nx">Action</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup Thng inheritance from Entity.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">Thng</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="nx">Entity</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
   <span class="p">};</span>
@@ -27,9 +28,12 @@ to this thng's scope's product resource.</p></div></div><div class="code"><div c
     <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">resource</span><span class="p">.</span><span class="nx">scope</span><span class="p">.</span><span class="nx">product</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">product</span><span class="p">).</span><span class="nx">read</span><span class="p">();</span>
   <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Extend Thng API by exposing a Property Resource, allowing to
 manage the properties of this product with a resource pattern.
+Expose an Action resource as well, for managing Thngs actions.
 Also attach the <em>readProduct()</em> method to every Thng.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Thng</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
 
     <span class="nx">property</span><span class="o">:</span> <span class="nx">Property</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
+
+    <span class="nx">action</span><span class="o">:</span> <span class="nx">Action</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
 
     <span class="nx">readProduct</span><span class="o">:</span> <span class="nx">readProduct</span>
 

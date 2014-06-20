@@ -2,23 +2,22 @@
 is a sub-class of scope and it defines the public API that the
 user and its API Keys can access to.</strong></p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A User scope currently has access to:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
 <li>Product resource (<code>C</code>, <code>R</code>, <code>U</code>)</li>
-<li>Action resource (<code>C</code>, <code>R</code>, <code>U</code>)</li>
 <li>Thng resource (<code>C</code>, <code>R</code>, <code>U</code>)</li>
 <li>Collection resource (<code>C</code>, <code>R</code>, <code>U</code>)</li>
 <li>Logout</li>
 <li>Search</li>
 <li>Update itself (the user information)</li>
+<li>(<code>C</code>, <code>R</code>, <code>U</code> actions via products/thngs)</li>
 </ul></div></div><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
   <span class="s1">&#39;core&#39;</span><span class="p">,</span>
   <span class="s1">&#39;./scope&#39;</span><span class="p">,</span>
   <span class="s1">&#39;entity/product&#39;</span><span class="p">,</span>
   <span class="s1">&#39;entity/thng&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;entity/action&#39;</span><span class="p">,</span>
   <span class="s1">&#39;entity/appUser&#39;</span><span class="p">,</span>
   <span class="s1">&#39;entity/collection&#39;</span><span class="p">,</span>
   <span class="s1">&#39;authentication&#39;</span><span class="p">,</span>
   <span class="s1">&#39;utils&#39;</span>
-<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Scope</span><span class="p">,</span> <span class="nx">Product</span><span class="p">,</span> <span class="nx">Thng</span><span class="p">,</span> <span class="nx">Action</span><span class="p">,</span> <span class="nx">AppUser</span><span class="p">,</span> <span class="nx">Collection</span><span class="p">,</span>
+<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Scope</span><span class="p">,</span> <span class="nx">Product</span><span class="p">,</span> <span class="nx">Thng</span><span class="p">,</span> <span class="nx">AppUser</span><span class="p">,</span> <span class="nx">Collection</span><span class="p">,</span>
              <span class="nx">Authentication</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>User Scope constructor. It can be called with the parameters:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
 <li><strong><em>new EVT.User(apiKey, parentScope)</strong> - API Key string.
@@ -88,8 +87,6 @@ in the <em>'/users'</em> endpoint.</p></div></div><div class="code"><div class="
 the default <em>'/thngs'</em> endpoint.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">UserScope</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
 
     <span class="nx">product</span><span class="o">:</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
-
-    <span class="nx">action</span><span class="o">:</span> <span class="nx">Action</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
 
     <span class="nx">thng</span><span class="o">:</span> <span class="nx">Thng</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
 

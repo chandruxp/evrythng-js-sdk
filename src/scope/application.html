@@ -2,22 +2,21 @@
 is a sub-class of scope and it defines the public API that an App Api Key
 can access to.</strong></p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An Application scope currently has access to:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
 <li>Product resource (<code>R</code>)</li>
-<li>Action resource (<code>C</code>)</li>
 <li>App User resource (<code>C</code>)</li>
 <li>Login</li>
+<li>(<code>C</code> actions via products)</li>
 </ul></div></div><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">([</span>
   <span class="s1">&#39;core&#39;</span><span class="p">,</span>
   <span class="s1">&#39;./scope&#39;</span><span class="p">,</span>
   <span class="s1">&#39;resource&#39;</span><span class="p">,</span>
   <span class="s1">&#39;entity/product&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;entity/action&#39;</span><span class="p">,</span>
   <span class="s1">&#39;entity/appUser&#39;</span><span class="p">,</span>
   <span class="s1">&#39;authentication&#39;</span><span class="p">,</span>
   <span class="s1">&#39;social/facebook&#39;</span><span class="p">,</span>
   <span class="s1">&#39;utils&#39;</span><span class="p">,</span>
   <span class="s1">&#39;logger&#39;</span><span class="p">,</span>
   <span class="s1">&#39;ajax&#39;</span>
-<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Scope</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">,</span> <span class="nx">Product</span><span class="p">,</span> <span class="nx">Action</span><span class="p">,</span> <span class="nx">AppUser</span><span class="p">,</span>
+<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Scope</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">,</span> <span class="nx">Product</span><span class="p">,</span> <span class="nx">AppUser</span><span class="p">,</span>
              <span class="nx">Authentication</span><span class="p">,</span> <span class="nx">Facebook</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">,</span> <span class="nx">Logger</span><span class="p">)</span> <span class="p">{</span>
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Application Scope constructor. It can be called with the parameters:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
 <li><strong><em>new EVT.App(apiKey)</strong> - API Key string</em></li>
@@ -83,9 +82,7 @@ return be the same. Thus we need to setup the resource constructor to use a cert
 path, and return the correct factory function. This is what happens here with the
 <strong>appUser()</strong> resource constructor.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Utils</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">ApplicationScope</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
 
-    <span class="nx">product</span><span class="o">:</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
-
-    <span class="nx">action</span><span class="o">:</span> <span class="nx">Action</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup AppUser resource to use <em>'/auth/evrythng/users'</em> instead
+    <span class="nx">product</span><span class="o">:</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup AppUser resource to use <em>'/auth/evrythng/users'</em> instead
 of the default <em>'/users'</em>. Both endpoints return a list of User entities.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">appUser</span><span class="o">:</span> <span class="nx">AppUser</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">(</span><span class="s1">&#39;/auth/evrythng/users&#39;</span><span class="p">),</span>
 
     <span class="nx">login</span><span class="o">:</span> <span class="nx">Authentication</span><span class="p">.</span><span class="nx">login</span>
