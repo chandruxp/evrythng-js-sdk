@@ -42,7 +42,7 @@ Evrythng.js is also available as an NPM package. Install it using:
 
 Evrythng.js uses UMD, which makes it available in every environment running Javascript.
 
-For advanced usage and options, see the [Documentation section](#Documentation) below and the API 
+For advanced usage and options, see the [Documentation section](#documentation) below and the API 
 documentation on [EVRYTHNG's Developer Portal](https://dev.evrythng.com/documentation). 
 
 **Note:** Be sure to only include your EVRYTHNG App API key and **not** your Operator or User
@@ -219,7 +219,7 @@ uncompressed version of the library.
 
 ### Size
 
-28.21 kB (min) → 5.55 kB (gzip)
+29.56 kB (min) → 5.82 kB (gzip)
 
 ## Development
 

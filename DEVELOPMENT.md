@@ -90,29 +90,4 @@ following lines in the **grunt groc task options**:
 
     out: "docs/",
     //github: true,
-
-## Deploy
-
-Deploy requires a clean repo and verify everything is running as expected. You
-can deploy EvrythngJS for Development purposes to the AWS S3 development bucket
-using:
-
-    grunt deploy
-  
-### Release
-
-**Please look at the release task steps before using it.**
-
-Releasing EvrythngJS is done by using:
-
-    grunt deploy:release
-  
-This builds, tests, update package (NPM and Bower) versions, update references,
-tags commit, upload to S3, push to Github, and update documentation.
-
-All S3 required information should be present in your environment variables as:
-
-    AWS_ACCESS_KEY_ID
-    AWS_SECRET_KEY
-    AWS_EVTJS_DEV_BUCKET
-    AWS_EVTJS_RELEASE_BUCKET
+    

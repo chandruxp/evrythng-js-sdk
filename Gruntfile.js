@@ -96,6 +96,17 @@ module.exports = function(grunt) {
       }
     },
 
+    compress: {
+      main: {
+        options: {
+          mode: 'gzip'
+        },
+        files: [
+          {expand: true, src: ['dist/evrythng.min.js']}
+        ]
+      }
+    },
+
     karma: {
       unit: {
         options: {
@@ -211,7 +222,7 @@ module.exports = function(grunt) {
       },
       dev: {
         options: {
-          bucket: process.env.AWS_EVTJS_DEV_BUCKET,
+          bucket: process.env.AWS_EVTJS_DEV_BUCKET
           //debug: true
         },
         files: [{
@@ -225,12 +236,12 @@ module.exports = function(grunt) {
       },
       release: {
         options: {
-          bucket: process.env.AWS_EVTJS_RELEASE_BUCKET,
+          bucket: process.env.AWS_EVTJS_RELEASE_BUCKET
           // Debug option is for testing purposes
           //debug: true,
-          params: {
+          /*params: {
             ContentEncoding: 'gzip' // applies to all the files!
-          }
+          }*/
         },
         files: [{
           expand: true,
@@ -272,6 +283,7 @@ module.exports = function(grunt) {
     'version',
     'requirejs',
     'uglify',
+    //'compress',
     'test:dist',
     'clean:build'
   ]);
