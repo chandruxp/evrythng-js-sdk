@@ -1,6 +1,6 @@
 # [EVRYTHNG](https://www.evrythng.com) Client JavaScript SDK
 
-EvrythngJS is a [UMD](https://github.com/umdjs/umd)-compatible JavaScript library for Client-side applications
+Evrythng.js is a [UMD](https://github.com/umdjs/umd)-compatible JavaScript library for Client-side applications
 interacting with the EVRYTHNG API.
 
 **We are updgrading EvrythngJS to the new 2.0 version. In the meantime, please refer to 
@@ -33,17 +33,17 @@ respectively
     
 ### Node.js
 
-EvrythngJS is also available as an NPM package. Install it using:
+Evrythng.js is also available as an NPM package. Install it using:
 
     npm install evrythng
 
 
 ## Usage
 
-EvrythngJS uses UMD, which makes it available everywhere that runs Javascript.
+Evrythng.js uses UMD, which makes it available in every environment running Javascript.
 
-For advanced usage and options, see the API documentation on [Evrythng's Developer
-Portal](https://dev.evrythng.com/documentation), and the Documentation section below. 
+For advanced usage and options, see the [Documentation section](#Documentation) below and the API 
+documentation on [EVRYTHNG's Developer Portal](https://dev.evrythng.com/documentation). 
 
 **Note:** Be sure to only include your EVRYTHNG App API key and **not** your Operator or User
 App key in any public application code (read more [here](https://dev.evrythng.com/documentation/api#users)).
@@ -206,16 +206,16 @@ var app = new EVT.App('apiKey');
 
 ## Documentation
 
-For in-depth documentation beyond the one provided here, please have a look at the 
+For in-depth documentation beyond the one provided here, we encourage you please have a look at the 
 [Annotated Source Code](https://evrythng.github.io/evrythng-js-sdk).
 
 The [EVRYTHNG API is documented here](https://dev.evrythng.com/documentation/api).
 
 ## Source Maps
 
-Source Maps are available, which means that when using the minified version, if a developer opens the 
-Developer Tools, .map files will be downloaded to help the developer debug code using the original version
-of the code.
+Source Maps are available, which means that when using the minified version, if a developer 
+opens the Developer Tools, .map files will be downloaded to help him debug code using the original 
+uncompressed version of the library.
 
 ### Size
 
@@ -223,7 +223,7 @@ of the code.
 
 ## Development
 
-Check the Development Notes in `DEVELOPMENT.md`.
+Check the Development Notes in [`DEVELOPMENT.md`](./DEVELOPMENT.md).
 
 ### Testing
 
