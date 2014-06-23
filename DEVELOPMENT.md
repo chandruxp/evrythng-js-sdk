@@ -1,12 +1,12 @@
-# [Evrythng](https://www.evrythng.com) JavaScript SDK For Developers
+# [EVRYTHNG](https://www.evrythng.com) JavaScript SDK For Developers
 
-Evrythng's JavaScript library is built using AMD modules and using RequireJS while
+EVRYTHNG's JavaScript library is built using AMD modules and using RequireJS while
 in dev, but then building a file for distribution that does not require an AMD loader.
 It is compatible with the UMD pattern, meaning it can easily be used everywhere using
 AMD and CommonJS-like (Node.js) script loaders, falling back to browser globals.
 
 
-When the EvrythngJS library is built, it includes:
+When the evrythng.js library is built, it includes:
 
 - [Almond](https://github.com/jrburke/almond): The built library also does not include 
 require.js in the file, but instead uses *Almond*, a small AMD API implementation, that 
@@ -90,4 +90,3 @@ following lines in the **grunt groc task options**:
 
     out: "docs/",
     //github: true,
-    

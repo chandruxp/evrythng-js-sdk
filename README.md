@@ -1,10 +1,8 @@
 # [EVRYTHNG](https://www.evrythng.com) Client JavaScript SDK
 
-Evrythng.js is a [UMD](https://github.com/umdjs/umd)-compatible JavaScript library for Client-side applications
-interacting with the EVRYTHNG API.
 
-**We are updgrading EvrythngJS to the new 2.0 version. In the meantime, please refer to 
-the [`v.1.x` branch](https://github.com/evrythng/evrythng-js-sdk/tree/v1.x) for the previous documentation.**
+evrythng.js is a Javascript library making it a breeze to interact with the EVRYTHNG API thanks to its fluent API. Because of its [UMD](https://github.com/umdjs/umd)-compatibility it can be used for your Web (mobile, desktop or hybrid) apps as well as directly embedded in Node.js apps.
+
 
 ## Installation
 
@@ -33,14 +31,14 @@ respectively
     
 ### Node.js
 
-Evrythng.js is also available as an NPM package. Install it using:
+evrythng.js is also available as an NPM package. Install it using:
 
     npm install evrythng
 
 
 ## Usage
 
-Evrythng.js uses UMD, which makes it available in every environment running Javascript.
+evrythng.js uses UMD, which makes it available in every environment running Javascript.
 
 For advanced usage and options, see the [Documentation section](#documentation) below and the API 
 documentation on [EVRYTHNG's Developer Portal](https://dev.evrythng.com/documentation). 
