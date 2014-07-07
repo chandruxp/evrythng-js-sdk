@@ -149,6 +149,12 @@ require(['evrythng'], function (EVT) {
     url: '/products',
     method: 'post',
     authorization: 'userApiKey',
+    data: {
+      fn: 'My cool product'
+    },
+    params: {
+      foo: 'bar'
+    },
     success: function(product){
       console.log(product);
     },
