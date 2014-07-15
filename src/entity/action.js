@@ -38,19 +38,19 @@ define([
 
   // Set the Entity ID of the entity receiving the action as well
   // as the specified action type in the action data.
-  function _fillAction(actionObj, actionType, entityId) {
+  function _fillAction(entity, actionObj, actionType) {
 
-    if(!entityId){
+    if(!entity.id){
       throw new Error('This entity does not have an ID.');
     }
 
     var ret = actionObj;
     ret.type = actionType;
 
-    if(this.class.constructor == EVT.Product.constructor){
-      ret.product = entityId;
-    }else if(this.class.constructor == EVT.Thng.constructor){
-      ret.thng = entityId;
+    if(entity.constructor === EVT.Product){
+      ret.product = entity.id;
+    }else if(entity.constructor === EVT.Thng){
+      ret.thng = entity.id;
     }
 
     return ret;
@@ -69,7 +69,7 @@ define([
   return {
 
     resourceConstructor: function (actionType, id) {
-      var path, resource, entityId = this.id;
+      var path, resource, entity = this;
 
       if(actionType){
         if(Utils.isString(actionType)){
@@ -84,7 +84,7 @@ define([
       // Create a resource constructor dynamically and call it with this
       // action's ID.
       resource = Resource.constructorFactory(path, EVT.Action)
-        .call(this.resource.scope, id);
+        .call(entity.resource.scope, id);
 
       // Overload Action resource *create()* method to allow empty object.
       resource.create = function () {
@@ -92,7 +92,7 @@ define([
         var $this = this,
           args = _normalizeArguments.apply(this, arguments);
 
-        args[0] = _fillAction.call(this, args[0], actionType, entityId);
+        args[0] = _fillAction(entity, args[0], actionType);
 
         // If geolocation setting is turned on, get current position before
         // registering the action in the Engine.

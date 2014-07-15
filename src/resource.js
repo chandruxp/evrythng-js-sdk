@@ -150,7 +150,9 @@ define([
         // If response is an array, also create array of entities.
         var ret = [];
         for(var i in jsonData){
-          ret.push(new this['class'](jsonData[i], this));
+          if(jsonData.hasOwnProperty(i)){
+            ret.push(new this['class'](jsonData[i], this));
+          }
         }
         return ret;
 

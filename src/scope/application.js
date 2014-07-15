@@ -89,7 +89,7 @@ define([
 
             if(response.status === 'connected') {
 
-              // If user is connected with Faceobok, return a promise with his details.
+              // If user is connected with Facebook, return a promise with his details.
               return Authentication.authFacebook.call($this, response);
 
             } else {
