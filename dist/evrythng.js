@@ -3628,13 +3628,15 @@ define('entity/action',[
             };
             args[0].locationSource = 'sensor';
 
+            return Resource.prototype.create.apply($this, args);
+
           }, function (err) {
 
             // Unable to get position, just inform the reason in the console.
             Logger.info(err);
 
-          }).finally(function () {
             return Resource.prototype.create.apply($this, args);
+
           });
 
         }else{

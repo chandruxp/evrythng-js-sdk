@@ -270,6 +270,22 @@ define([
           expect(jasmine.Ajax.requests.mostRecent().data().customFields).toEqual({ foo: 'bar' });
         });
 
+        it('should create action', function (done) {
+          product = new EVT.Product({
+            id: '1'
+          }, productResource);
+
+          product.action('scans').create().then(function (action) {
+            expect(action).toBeDefined();
+            done();
+          }, function () {
+            expect(false).toBeTruthy();
+            done();
+          });
+
+          jasmine.Ajax.requests.mostRecent().response(TestResponses.actions.scans.one);
+        });
+
         describe('with Geolocation', function () {
           var geolocation = window.navigator.geolocation;
 
@@ -346,6 +362,20 @@ define([
 
             expect(jasmine.Ajax.requests.mostRecent().data().location).not.toBeDefined();
             expect(jasmine.Ajax.requests.mostRecent().data().locationSource).not.toBeDefined();
+          });
+
+          it('should create action with geolocation', function (done) {
+            product.action('scans').create().then(function (action) {
+              expect(action).toBeDefined();
+              done();
+            }, function () {
+              expect(false).toBeTruthy();
+              done();
+            });
+
+            setTimeout(function () {
+              jasmine.Ajax.requests.mostRecent().response(TestResponses.actions.scans.one);
+            });
           });
 
         });
