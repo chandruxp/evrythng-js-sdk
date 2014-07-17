@@ -75,10 +75,12 @@ registering the action in the Engine.</p></div></div><div class="code"><div clas
             <span class="p">};</span>
             <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">locationSource</span> <span class="o">=</span> <span class="s1">&#39;sensor&#39;</span><span class="p">;</span>
 
+            <span class="k">return</span> <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+
           <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Unable to get position, just inform the reason in the console.</p></div></div><div class="code"><div class="wrapper">            <span class="nx">Logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
 
-          <span class="p">}).</span><span class="k">finally</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
             <span class="k">return</span> <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+
           <span class="p">});</span>
 
         <span class="p">}</span><span class="k">else</span><span class="p">{</span>
