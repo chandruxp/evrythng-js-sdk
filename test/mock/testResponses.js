@@ -109,6 +109,26 @@ var TestResponses = {
       }
     }
   },
+  multimedia: {
+    all: {
+      "status": 200,
+      "responseHeaders": {
+        "Content-type": "application/json",
+        "X-Result-Count": "2"
+      },
+      "responseText": '[{"id":"123","name":"media1"},{"id":"1234","name":"media2"}]'
+    },
+    one: {
+      "status": 200,
+      "contentType": "application/json",
+      "responseText": '{"id":"123","name":"media1"}'
+    },
+    updated: {
+      "status": 200,
+      "contentType": "application/json",
+      "responseText": '{"id":"123","name":"media-updated","media":{"foo":"bar"}}'
+    }
+  },
   application: {
     withFacebook: {
       "status": 200,

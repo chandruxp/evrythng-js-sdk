@@ -7,10 +7,11 @@
 define([
   'core',
   './entity',
+  'scope/scope',
   'resource',
   'utils',
   'logger'
-], function (EVT, Entity, Resource, Utils, Logger) {
+], function (EVT, Entity, Scope, Resource, Utils, Logger) {
   'use strict';
 
   // Setup Action inheritance from Entity.
@@ -40,7 +41,7 @@ define([
   // as the specified action type in the action data.
   function _fillAction(entity, actionObj, actionType) {
 
-    if(!entity.id){
+    if(!(entity instanceof Scope) && !entity.id){
       throw new Error('This entity does not have an ID.');
     }
 
@@ -69,7 +70,9 @@ define([
   return {
 
     resourceConstructor: function (actionType, id) {
-      var path, resource, entity = this;
+      var path, resource,
+        context = this,
+        scope = this instanceof Scope? this : this.resource.scope;
 
       if(actionType){
         if(Utils.isString(actionType)){
@@ -83,8 +86,7 @@ define([
 
       // Create a resource constructor dynamically and call it with this
       // action's ID.
-      resource = Resource.constructorFactory(path, EVT.Action)
-        .call(entity.resource.scope, id);
+      resource = Resource.constructorFactory(path, EVT.Action).call(scope, id);
 
       // Overload Action resource *create()* method to allow empty object.
       resource.create = function () {
@@ -92,7 +94,7 @@ define([
         var $this = this,
           args = _normalizeArguments.apply(this, arguments);
 
-        args[0] = _fillAction(entity, args[0], actionType);
+        args[0] = _fillAction(context, args[0], actionType);
 
         // If geolocation setting is turned on, get current position before
         // registering the action in the Engine.

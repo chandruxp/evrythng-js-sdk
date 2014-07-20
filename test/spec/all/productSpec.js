@@ -163,6 +163,14 @@ define([
         expect(badConstructor).toThrow();
       });
 
+      it('should throw error if there is no action type', function () {
+        var badConstructor = function () {
+          product.action();
+        };
+
+        expect(badConstructor).toThrow();
+      });
+
       it('should need string actionType of type string', function () {
         var badConstructor = function () {
           product.action({});

@@ -20,11 +20,13 @@ define([
   'entity/product',
   'entity/thng',
   'entity/appUser',
+  'entity/action',
   'entity/collection',
+  'entity/multimedia',
   'authentication',
   'utils'
-], function (EVT, Scope, Product, Thng, AppUser, Collection,
-             Authentication, Utils) {
+], function (EVT, Scope, Product, Thng, AppUser, Action, Collection,
+             Multimedia, Authentication, Utils) {
   'use strict';
 
   // User Scope constructor. It can be called with the parameters:
@@ -139,7 +141,11 @@ define([
 
     thng: Thng.resourceConstructor,
 
+    action: Action.resourceConstructor,
+
     collection: Collection.resourceConstructor,
+
+    multimedia: Multimedia.resourceConstructor,
 
     logout: Authentication.logout,
 

@@ -3529,10 +3529,11 @@ define('entity/property',[
 define('entity/action',[
   'core',
   './entity',
+  'scope/scope',
   'resource',
   'utils',
   'logger'
-], function (EVT, Entity, Resource, Utils, Logger) {
+], function (EVT, Entity, Scope, Resource, Utils, Logger) {
   
 
   // Setup Action inheritance from Entity.
@@ -3562,7 +3563,7 @@ define('entity/action',[
   // as the specified action type in the action data.
   function _fillAction(entity, actionObj, actionType) {
 
-    if(!entity.id){
+    if(!(entity instanceof Scope) && !entity.id){
       throw new Error('This entity does not have an ID.');
     }
 
@@ -3591,7 +3592,9 @@ define('entity/action',[
   return {
 
     resourceConstructor: function (actionType, id) {
-      var path, resource, entity = this;
+      var path, resource,
+        context = this,
+        scope = this instanceof Scope? this : this.resource.scope;
 
       if(actionType){
         if(Utils.isString(actionType)){
@@ -3605,8 +3608,7 @@ define('entity/action',[
 
       // Create a resource constructor dynamically and call it with this
       // action's ID.
-      resource = Resource.constructorFactory(path, EVT.Action)
-        .call(entity.resource.scope, id);
+      resource = Resource.constructorFactory(path, EVT.Action).call(scope, id);
 
       // Overload Action resource *create()* method to allow empty object.
       resource.create = function () {
@@ -3614,7 +3616,7 @@ define('entity/action',[
         var $this = this,
           args = _normalizeArguments.apply(this, arguments);
 
-        args[0] = _fillAction(entity, args[0], actionType);
+        args[0] = _fillAction(context, args[0], actionType);
 
         // If geolocation setting is turned on, get current position before
         // registering the action in the Engine.
@@ -4241,13 +4243,14 @@ define('scope/application',[
   './scope',
   'resource',
   'entity/product',
+  'entity/action',
   'entity/appUser',
   'authentication',
   'social/facebook',
   'utils',
   'logger',
   'ajax'
-], function (EVT, Scope, Resource, Product, AppUser,
+], function (EVT, Scope, Resource, Product, Action, AppUser,
              Authentication, Facebook, Utils, Logger) {
   
 
@@ -4353,6 +4356,8 @@ define('scope/application',[
   Utils.extend(ApplicationScope.prototype, {
 
     product: Product.resourceConstructor,
+
+    action: Action.resourceConstructor,
 
     // Setup AppUser resource to use *'/auth/evrythng/users'* instead
     // of the default *'/users'*. Both endpoints return a list of User entities.
@@ -4487,6 +4492,35 @@ define('entity/collection',[
     resourceConstructor: Resource.constructorFactory('/collections', EVT.Collection)
   };
 });
+// ## MULTIMEDIA.JS
+
+// **The Multimedia is a simple Entity subclass representing the REST API
+// Multimedia Content object.**
+
+define('entity/multimedia',[
+  'core',
+  './entity',
+  'resource'
+], function (EVT, Entity, Resource) {
+  
+
+  // Setup Multimedia inheritance from Entity.
+  var Multimedia = function () {
+    Entity.apply(this, arguments);
+  };
+
+  Multimedia.prototype = Object.create(Entity.prototype);
+  Multimedia.prototype.constructor = Multimedia;
+
+
+  // Attach class to EVT module.
+  EVT.Multimedia = Multimedia;
+
+
+  return {
+    resourceConstructor: Resource.constructorFactory('/contents/multimedia', EVT.Multimedia)
+  };
+});
 // ## USER.JS
 
 // **Here it is defined the UserScope or `EVT.User`. EVT.User
@@ -4509,11 +4543,13 @@ define('scope/user',[
   'entity/product',
   'entity/thng',
   'entity/appUser',
+  'entity/action',
   'entity/collection',
+  'entity/multimedia',
   'authentication',
   'utils'
-], function (EVT, Scope, Product, Thng, AppUser, Collection,
-             Authentication, Utils) {
+], function (EVT, Scope, Product, Thng, AppUser, Action, Collection,
+             Multimedia, Authentication, Utils) {
   
 
   // User Scope constructor. It can be called with the parameters:
@@ -4628,7 +4664,11 @@ define('scope/user',[
 
     thng: Thng.resourceConstructor,
 
+    action: Action.resourceConstructor,
+
     collection: Collection.resourceConstructor,
+
+    multimedia: Multimedia.resourceConstructor,
 
     logout: Authentication.logout,
 

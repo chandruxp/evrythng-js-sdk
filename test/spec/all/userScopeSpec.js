@@ -443,5 +443,83 @@ define([
 
     });
 
+    describe('.multimedia()', function () {
+      var multimediaResource;
+
+      it('should create Resource for multimedia using EVT.Multimedia class', function () {
+        multimediaResource = user.multimedia();
+
+        expect(multimediaResource instanceof Resource).toBeTruthy();
+        expect(multimediaResource.path).toBe('/contents/multimedia');
+        expect(multimediaResource.class).toEqual(EVT.Multimedia);
+
+        expect(multimediaResource.read).toBeDefined();
+      });
+
+      it('should allow single resource with provided ID', function () {
+        multimediaResource = user.multimedia('1');
+
+        expect(multimediaResource.path).toBe('/contents/multimedia/1');
+      });
+
+      it('should throw Error if ID is not String', function () {
+        var badCall = function () {
+          user.multimedia({});
+        };
+
+        expect(badCall).toThrow();
+      });
+
+      it('.read() without ID should handle list of collections', function (done) {
+        user.multimedia().read()
+          .then(function (multimedia) {
+            expect(multimedia.length).toBe(2);
+            expect(multimedia[0] instanceof EVT.Multimedia).toBeTruthy();
+            done();
+          }, function () {
+            expect(false).toBeTruthy();
+            done();
+          });
+
+        jasmine.Ajax.requests.mostRecent().response(TestResponses.multimedia.all);
+      });
+
+      it('.read() with ID should handle single object', function (done) {
+        user.multimedia('123').read()
+          .then(function (multimedia) {
+            expect(multimedia instanceof EVT.Multimedia).toBeTruthy();
+            done();
+          }, function () {
+            expect(false).toBeTruthy();
+            done();
+          });
+
+        jasmine.Ajax.requests.mostRecent().response(TestResponses.multimedia.one);
+      });
+
+      it('should allow to update multimedia once its returned', function (done) {
+        var multimedia123,
+          media = { foo: 'bar' };
+
+        user.multimedia('123').read()
+          .then(function (multimedia) {
+            multimedia123 = multimedia;
+
+            expect(multimedia.media).toBeUndefined();
+            jasmine.Ajax.stubRequest(EVT.settings.apiUrl + '/contents/multimedia/123')
+              .andReturn(TestResponses.multimedia.updated);
+
+            multimedia123.media = media;
+            return multimedia123.update();
+          }).then(function (updated) {
+            expect(updated.media).toEqual(media);
+            expect(multimedia123.media).toEqual(media);
+            done();
+          });
+
+        jasmine.Ajax.requests.mostRecent().response(TestResponses.multimedia.one);
+      });
+    });
+
   });
 });

@@ -30,7 +30,7 @@ define([
         properties: {
           foo: 'bar'
         }
-      },thngResource);
+      }, thngResource);
     });
 
     afterEach(function () {
@@ -47,7 +47,7 @@ define([
         thng = new EVT.Thng({
           id: '123',
           name: 'foo'
-        },thngResource);
+        }, thngResource);
 
         var badCall = function () {
           thng.readProduct();
@@ -83,6 +83,69 @@ define([
         expect(request.requestHeaders.Authorization).toBe(user.apiKey);
 
         request.response(TestResponses.products.one);
+      });
+
+    });
+
+    describe('.action()', function () {
+
+      beforeEach(function () {
+        EVT.setup({ geolocation: false });
+      });
+
+      afterEach(function () {
+        EVT.setup({ geolocation: true });
+      });
+
+      describe('.read()', function () {
+
+        it('without ID should handle list of actions', function (done) {
+          thng.action('scans').read().then(function (scans) {
+            expect(scans.length).toBe(2);
+            expect(scans[0].customFields.foo).toBe("bar");
+            expect(scans[1].user).toBe("000");
+            done();
+          }, function () {
+            expect(false).toBeTruthy();
+            done();
+          });
+
+          jasmine.Ajax.requests.mostRecent().response(TestResponses.actions.scans.all);
+        });
+
+        it('with ID should handle single object', function (done) {
+          thng.action('scans', '2134').read()
+            .then(function (action) {
+              expect(action instanceof EVT.Action).toBeTruthy();
+              done();
+            }, function () {
+              expect(false).toBeTruthy();
+              done();
+            });
+
+          jasmine.Ajax.requests.mostRecent().response(TestResponses.actions.scans.one);
+        });
+
+      });
+
+      describe('.create()', function () {
+
+        it('should send thng ID', function (done) {
+          thng.action('scans').create()
+            .then(function (action) {
+              expect(action instanceof EVT.Action).toBeTruthy();
+              done();
+            }, function () {
+              expect(false).toBeTruthy();
+              done();
+            });
+
+          var request = jasmine.Ajax.requests.mostRecent();
+
+          expect(request.data().thng).toBe('123');
+          jasmine.Ajax.requests.mostRecent().response(TestResponses.actions.scans.one);
+        });
+
       });
 
     });

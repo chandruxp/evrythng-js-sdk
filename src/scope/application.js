@@ -16,13 +16,14 @@ define([
   './scope',
   'resource',
   'entity/product',
+  'entity/action',
   'entity/appUser',
   'authentication',
   'social/facebook',
   'utils',
   'logger',
   'ajax'
-], function (EVT, Scope, Resource, Product, AppUser,
+], function (EVT, Scope, Resource, Product, Action, AppUser,
              Authentication, Facebook, Utils, Logger) {
   'use strict';
 
@@ -128,6 +129,8 @@ define([
   Utils.extend(ApplicationScope.prototype, {
 
     product: Product.resourceConstructor,
+
+    action: Action.resourceConstructor,
 
     // Setup AppUser resource to use *'/auth/evrythng/users'* instead
     // of the default *'/users'*. Both endpoints return a list of User entities.
