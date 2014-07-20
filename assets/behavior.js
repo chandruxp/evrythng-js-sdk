@@ -347,6 +347,36 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
+                "sourcePath": "/Users/joaovieira/Documents/EVRYTHNG/evrythng-js-sdk/src/entity/multimedia.js",
+                "projectPath": "src/entity/multimedia.js",
+                "targetPath": "src/entity/multimedia",
+                "pageTitle": "src/entity/multimedia",
+                "title": "multimedia"
+              },
+              "depth": 3,
+              "outline": [
+                {
+                  "type": "heading",
+                  "data": {
+                    "level": 2,
+                    "title": "MULTIMEDIA.JS",
+                    "slug": "multimediajs"
+                  },
+                  "depth": 2
+                }
+              ]
+            }, {
+              "type": "file",
+              "data": {
+                "language": {
+                  "nameMatchers": [".js"],
+                  "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
+                  "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
+                  "name": "JavaScript"
+                },
                 "sourcePath": "/Users/joaovieira/Documents/EVRYTHNG/evrythng-js-sdk/src/entity/product.js",
                 "projectPath": "src/entity/product.js",
                 "targetPath": "src/entity/product",

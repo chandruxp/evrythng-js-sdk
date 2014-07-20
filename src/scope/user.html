@@ -14,11 +14,13 @@ user and its API Keys can access to.</strong></p></div></div></div><div class="s
   <span class="s1">&#39;entity/product&#39;</span><span class="p">,</span>
   <span class="s1">&#39;entity/thng&#39;</span><span class="p">,</span>
   <span class="s1">&#39;entity/appUser&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;entity/action&#39;</span><span class="p">,</span>
   <span class="s1">&#39;entity/collection&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;entity/multimedia&#39;</span><span class="p">,</span>
   <span class="s1">&#39;authentication&#39;</span><span class="p">,</span>
   <span class="s1">&#39;utils&#39;</span>
-<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Scope</span><span class="p">,</span> <span class="nx">Product</span><span class="p">,</span> <span class="nx">Thng</span><span class="p">,</span> <span class="nx">AppUser</span><span class="p">,</span> <span class="nx">Collection</span><span class="p">,</span>
-             <span class="nx">Authentication</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">EVT</span><span class="p">,</span> <span class="nx">Scope</span><span class="p">,</span> <span class="nx">Product</span><span class="p">,</span> <span class="nx">Thng</span><span class="p">,</span> <span class="nx">AppUser</span><span class="p">,</span> <span class="nx">Action</span><span class="p">,</span> <span class="nx">Collection</span><span class="p">,</span>
+             <span class="nx">Multimedia</span><span class="p">,</span> <span class="nx">Authentication</span><span class="p">,</span> <span class="nx">Utils</span><span class="p">)</span> <span class="p">{</span>
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>User Scope constructor. It can be called with the parameters:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
 <li><strong><em>new EVT.User(apiKey, parentScope)</strong> - API Key string.
 Optional parent scope.</em></li>
@@ -90,7 +92,11 @@ the default <em>'/thngs'</em> endpoint.</p></div></div><div class="code"><div cl
 
     <span class="nx">thng</span><span class="o">:</span> <span class="nx">Thng</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
 
+    <span class="nx">action</span><span class="o">:</span> <span class="nx">Action</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
+
     <span class="nx">collection</span><span class="o">:</span> <span class="nx">Collection</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
+
+    <span class="nx">multimedia</span><span class="o">:</span> <span class="nx">Multimedia</span><span class="p">.</span><span class="nx">resourceConstructor</span><span class="p">,</span>
 
     <span class="nx">logout</span><span class="o">:</span> <span class="nx">Authentication</span><span class="p">.</span><span class="nx">logout</span><span class="p">,</span>
 
