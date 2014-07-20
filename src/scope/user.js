@@ -8,7 +8,9 @@
 
 // - Product resource (`C`, `R`, `U`)
 // - Thng resource (`C`, `R`, `U`)
+// - Action resource (`C`, `R`)
 // - Collection resource (`C`, `R`, `U`)
+// - Multimedia resource (`R`)
 // - Logout
 // - Search
 // - Update itself (the user information)

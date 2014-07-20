@@ -7,6 +7,7 @@
 // An Application scope currently has access to:
 
 // - Product resource (`R`)
+// - Action resource (`C`) - Scans only
 // - App User resource (`C`)
 // - Login
 // - (`C` actions via products)
