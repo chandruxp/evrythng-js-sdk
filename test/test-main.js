@@ -12,7 +12,7 @@ require.config({
   baseUrl: '/base/src',
 
   paths: {
-    rsvp: '../lib/rsvp',
+    npo: '../lib/npo',
     facebook: '//connect.facebook.net/en_US/all'
   },
 

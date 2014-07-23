@@ -110,8 +110,8 @@ define([
       var $this = this;
 
       // If request is async, and before returning the response, parse it.
-      // This success handler is called inside RSVP, so we need to keep the
-      // current context.
+      // This success handler is called inside the Promise, so we need to
+      // keep the current context.
 
       // Also, By not providing an error interceptor, we will let the error
       // propagate from `EVT.api()` to the `resource.read()` promise error

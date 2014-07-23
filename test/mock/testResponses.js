@@ -135,6 +135,11 @@ var TestResponses = {
       "contentType": "application/json",
       "responseText": '[{"name":"abc","apiKey":"12345","socialNetworks":{"facebook":{"appId":"1428154137454112"}},"id":"app1"}]'
     },
+    withoutFacebook: {
+      "status": 200,
+      "contentType": "application/json",
+      "responseText": '[{"name":"abc","apiKey":"12345","socialNetworks":{"twitter":{"appId":"1428154137454112"}},"id":"app1"}]'
+    },
     simple:{
       "status": 200,
       "contentType": "application/json",

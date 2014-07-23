@@ -17,7 +17,8 @@
 // EvrythngJS bundle also includes:
 
 // - [Almond](https://github.com/jrburke/almond): a minimal AMD script loader
-// - [RSVP](https://github.com/tildeio/rsvp.js): a lightweight Promises/A+ (1.1) library
+// - [NPO](https://github.com/getify/native-promise-only): an ES6 Promise polyfill,
+// strict Promises/A+ (1.1) implementation
 
 // See the full [uncompressed library](https://github.com/evrythng/evrythng-js-sdk/tree/master/dist/evrythng.js) @ Github.
 

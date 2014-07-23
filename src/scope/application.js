@@ -85,6 +85,11 @@ define([
       // ```
       if(obj.facebook){
 
+        if(!app.socialNetworks || !app.socialNetworks.facebook){
+          Logger.error('The Facebook configuration for this application is incorrect.');
+          return;
+        }
+
         // Get Facebook App ID from the Evrythng App social networks list.
         return Facebook.init(app.socialNetworks.facebook.appId)
           .then(function (response) {

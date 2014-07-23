@@ -4,7 +4,7 @@
 // across the whole library. For that, it doesn't have any
 // dependency.**
 
-define(['rsvp'], function (RSVP) {
+define(['npo'], function (Promise) {
   'use strict';
 
   return {
@@ -96,7 +96,7 @@ define(['rsvp'], function (RSVP) {
           enableHighAccuracy: true
         }, options);
 
-        return new RSVP.Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
           window.navigator.geolocation.getCurrentPosition(function (position) {
 
@@ -121,7 +121,9 @@ define(['rsvp'], function (RSVP) {
         });
 
       }else{
-        return RSVP.reject('Your browser doesn\'t support geolocation.');
+        return new Promise(function (resolve, reject) {
+          reject('Your browser doesn\'t support geolocation.');
+        });
       }
     }
 

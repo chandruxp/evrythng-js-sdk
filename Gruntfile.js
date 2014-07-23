@@ -51,11 +51,11 @@ module.exports = function(grunt) {
           modules: [
             {
               name: 'evrythng',
-              include: ["almond","rsvp"]
+              include: ["almond","npo"]
             }
           ],
           paths: {
-            rsvp: "../lib/rsvp",
+            npo: "../lib/npo",
             almond: "../tools/almond"
           },
           wrap: {

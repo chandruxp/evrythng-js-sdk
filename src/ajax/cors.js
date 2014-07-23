@@ -12,10 +12,10 @@
 
 define([
   'core',
-  'rsvp',
+  'npo',
   'utils',
   'logger'
-], function (EVT, RSVP, Utils, Logger) {
+], function (EVT, Promise, Utils, Logger) {
   'use strict';
 
   // Helper method used to build the returned response. It parses the JSON
@@ -129,7 +129,7 @@ define([
 
         // Do a normal asynchronous request and return a promise. If there
         // are callbacks execute them as well before resolving the promise.
-        return new RSVP.Promise(function(resolve, reject) {
+        return new Promise(function(resolve, reject) {
 
           // Define the response handler.
           function handler() {

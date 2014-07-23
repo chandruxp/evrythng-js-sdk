@@ -9,11 +9,11 @@
 
 define([
   'core',
-  'rsvp',
+  'npo',
   'social/facebook',
   'utils',
   'ajax'
-], function (EVT, RSVP, Facebook, Utils) {
+], function (EVT, Promise, Facebook, Utils) {
   'use strict';
 
   // Login into Evryhtng. This method is attached to the `EVT.App` API methods.
@@ -97,7 +97,7 @@ define([
     }
 
     // Return promise and resolve only once authenticated with EVRYTHNG.
-    return new RSVP.Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
 
       // Login using Facebook with options above.
       Facebook.login(options).then(function (userResponse) {

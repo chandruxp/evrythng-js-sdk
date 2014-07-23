@@ -100,6 +100,28 @@ define([
             });
           });
 
+          it('should log error if app has no social networks defined', function (done) {
+            console.error = jasmine.createSpy('error');
+
+            app.$init.then(function () {
+              expect(console.error).toHaveBeenCalled();
+              done();
+            });
+
+            jasmine.Ajax.requests.mostRecent().response(TestResponses.application.simple);
+          });
+
+          it('should log error if app has no facebook account', function (done) {
+            console.error = jasmine.createSpy('error');
+
+            app.$init.then(function () {
+              expect(console.error).toHaveBeenCalled();
+              done();
+            });
+
+            jasmine.Ajax.requests.mostRecent().response(TestResponses.application.withoutFacebook);
+          });
+
           it('should init facebook if app uses Facebook', function (done) {
             app.$init.then(function () {
               expect(fbInit).toHaveBeenCalled();

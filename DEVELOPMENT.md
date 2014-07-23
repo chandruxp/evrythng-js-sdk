@@ -14,10 +14,10 @@ allows the built file's internal modules to work. These internal modules and thi
 of almond are not visible outside the built file, just used internally by the built file 
 for code organization and referencing.
 
-- [RSVP](https://github.com/tildeio/rsvp.js): a lightweight Promises/A+ (1.1)-compliant
-library used while native Promises don't get implemented in all browsers. This library 
-has the same ES6 Promise interface for easy future update. However, this might change in 
-the future for an even lighter ES6-Promise shim.
+- [NPO](https://github.com/getify/native-promise-only): a minimal ES6 Promise polyfill.
+As a polyfill, it will not override the native Promise implemented by the Browser if they
+are available. It adheres pretty strictly to the narrow core of Promises/A+ as 
+adopted/implemented by ES6 into the native `Promise()` mechanism.
 
 
 ## File structure
@@ -27,7 +27,7 @@ the future for an even lighter ES6-Promise shim.
 - **dist/evrythng.min.map**: source maps for the minified version. This allows the 
 developer to open the Developer Tools in the browser and debug the minified code as if
 was the development version.
-* **lib**: contains dependencies or bundled scripts. RSVP.js for now.
+* **lib**: contains dependencies or bundled scripts. npo.js - ES6 Promise polyfill - for now.
 * **test**: the Jasmine-based Unit tests. All tests in 'test/spec/all' refer to unit
 testing using Karma and RequireJS. The file 'test/spec/evrythngDistSpec.js' defines
 a small test suite used to test UMD (Karma + RequireJS, Karma + browser globals and 

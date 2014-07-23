@@ -4,9 +4,9 @@
 // from the Facebook SDK, always returning Promises.**
 
 define([
-  'rsvp',
+  'npo',
   'utils'
-], function (RSVP, Utils) {
+], function (Promise, Utils) {
   'use strict';
   /*global FB*/
 
@@ -19,7 +19,7 @@ define([
   function init(appId) {
 
     // Return promise and resolve once user status is retrieved.
-    return new RSVP.Promise(function(resolve){
+    return new Promise(function(resolve){
 
       // Notice that the FB SDK only works in the browser. Thus, an Evrtyhng
       // application cannot use Facebook authentication if it is not intended
@@ -63,7 +63,7 @@ define([
   function login(options) {
 
     // Return promise and resolve once user info is retrieved.
-    return new RSVP.Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       FB.login(function (response) {
 
@@ -92,7 +92,7 @@ define([
   // Invoke Facebook's logout and return promise.
   function logout() {
 
-    return new RSVP.Promise(function (resolve) {
+    return new Promise(function (resolve) {
       FB.logout(resolve);
     });
   }
@@ -103,7 +103,7 @@ define([
     if(response.status == 'connected') {
 
       // Return a Promise for the response with user details.
-      return new RSVP.Promise(function (resolve) {
+      return new Promise(function (resolve) {
 
         // Until here, `response` was FB's auth response. Here
         // we start to build bigger response by appending the Facebook's
@@ -117,7 +117,7 @@ define([
     }else{
 
       // Return an already resolved promise.
-      return new RSVP.Promise(function (resolve) {
+      return new Promise(function (resolve) {
         resolve(response);
       });
 

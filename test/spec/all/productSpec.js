@@ -363,13 +363,16 @@ define([
             });
           });
 
-          it('if geolocation unavailable send action without location', function () {
+          it('if geolocation unavailable send action without location', function (done) {
             window.navigator.geolocation = geolocation;
 
             product.action('scans').create();
 
-            expect(jasmine.Ajax.requests.mostRecent().data().location).not.toBeDefined();
-            expect(jasmine.Ajax.requests.mostRecent().data().locationSource).not.toBeDefined();
+            setTimeout(function () {
+              expect(jasmine.Ajax.requests.mostRecent().data().location).not.toBeDefined();
+              expect(jasmine.Ajax.requests.mostRecent().data().locationSource).not.toBeDefined();
+              done();
+            });
           });
 
           it('should create action with geolocation', function (done) {

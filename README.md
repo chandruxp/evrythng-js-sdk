@@ -223,7 +223,7 @@ uncompressed version of the library.
 
 ### Size
 
-29.56 kB (min) → 5.82 kB (gzip)
+22.08 kB (min) → 4.4 kB (gzip)
 
 ## Development
 

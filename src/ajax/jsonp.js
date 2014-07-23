@@ -8,10 +8,10 @@
 
 define([
   'core',
-  'rsvp',
+  'npo',
   'utils',
   'logger'
-], function (EVT, RSVP, Utils, Logger) {
+], function (EVT, Promise, Utils, Logger) {
   'use strict';
 
   // Counter defines uniquely identified callbacks.
@@ -95,7 +95,7 @@ define([
 
 
     // Return a promise and resolve/reject it in the callback function.
-    return new RSVP.Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
 
       // Attach callback as a global method. Evrythng's REST API error
       // responses always have a status and array of errors.

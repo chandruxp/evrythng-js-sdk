@@ -10,7 +10,7 @@ define([
   'use strict';
 
   // Version is udpated from package.json using `grunt-version` on build.
-  var version = '2.0.2';
+  var version = '2.0.3';
 
 
   // Setup default settings:
