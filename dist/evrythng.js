@@ -20,7 +20,8 @@
     root.EVT = root.Evrythng = factory(XMLHttpRequest);
   }
 
-}(this, function (XMLHttpRequest) {// Almond.js
+}(this, function (XMLHttpRequest) {
+// Almond.js
 // ---------
 
 // Almond is packaged into evrythng.js providing a minimal AMD wrapper,

@@ -35,7 +35,7 @@ module.exports = function(grunt) {
         src: 'README.md',
         overwrite: true,
         replacements: [{
-          from: /evrythng-\d+\.\d+\.\d+(-\w+(\.\d+)?)?/,
+          from: /evrythng-\d+\.\d+\.\d+(-\w+(\.\d+)?)?/g,
           to: 'evrythng-<%= pkg.version %>'
         }]
       }
@@ -179,7 +179,7 @@ module.exports = function(grunt) {
     gitcommit: {
       task: {
         options: {
-          message: 'Updating documentation to version number to <%= pkg.version %>'
+          message: 'Updating documentation to version number <%= pkg.version %>'
         },
         files: {
           src: ['README.md']

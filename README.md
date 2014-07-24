@@ -23,7 +23,7 @@ Or always get the last stable release:
     
 For HTTPs you'll have to use:
 
-    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-2.0.0.min.js"></script>
+    <script src="//d10ka0m22z5ju5.cloudfront.net/toolkit/evrythng-js-sdk/evrythng-2.0.3.min.js"></script>
 
 respectively
 
