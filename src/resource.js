@@ -147,11 +147,18 @@ define([
 
       if(Utils.isArray(jsonData)) {
 
-        // If response is an array, also create array of entities.
+        // If response is an array, also create array of entities. For
+        // each, we need a new Resource with single path.
         var ret = [];
         for(var i in jsonData){
           if(jsonData.hasOwnProperty(i)){
-            ret.push(new this['class'](jsonData[i], this));
+            var objId = jsonData[i].id, resource = this;
+
+            if(objId){
+              resource = new Resource(this.scope, this.path + '/' + objId, this['class']);
+            }
+
+            ret.push(new this['class'](jsonData[i], resource));
           }
         }
         return ret;

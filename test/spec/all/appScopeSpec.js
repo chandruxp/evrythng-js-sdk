@@ -216,6 +216,7 @@ define([
           .then(function (products) {
             expect(products.length).toBe(2);
             expect(products[0] instanceof EVT.Product).toBeTruthy();
+            expect(products[0].resource.path).toBe('/products/1');
             done();
           }, function () {
             expect(false).toBeTruthy();
@@ -261,7 +262,7 @@ define([
 
       it('should allow to update a product in a list', function (done) {
         var prod1;
-        app.product('1').read()
+        app.product().read()
           .then(function (products) {
             prod1 = products[0];
 

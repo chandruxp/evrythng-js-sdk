@@ -28,17 +28,6 @@ define([
       jasmine.Ajax.uninstall();
     });
 
-    // TODO: normalize API so that /properties/status return single property
-/*    it('.update() should allow string', function () {
-      product.property('status').read().then(function (property) {
-        property.update('off');
-
-        expect(jasmine.Ajax.requests.mostRecent().params).toBe('[{"value":"off"}]');
-      });
-
-      jasmine.Ajax.requests.mostRecent().response(TestResponses.properties.one);
-    });*/
-
   });
 
 });
