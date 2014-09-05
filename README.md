@@ -241,8 +241,8 @@ app.appUser().create({
 
 ```javascript
 app.login({
-  email: 'joao@evrythng.com',
-  password: 'test12345'
+  email: 'some@one.com',
+  password: 'password' // don't put this one in the code :)
 }).then(function(authResponse){
   var user = authResponse.user;
   user.thng().read().then(function(thngs){
