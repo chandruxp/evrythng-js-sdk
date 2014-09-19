@@ -48,7 +48,7 @@ Encode key and value components as they are appended to query string.</p></div><
       <span class="k">return</span> <span class="nx">url</span><span class="p">;</span>
     <span class="p">},</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Get current position using HTML5 Geolocation and resolve promise
 once it has returned.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">getCurrentPosition</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">){</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">navigator</span><span class="p">.</span><span class="nx">geolocation</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Have default options, but allow to extend with custom.</p></div></div><div class="code"><div class="wrapper">        <span class="kd">var</span> <span class="nx">geolocationOptions</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">window</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">&amp;&amp;</span> <span class="nb">window</span><span class="p">.</span><span class="nx">navigator</span><span class="p">.</span><span class="nx">geolocation</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Have default options, but allow to extend with custom.</p></div></div><div class="code"><div class="wrapper">        <span class="kd">var</span> <span class="nx">geolocationOptions</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
           <span class="nx">maximumAge</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
           <span class="nx">timeout</span><span class="o">:</span> <span class="mi">10000</span><span class="p">,</span>
           <span class="nx">enableHighAccuracy</span><span class="o">:</span> <span class="kc">true</span>
@@ -80,7 +80,7 @@ once it has returned.</p></div></div><div class="code"><div class="wrapper">    
 
       <span class="p">}</span><span class="k">else</span><span class="p">{</span>
         <span class="k">return</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="p">{</span>
-          <span class="nx">reject</span><span class="p">(</span><span class="s1">&#39;Your browser doesn\&#39;t support geolocation.&#39;</span><span class="p">);</span>
+          <span class="nx">reject</span><span class="p">(</span><span class="s1">&#39;Your browser\/environment doesn\&#39;t support geolocation.&#39;</span><span class="p">);</span>
         <span class="p">});</span>
       <span class="p">}</span>
     <span class="p">}</span>
