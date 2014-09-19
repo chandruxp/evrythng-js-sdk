@@ -46,7 +46,7 @@ documentation on [EVRYTHNG's Developer Portal](https://dev.evrythng.com/document
 **Note:** Be sure to only include your EVRYTHNG App API key and **not** your Operator or User
 App key in any public application code (read more [here](https://dev.evrythng.com/documentation/api#users)).
 
-### AMD (RequireJS)
+### With RequireJS (AMD)
 
 ```javascript
 require(['evrythng'], function (EVT) {
@@ -189,16 +189,7 @@ require(['evrythng'], function (EVT) {
 });
 ```
 
-### Node.js
-
-```javascript
-var EVT = require('evrythng');
-
-var app = new EVT.App('apiKey');
-...
-```
-
-### Browser Globals
+### Plain Javascript
 
 If you aren't using any of the above script loading mechanisms, the EVT module is available
 as a browser global:
@@ -207,6 +198,59 @@ as a browser global:
 var app = new EVT.App('apiKey');
 ...
 ```
+
+### Node.js
+
+Note: the Node.js version is currently experiemental.
+
+```javascript
+var EVT = require('evrythng');
+
+var app = new EVT.App('apiKey');
+...
+```
+
+## More examples
+
+### Create and validate app users:
+
+```javascript
+// Initialize app using appApiKey
+var app = new EVT.App('APP-API-KEY');
+
+// create app user
+app.appUser().create({
+  email: 'someone@anyone.com',
+  password: 'password', // don't put this one in the code :)
+  firstName: 'Some',
+  lastName: 'One'
+}).then(function(appUser){
+  console.log('Created user: ', appUser);
+
+  // validate app user
+  return appUser.validate();
+
+}).then(function(appUser){
+
+  // validated user and his api key
+  console.log('Validated app user: ', appUser);
+});
+```
+
+### Log an EVRYTHNG user it and get his Thngs
+
+```javascript
+app.login({
+  email: 'some@one.com',
+  password: 'password' // don't put this one in the code :)
+}).then(function(authResponse){
+  var user = authResponse.user;
+  user.thng().read().then(function(thngs){
+    console.log('thngs: ' thngs);
+  });
+});
+```
+
 
 ## Documentation
 
