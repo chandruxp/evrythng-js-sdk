@@ -87,7 +87,7 @@ define(['npo'], function (Promise) {
     // Get current position using HTML5 Geolocation and resolve promise
     // once it has returned.
     getCurrentPosition: function(options){
-      if (window.navigator.geolocation) {
+      if (typeof window !== 'undefined' && window.navigator.geolocation) {
 
         // Have default options, but allow to extend with custom.
         var geolocationOptions = this.extend({
@@ -122,7 +122,7 @@ define(['npo'], function (Promise) {
 
       }else{
         return new Promise(function (resolve, reject) {
-          reject('Your browser doesn\'t support geolocation.');
+          reject('Your browser\/environment doesn\'t support geolocation.');
         });
       }
     }

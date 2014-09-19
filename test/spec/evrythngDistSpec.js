@@ -33,12 +33,12 @@
     it('should allow raw .api() call', function (done) {
       EVT.api({
         url: '/products',
-        authorization: 'fmVpqaBLZtCZyZZbx67aXaBC5IpQIVcJDhGXn54vweSGRXEiT3SSKXWsoHKGe9TbPG69jNLQl0TMuWKo'
-      }).then(function (products) {
-        expect(Object.prototype.toString.call(products) == "[object Array]").toBeTruthy();
-        done();
-      }, function () {
+        authorization: 'randomApiAccessKey'
+      }).then(function () {
         expect(false).toBeTruthy();
+        done();
+      }, function (err) {
+        expect(err.status).toBe(403);
         done();
       });
     });
