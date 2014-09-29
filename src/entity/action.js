@@ -37,6 +37,17 @@ define([
     return args;
   }
 
+  // Add the given entity identifier to an object (params or data).
+  function _addEntityIdentifier(entity, obj) {
+    if(entity.constructor === EVT.Product){
+      obj.product = entity.id;
+    }else if(entity.constructor === EVT.Thng){
+      obj.thng = entity.id;
+    }
+
+    return obj;
+  }
+
   // Set the Entity ID of the entity receiving the action as well
   // as the specified action type in the action data.
   function _fillAction(entity, actionObj, actionType) {
@@ -48,11 +59,7 @@ define([
     var ret = actionObj;
     ret.type = actionType;
 
-    if(entity.constructor === EVT.Product){
-      ret.product = entity.id;
-    }else if(entity.constructor === EVT.Thng){
-      ret.thng = entity.id;
-    }
+    _addEntityIdentifier(entity, ret);
 
     return ret;
   }
@@ -122,6 +129,21 @@ define([
         }else{
           return Resource.prototype.create.apply($this, args);
         }
+      };
+
+
+      // Overload Action resource *read()* method to send entity identifier in
+      // the params and fetch actions related to this entity.
+      resource.read = function () {
+
+        // Create params if they are not defined yet.
+        var args = _normalizeArguments.apply(this, arguments);
+        args[0].params = args[0].params || {};
+
+        // Add the current entity identifier to the params
+        _addEntityIdentifier(context, args[0].params);
+
+        return Resource.prototype.read.apply(this, args);
       };
 
       return resource;

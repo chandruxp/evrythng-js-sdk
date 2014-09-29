@@ -205,6 +205,28 @@ define([
 
       describe('.read()', function () {
 
+        beforeEach(function () {
+          product = new EVT.Product({
+            id: '1'
+          }, productResource);
+        });
+
+        it('should send current product ID', function () {
+          product.action('scans').read();
+
+          expect(jasmine.Ajax.requests.mostRecent().url).toContain('actions/scans?product=1');
+        });
+
+        it('should allow to send more query params', function () {
+          product.action('scans').read({
+            params: {
+              filter: 'a=b'
+            }
+          });
+
+          expect(jasmine.Ajax.requests.mostRecent().url).toContain('actions/scans?filter=a%3Db&product=1');
+        });
+
         it('without ID should handle list of actions', function (done) {
           product.action('scans').read().then(function (scans) {
             expect(scans.length).toBe(2);

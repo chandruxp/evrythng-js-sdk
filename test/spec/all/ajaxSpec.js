@@ -350,7 +350,7 @@ define([
         expect(EVT.api).toBeDefined();
       });
 
-      it('should use setup ApiKey', function () {
+      it('should use default setup settings', function () {
         var previousApikey = EVT.settings.apiKey;
 
         EVT.setup({
@@ -362,11 +362,12 @@ define([
         });
 
         expect(jasmine.Ajax.requests.mostRecent().requestHeaders.Authorization).toBe('123');
+        expect(jasmine.Ajax.requests.mostRecent().url).toContain(EVT.settings.apiUrl);
 
         // revert apiKey
         EVT.setup({
           apiKey: previousApikey
-        })
+        });
       });
 
       it('should allow to specify options for each request', function () {
