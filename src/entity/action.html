@@ -24,6 +24,14 @@ which can be obtained from the resource's path.</p></div></div><div class="code"
     <span class="p">}</span>
 
     <span class="k">return</span> <span class="nx">args</span><span class="p">;</span>
+  <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Add the given entity identifier to an object (params or data).</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">_addEntityIdentifier</span><span class="p">(</span><span class="nx">entity</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">entity</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">===</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">Product</span><span class="p">){</span>
+      <span class="nx">obj</span><span class="p">.</span><span class="nx">product</span> <span class="o">=</span> <span class="nx">entity</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+    <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">entity</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">===</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">Thng</span><span class="p">){</span>
+      <span class="nx">obj</span><span class="p">.</span><span class="nx">thng</span> <span class="o">=</span> <span class="nx">entity</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">obj</span><span class="p">;</span>
   <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Set the Entity ID of the entity receiving the action as well
 as the specified action type in the action data.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">function</span> <span class="nx">_fillAction</span><span class="p">(</span><span class="nx">entity</span><span class="p">,</span> <span class="nx">actionObj</span><span class="p">,</span> <span class="nx">actionType</span><span class="p">)</span> <span class="p">{</span>
 
@@ -34,11 +42,7 @@ as the specified action type in the action data.</p></div></div><div class="code
     <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">actionObj</span><span class="p">;</span>
     <span class="nx">ret</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="nx">actionType</span><span class="p">;</span>
 
-    <span class="k">if</span><span class="p">(</span><span class="nx">entity</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">===</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">Product</span><span class="p">){</span>
-      <span class="nx">ret</span><span class="p">.</span><span class="nx">product</span> <span class="o">=</span> <span class="nx">entity</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
-    <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">entity</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">===</span> <span class="nx">EVT</span><span class="p">.</span><span class="nx">Thng</span><span class="p">){</span>
-      <span class="nx">ret</span><span class="p">.</span><span class="nx">thng</span> <span class="o">=</span> <span class="nx">entity</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
-    <span class="p">}</span>
+    <span class="nx">_addEntityIdentifier</span><span class="p">(</span><span class="nx">entity</span><span class="p">,</span> <span class="nx">ret</span><span class="p">);</span>
 
     <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
   <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Attach class to EVT module.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">EVT</span><span class="p">.</span><span class="nx">Action</span> <span class="o">=</span> <span class="nx">Action</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Return the resource factory function. Actions have a custom <em>resource
@@ -88,6 +92,11 @@ registering the action in the Engine.</p></div></div><div class="code"><div clas
         <span class="p">}</span><span class="k">else</span><span class="p">{</span>
           <span class="k">return</span> <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">$this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
         <span class="p">}</span>
+      <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Overload Action resource <em>read()</em> method to send entity identifier in
+the params and fetch actions related to this entity.</p></div></div><div class="code"><div class="wrapper">      <span class="nx">resource</span><span class="p">.</span><span class="nx">read</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Create params if they are not defined yet.</p></div></div><div class="code"><div class="wrapper">        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">_normalizeArguments</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+        <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">params</span> <span class="o">=</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">params</span> <span class="o">||</span> <span class="p">{};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Add the current entity identifier to the params</p></div></div><div class="code"><div class="wrapper">        <span class="nx">_addEntityIdentifier</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">params</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">read</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
       <span class="p">};</span>
 
       <span class="k">return</span> <span class="nx">resource</span><span class="p">;</span>
