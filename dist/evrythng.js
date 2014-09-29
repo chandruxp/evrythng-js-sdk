@@ -1,4 +1,4 @@
-// EVRYTHNG JS SDK v2.0.4
+// EVRYTHNG JS SDK v2.0.5
 
 // (c) 2012-2014 EVRYTHNG Ltd. London / New York / Zurich.
 // Released under the Apache Software License, Version 2.0.
@@ -861,7 +861,7 @@ define('core',[
   
 
   // Version is udpated from package.json using `grunt-version` on build.
-  var version = '2.0.4';
+  var version = '2.0.5';
 
 
   // Setup default settings:
@@ -1332,7 +1332,8 @@ define('ajax',[
     // Merge options with defaults setup in `EVT.settings`.
     var requestOptions = Utils.extend({
       async: EVT.settings.async,
-      fullResponse: EVT.settings.fullResponse
+      fullResponse: EVT.settings.fullResponse,
+      authorization: EVT.settings.apiKey
     }, options);
 
     requestOptions.url = EVT.settings.apiUrl + requestOptions.url;
@@ -1354,7 +1355,7 @@ define('ajax',[
     }
 
 
-    // Returns a promise or imediate response if async = false.
+    // Returns a promise or immediate response if async = false.
     // Try to use XmlHttpRequest with CORS and fallback to JSON-P.
     try {
 
@@ -1951,6 +1952,17 @@ define('entity/action',[
     return args;
   }
 
+  // Add the given entity identifier to an object (params or data).
+  function _addEntityIdentifier(entity, obj) {
+    if(entity.constructor === EVT.Product){
+      obj.product = entity.id;
+    }else if(entity.constructor === EVT.Thng){
+      obj.thng = entity.id;
+    }
+
+    return obj;
+  }
+
   // Set the Entity ID of the entity receiving the action as well
   // as the specified action type in the action data.
   function _fillAction(entity, actionObj, actionType) {
@@ -1962,11 +1974,7 @@ define('entity/action',[
     var ret = actionObj;
     ret.type = actionType;
 
-    if(entity.constructor === EVT.Product){
-      ret.product = entity.id;
-    }else if(entity.constructor === EVT.Thng){
-      ret.thng = entity.id;
-    }
+    _addEntityIdentifier(entity, ret);
 
     return ret;
   }
@@ -2036,6 +2044,21 @@ define('entity/action',[
         }else{
           return Resource.prototype.create.apply($this, args);
         }
+      };
+
+
+      // Overload Action resource *read()* method to send entity identifier in
+      // the params and fetch actions related to this entity.
+      resource.read = function () {
+
+        // Create params if they are not defined yet.
+        var args = _normalizeArguments.apply(this, arguments);
+        args[0].params = args[0].params || {};
+
+        // Add the current entity identifier to the params
+        _addEntityIdentifier(context, args[0].params);
+
+        return Resource.prototype.read.apply(this, args);
       };
 
       return resource;
