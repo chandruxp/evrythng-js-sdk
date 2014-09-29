@@ -36,7 +36,8 @@ define([
     // Merge options with defaults setup in `EVT.settings`.
     var requestOptions = Utils.extend({
       async: EVT.settings.async,
-      fullResponse: EVT.settings.fullResponse
+      fullResponse: EVT.settings.fullResponse,
+      authorization: EVT.settings.apiKey
     }, options);
 
     requestOptions.url = EVT.settings.apiUrl + requestOptions.url;
@@ -58,7 +59,7 @@ define([
     }
 
 
-    // Returns a promise or imediate response if async = false.
+    // Returns a promise or immediate response if async = false.
     // Try to use XmlHttpRequest with CORS and fallback to JSON-P.
     try {
 
